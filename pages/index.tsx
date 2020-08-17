@@ -53,10 +53,9 @@ export default function Home({ initialData }) {
           caption: info.attributes.caption,
           img: info.included.images[0].attributes.medium,
           publicDate: new Date(info.attributes.public_golive_at),
-          isRTFirst: isBefore(
-            new Date(),
-            new Date(info.attributes.public_golive_at)
-          ),
+          isRTFirst:
+            isBefore(new Date(), new Date(info.attributes.public_golive_at)) ||
+            info.attributes.is_sponsors_only,
           link: `/watch/${info.canonical_links.self.split('/watch/')[1]}`,
         }))
       )
