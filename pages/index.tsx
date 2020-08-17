@@ -11,10 +11,13 @@ import Link from 'next/link'
 import useInfiniteScroll from 'hooks/useInfiniteScroll'
 import { AnimatePresence } from 'framer-motion'
 import { MotionFlex } from 'components/MotionComponents'
+import { getHostUrl } from 'lib/config'
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const data = await fetcher(
-    `${process.env.API_BASE_URL}/api/v1/episodes?per_page=30&channel_id=achievement-hunter&page=1`
+    `${getHostUrl(
+      ctx
+    )}/api/episodes?per_page=30&channel_id=achievement-hunter&page=1`
   )
 
   return {
@@ -28,11 +31,9 @@ const getPage = (pageIndex, previousPageData) => {
   if (previousPageData && !previousPageData?.data?.length) {
     return null
   }
-  return `${
-    process.env.API_BASE_URL
-  }/api/v1/episodes?per_page=30&channel_id=achievement-hunter&page=${
+  return `/api/episodes?per_page=30&channel_id=achievement-hunter&page=${
     pageIndex + 1
-  }` // SWR key
+  }`
 }
 
 export default function Home({ initialData }) {
