@@ -1,149 +1,292 @@
+import {
+  MotionBox,
+  MotionFlex,
+  MotionFlexProps,
+  MotionGrid,
+  MotionImage,
+} from 'components/MotionComponents'
+import WatchVideo from 'components/WatchVideo'
 import { format, isBefore } from 'date-fns'
+import { AnimatePresence, AnimateSharedLayout } from 'framer-motion'
+import useInfiniteScroll from 'hooks/useInfiniteScroll'
+import { useLocalStorage } from 'hooks/useLocalStorage'
 import { fetcher } from 'lib/fetcher'
 import { GetServerSideProps } from 'next'
-import Head from 'next/head'
-import React, { useMemo, useState } from 'react'
-import useSWR, { useSWRInfinite } from 'swr'
-import { Box, Grid, Image } from 'theme-ui'
+import { useRouter } from 'next/router'
+import qs from 'qs'
+import React, { useEffect, useMemo, useState } from 'react'
+import { makeQueryCache, useInfiniteQuery } from 'react-query'
+import { dehydrate } from 'react-query/hydration'
+import { Box, Grid, Input, Progress } from 'theme-ui'
 import Flex from '../components/Flex'
 import Text from '../components/Text'
-import Link from 'next/link'
-import useInfiniteScroll from 'hooks/useInfiniteScroll'
-import { AnimatePresence } from 'framer-motion'
-import { MotionFlex } from 'components/MotionComponents'
-import { getHostUrl } from 'lib/config'
+
+const PER_PAGE = 30
+const fetchEpisodes = (key, page = 0, params = {}, ctx?: any) =>
+  fetcher(
+    `/api/episodes?per_page=${PER_PAGE}&channel_id=achievement-hunter&order=desc&page=${page}&${qs.stringify(
+      params
+    )}`,
+    { ctx }
+  )
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const data = await fetcher(
-    `${getHostUrl(
-      ctx
-    )}/api/episodes?per_page=30&channel_id=achievement-hunter&page=1`
+  const queryCache = makeQueryCache()
+
+  await queryCache.prefetchQuery('episodes', () =>
+    fetchEpisodes(null, 0, { query: ctx.query.search }, ctx).then((res) => [
+      res,
+    ])
   )
 
   return {
     props: {
-      initialData: data,
+      dehydratedState: dehydrate(queryCache),
     },
   }
 }
 
-const getPage = (pageIndex, previousPageData) => {
-  if (previousPageData && !previousPageData?.data?.length) {
-    return null
-  }
-  return `/api/episodes?per_page=30&channel_id=achievement-hunter&page=${
-    pageIndex + 1
-  }`
+type Episode = {
+  id: string
+  title: string
+  caption: string
+  img: string
+  date: Date
+  publicDate: Date
+  isRTFirst: boolean
+  link: string
 }
 
-export default function Home({ initialData }) {
-  const [loading, setLoading] = useState(false)
-  const { data, size, setSize } = useSWRInfinite(getPage, fetcher, {
-    initialSize: 1,
-    initialData: [initialData],
+export default function Home() {
+  const router = useRouter()
+  const [search, setSearch] = useState((router.query.search as string) ?? '')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
+  const [selectedVideo, setSelectedVideo] = useState(null)
+
+  const {
+    data = [],
+    isFetching,
+    isFetchingMore,
+    fetchMore,
+    canFetchMore,
+    clear,
+  } = useInfiniteQuery(
+    `episodes`,
+    (key, page: number) => fetchEpisodes(key, page, { query: debouncedSearch }),
+    {
+      getFetchMore(prev) {
+        const nextPage = prev?.page + 1 ?? 0
+
+        return nextPage < prev.total_pages ? nextPage : false
+      },
+    }
+  )
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (search !== debouncedSearch) {
+        clear()
+        setDebouncedSearch(search)
+
+        router.replace(
+          search ? `/?${qs.stringify({ search })}` : '/',
+          undefined,
+          {
+            shallow: true,
+          }
+        )
+      }
+    }, 250)
+
+    return () => clearTimeout(timeout)
+  }, [search])
+
+  useEffect(() => {
+    if (selectedVideo) {
+      // router.replace(
+      //   `/watch/${selectedVideo.link}`,
+      //   `/watch/${selectedVideo.link}`,
+      //   {
+      //     shallow: true,
+      //   }
+      // )
+    } else {
+      router.replace(
+        search ? `/?${qs.stringify({ search })}` : '/',
+        undefined,
+        {
+          shallow: true,
+        }
+      )
+    }
+  }, [selectedVideo])
+  useInfiniteScroll({
+    enabled: canFetchMore && !isFetching && !isFetchingMore,
+    onLoadMore: () => {
+      fetchMore()
+    },
+    scrollPercentage: 0.75,
   })
 
-  const episodes = useMemo(() => {
+  const episodes = useMemo<Episode[]>(() => {
     if (data) {
-      setLoading(false)
       return data.flatMap(({ data }) =>
         data.map((info) => ({
           id: info.id,
           title: info.attributes.title,
           caption: info.attributes.caption,
           img: info.included.images[0].attributes.medium,
+          date: new Date(info.attributes.original_air_date),
           publicDate: new Date(info.attributes.public_golive_at),
           isRTFirst:
             isBefore(new Date(), new Date(info.attributes.public_golive_at)) ||
             info.attributes.is_sponsors_only,
-          link: `/watch/${info.canonical_links.self.split('/watch/')[1]}`,
+          link: info.canonical_links.self.split('/watch/')[1],
         }))
       )
     }
-
     return []
   }, [data])
 
-  useInfiniteScroll({
-    enabled: !loading,
-    onLoadMore: () => {
-      setLoading(true)
-      setSize(size + 1)
-    },
-    scrollPercentage: 0.75,
-  })
-
   return (
     <Box>
-      <Grid columns={[1, 2, 3, 3, 4]} p={2}>
-        <AnimatePresence initial={false}>
-          {episodes.map((episode) => (
-            <Link key={episode.id} href={episode.link} passHref>
-              <MotionFlex
-                direction="column"
-                sx={{
-                  borderRadius: 'lg',
-                  bg: 'gray.2',
-                  overflow: 'hidden',
-                  cursor: 'pointer',
-                }}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                <Box
-                  sx={{
-                    overflow: 'hidden',
-                    width: '100%',
-                    position: 'relative',
-                  }}
-                >
-                  <Image
-                    src={episode.img}
-                    sx={{
-                      width: '100%',
-                      height: 'auto',
-                      filter: episode.isRTFirst ? 'brightness(30%)' : undefined,
-                    }}
-                  />
-                  {episode.isRTFirst && (
-                    <Flex
-                      center
-                      sx={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                      }}
-                    >
-                      <Text fontWeight="bold" color="white" fontSize={3}>
-                        RT FIRST
-                      </Text>
-                    </Flex>
-                  )}
-                </Box>
-                <Flex
-                  p={2}
-                  direction="column"
-                  justify="space-between"
-                  sx={{ flexGrow: 1 }}
-                >
-                  <Box>
-                    <Text fontSize={2} fontWeight="semibold">
-                      {episode.title}
-                    </Text>
-                    <Text fontSize={0}>{episode.caption}</Text>
-                  </Box>
-                  <Text fontSize={0} mt={2} color="textMuted">
-                    {format(episode.publicDate, 'MMM dd / yy')}
-                  </Text>
-                </Flex>
-              </MotionFlex>
-            </Link>
-          ))}
+      <Box p={3}>
+        <Input
+          value={search}
+          onChange={(e) => {
+            setSearch(e.currentTarget.value)
+          }}
+          placeholder="Search"
+          sx={{ width: '100%' }}
+        />
+      </Box>
+      <AnimateSharedLayout type="crossfade">
+        <AnimatePresence initial={false} exitBeforeEnter>
+          <MotionGrid
+            columns={[1, 2, 3, 3, 4]}
+            p={3}
+            key={debouncedSearch}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }}
+          >
+            {episodes.map((episode) => (
+              <EpisodeCard
+                {...episode}
+                key={`${debouncedSearch}-${episode.id}`}
+                layoutId={`${debouncedSearch}-${episode.id}`}
+                onClick={() => setSelectedVideo(episode)}
+              />
+            ))}
+          </MotionGrid>
         </AnimatePresence>
-      </Grid>
+        <AnimatePresence>
+          {selectedVideo && (
+            <MotionBox
+              layoutId={`${debouncedSearch}-${selectedVideo.id}`}
+              sx={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                bottom: 0,
+                right: 0,
+              }}
+            >
+              <WatchVideo
+                link={selectedVideo.link}
+                thumbnail={selectedVideo.img}
+                onClose={() => setSelectedVideo(null)}
+              />
+            </MotionBox>
+          )}
+        </AnimatePresence>
+      </AnimateSharedLayout>
     </Box>
+  )
+}
+
+function EpisodeCard({
+  id,
+  link,
+  img,
+  isRTFirst,
+  title,
+  caption,
+  date,
+  publicDate,
+  ...props
+}: Episode & MotionFlexProps) {
+  const [progress] = useLocalStorage(`video-progress-${link}`, 0)
+
+  return (
+    <MotionFlex
+      direction="column"
+      sx={{
+        borderRadius: 'lg',
+        bg: 'gray.2',
+        overflow: 'hidden',
+        cursor: 'pointer',
+      }}
+      {...(props as any)}
+    >
+      <Box
+        sx={{
+          overflow: 'hidden',
+          width: '100%',
+          position: 'relative',
+        }}
+      >
+        <MotionImage
+          src={img}
+          sx={{
+            width: '100%',
+            height: 'auto',
+            filter: isRTFirst ? 'brightness(30%)' : undefined,
+          }}
+        />
+        <Progress
+          sx={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: 1,
+          }}
+          max={1}
+          value={progress}
+        />
+        {isRTFirst && (
+          <Flex
+            center
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+            }}
+          >
+            <Text fontWeight="bold" color="white" fontSize={3}>
+              RT FIRST
+            </Text>
+          </Flex>
+        )}
+      </Box>
+      <Flex
+        p={2}
+        direction="column"
+        justify="space-between"
+        sx={{ flexGrow: 1 }}
+      >
+        <Box>
+          <Text fontSize={2} fontWeight="semibold">
+            {title}
+          </Text>
+          <Text fontSize={0}>{caption}</Text>
+        </Box>
+        <Text fontSize={0} mt={2} color="textMuted">
+          {format(isRTFirst ? publicDate : date, 'MMM dd / yy')}
+        </Text>
+      </Flex>
+    </MotionFlex>
   )
 }

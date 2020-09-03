@@ -1,4 +1,3 @@
-import { fetcher } from 'lib/fetcher'
 import { NextApiRequest, NextApiResponse } from 'next'
 import qs from 'qs'
 import { cors } from 'lib/cors'

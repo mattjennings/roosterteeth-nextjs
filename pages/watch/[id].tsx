@@ -1,44 +1,33 @@
 import Flex from 'components/Flex'
+import { MotionBox } from 'components/MotionComponents'
 import Text from 'components/Text'
+import WatchVideo from 'components/WatchVideo'
+import { AnimatePresence } from 'framer-motion'
 import { fetcher } from 'lib/fetcher'
 import { GetServerSideProps } from 'next'
-import React from 'react'
+import React, { useState } from 'react'
 import ReactPlayer from 'react-player'
 import { Box } from 'theme-ui'
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const data = await fetcher(
-    `${process.env.API_BASE_URL}/api/v1/watch/${ctx.query.id}/videos`
-  )
+  const [watchRes, metaRes] = await Promise.all([
+    fetcher(`${process.env.API_BASE_URL}/api/v1/watch/${ctx.query.id}/videos`),
+    fetcher(`${process.env.API_BASE_URL}/api/v1/watch/${ctx.query.id}`),
+  ])
 
-  const url = data.data?.[0]?.attributes?.url ?? null
+  const attributes = watchRes.data?.[0]?.attributes
+  const url = attributes?.url ?? null
 
   return {
     props: {
-      error: data.access === false && data.message,
+      id: ctx.query.id,
+      attributes: metaRes.data?.[0]?.attributes,
       url,
+      error: watchRes.access === false && watchRes.message,
     },
   }
 }
 
-export default function Watch({ url, error }) {
-  return (
-    <Box
-      sx={{
-        width: '100vw',
-        height: '100vh',
-        bg: 'black',
-      }}
-    >
-      {error ? (
-        <Flex center sx={{ width: '100%', height: '100%' }}>
-          <Text color="white" fontSize={4}>
-            {error}
-          </Text>
-        </Flex>
-      ) : (
-        <ReactPlayer controls url={url} pip width="100%" height="100%" />
-      )}
-    </Box>
-  )
+export default function Watch({ id, url, error, attributes }) {
+  return <WatchVideo link={id} initialData={{ url, error, attributes }} />
 }
