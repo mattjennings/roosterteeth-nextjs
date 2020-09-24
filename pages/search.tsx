@@ -42,7 +42,6 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
   return {
     props: {
-      title: 'Home',
       dehydratedState: dehydrate(queryCache),
     },
   }

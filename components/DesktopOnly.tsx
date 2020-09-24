@@ -20,3 +20,10 @@ export default function DesktopOnly({
     </Box>
   )
 }
+
+export const desktopOnlyBreakpoints = (display: string = 'block') => [
+  `none`,
+  `none`,
+  `none`,
+  display,
+]

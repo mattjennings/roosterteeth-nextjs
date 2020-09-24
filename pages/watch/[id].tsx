@@ -15,13 +15,16 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     fetcher(`${process.env.API_BASE_URL}/api/v1/watch/${ctx.query.id}`),
   ])
 
-  const attributes = watchRes.data?.[0]?.attributes
-  const url = attributes?.url ?? null
+  const attributes = metaRes.data?.[0]?.attributes
+  const url = watchRes.data?.[0]?.attributes?.url ?? null
 
+  console.log(metaRes.data?.[0]?.attributes)
   return {
     props: {
+      header: false,
+      title: attributes.title,
       id: ctx.query.id,
-      attributes: metaRes.data?.[0]?.attributes,
+      attributes,
       url,
       error: watchRes.access === false && watchRes.message,
     },

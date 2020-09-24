@@ -42,6 +42,7 @@ export default function WatchVideo({
   const { error, url, attributes } = data ?? {}
 
   useEffect(() => {
+    debugger
     if (player.current && ready) {
       player.current.seekTo(progress)
     }
