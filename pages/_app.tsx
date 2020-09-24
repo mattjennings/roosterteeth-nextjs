@@ -1,5 +1,3 @@
-// import App from "next/app";
-import { AnimateSharedLayout } from 'framer-motion'
 import type { AppProps } from 'next/app'
 import { Box, ThemeProvider } from 'theme-ui'
 import { theme } from '../theme'
@@ -12,9 +10,6 @@ import React, { useEffect } from 'react'
 function App({ Component, pageProps, router }: AppProps) {
   useScrollRestoration(router)
 
-  useEffect(() => {
-    debugger
-  }, [])
   return (
     <React.StrictMode>
       <ReactQueryCacheProvider>

@@ -36,6 +36,8 @@ export default function WatchVideo({
   const [ready, setReady] = useState(false)
   const { data } = useQuery(`watch-${link}`, () => getVideoInfo(link), {
     initialData,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   })
 
   const [progress, setProgress] = useLocalStorage(`video-progress-${link}`, 0)
@@ -88,7 +90,7 @@ export default function WatchVideo({
                 setProgress(getProgress())
               }}
               onProgress={({ played }) => {
-                // setProgress(played)
+                setProgress(played)
               }}
               onReady={() => setReady(true)}
             />
