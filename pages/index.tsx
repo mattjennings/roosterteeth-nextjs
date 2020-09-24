@@ -15,7 +15,7 @@ import { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import qs from 'qs'
 import React, { useEffect, useMemo, useState } from 'react'
-import { makeQueryCache, useInfiniteQuery } from 'react-query'
+import { QueryCache, useInfiniteQuery } from 'react-query'
 import { dehydrate } from 'react-query/hydration'
 import { Box, Grid, Input, Progress } from 'theme-ui'
 import Flex from '../components/Flex'
@@ -32,7 +32,7 @@ const fetchEpisodes = (key, page = 0, params = {}, ctx?: any) =>
   )
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const queryCache = makeQueryCache()
+  const queryCache = new QueryCache()
 
   await queryCache.prefetchQuery('episodes', () =>
     fetchEpisodes(null, 0, { query: ctx.query.search }, ctx).then((res) => [
