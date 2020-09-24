@@ -7,10 +7,14 @@ import { ReactQueryCacheProvider, makeQueryCache } from 'react-query'
 import { ReactQueryDevtools } from 'react-query-devtools'
 import { Hydrate } from 'react-query/hydration'
 import useScrollRestoration from 'hooks/useScrollRestoration'
-import React from 'react'
+import React, { useEffect } from 'react'
 
 function App({ Component, pageProps, router }: AppProps) {
   useScrollRestoration(router)
+
+  useEffect(() => {
+    debugger
+  }, [])
   return (
     <React.StrictMode>
       <ReactQueryCacheProvider>

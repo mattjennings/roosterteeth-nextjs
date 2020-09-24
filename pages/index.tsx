@@ -20,6 +20,7 @@ import { dehydrate } from 'react-query/hydration'
 import { Box, Grid, Input, Progress } from 'theme-ui'
 import Flex from '../components/Flex'
 import Text from '../components/Text'
+import Link from 'next/link'
 
 const PER_PAGE = 30
 const fetchEpisodes = (key, page = 0, params = {}, ctx?: any) =>
@@ -101,25 +102,6 @@ export default function Home() {
     return () => clearTimeout(timeout)
   }, [search])
 
-  useEffect(() => {
-    if (selectedVideo) {
-      // router.replace(
-      //   `/watch/${selectedVideo.link}`,
-      //   `/watch/${selectedVideo.link}`,
-      //   {
-      //     shallow: true,
-      //   }
-      // )
-    } else {
-      router.replace(
-        search ? `/?${qs.stringify({ search })}` : '/',
-        undefined,
-        {
-          shallow: true,
-        }
-      )
-    }
-  }, [selectedVideo])
   useInfiniteScroll({
     enabled: canFetchMore && !isFetching && !isFetchingMore,
     onLoadMore: () => {
@@ -180,26 +162,6 @@ export default function Home() {
             ))}
           </MotionGrid>
         </AnimatePresence>
-        <AnimatePresence>
-          {selectedVideo && (
-            <MotionBox
-              layoutId={`${debouncedSearch}-${selectedVideo.id}`}
-              sx={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                bottom: 0,
-                right: 0,
-              }}
-            >
-              <WatchVideo
-                link={selectedVideo.link}
-                thumbnail={selectedVideo.img}
-                onClose={() => setSelectedVideo(null)}
-              />
-            </MotionBox>
-          )}
-        </AnimatePresence>
       </AnimateSharedLayout>
     </Box>
   )
@@ -219,74 +181,77 @@ function EpisodeCard({
   const [progress] = useLocalStorage(`video-progress-${link}`, 0)
 
   return (
-    <MotionFlex
-      direction="column"
-      sx={{
-        borderRadius: 'lg',
-        bg: 'gray.2',
-        overflow: 'hidden',
-        cursor: 'pointer',
-      }}
-      {...(props as any)}
-    >
-      <Box
+    <Link href={`/watch/[id]`} as={`/watch/${link}`}>
+      <MotionFlex
+        as="a"
+        direction="column"
         sx={{
+          borderRadius: 'lg',
+          bg: 'gray.2',
           overflow: 'hidden',
-          width: '100%',
-          position: 'relative',
+          cursor: 'pointer',
         }}
+        {...(props as any)}
       >
-        <MotionImage
-          src={img}
+        <Box
           sx={{
+            overflow: 'hidden',
             width: '100%',
-            height: 'auto',
-            filter: isRTFirst ? 'brightness(30%)' : undefined,
+            position: 'relative',
           }}
-        />
-        <Progress
-          sx={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            bottom: 1,
-          }}
-          max={1}
-          value={progress}
-        />
-        {isRTFirst && (
-          <Flex
-            center
+        >
+          <MotionImage
+            src={img}
+            sx={{
+              width: '100%',
+              height: 'auto',
+              filter: isRTFirst ? 'brightness(30%)' : undefined,
+            }}
+          />
+          <Progress
             sx={{
               position: 'absolute',
-              top: 0,
               left: 0,
               right: 0,
-              bottom: 0,
+              bottom: 1,
             }}
-          >
-            <Text fontWeight="bold" color="white" fontSize={3}>
-              RT FIRST
-            </Text>
-          </Flex>
-        )}
-      </Box>
-      <Flex
-        p={2}
-        direction="column"
-        justify="space-between"
-        sx={{ flexGrow: 1 }}
-      >
-        <Box>
-          <Text fontSize={2} fontWeight="semibold">
-            {title}
-          </Text>
-          <Text fontSize={0}>{caption}</Text>
+            max={1}
+            value={progress}
+          />
+          {isRTFirst && (
+            <Flex
+              center
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+              }}
+            >
+              <Text fontWeight="bold" color="white" fontSize={3}>
+                RT FIRST
+              </Text>
+            </Flex>
+          )}
         </Box>
-        <Text fontSize={0} mt={2} color="textMuted">
-          {format(isRTFirst ? publicDate : date, 'MMM dd / yy')}
-        </Text>
-      </Flex>
-    </MotionFlex>
+        <Flex
+          p={2}
+          direction="column"
+          justify="space-between"
+          sx={{ flexGrow: 1 }}
+        >
+          <Box>
+            <Text fontSize={2} fontWeight="semibold">
+              {title}
+            </Text>
+            <Text fontSize={0}>{caption}</Text>
+          </Box>
+          <Text fontSize={0} mt={2} color="textMuted">
+            {format(isRTFirst ? publicDate : date, 'MMM dd / yy')}
+          </Text>
+        </Flex>
+      </MotionFlex>
+    </Link>
   )
 }
