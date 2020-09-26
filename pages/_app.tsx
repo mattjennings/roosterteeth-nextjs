@@ -15,10 +15,13 @@ import Text from 'components/Text'
 import Head from 'next/head'
 import MobileOnly, { mobileOnlyBreakpoints } from 'components/MobileOnly'
 import DesktopOnly, { desktopOnlyBreakpoints } from 'components/DesktopOnly'
+import { Global } from '@emotion/core'
+import { useResponsiveValue } from '@theme-ui/match-media'
 
 function App({ Component, pageProps, router }: AppProps) {
-  const { header = true, title } = pageProps
+  const { nav = true, title } = pageProps
   const [isSidebarOpen, setSidebarOpen] = useState(false)
+  const sidebarPosition = useResponsiveValue(['75vw', '50vw', '35vw'])
   useScrollRestoration(router)
 
   return (
@@ -40,7 +43,7 @@ function App({ Component, pageProps, router }: AppProps) {
                       right: 0,
                       bottom: 0,
                       zIndex: 99,
-                      display: ['block', 'block', 'none'],
+                      display: mobileOnlyBreakpoints(),
                       bg: 'black',
                     }}
                     animate={{
@@ -59,16 +62,16 @@ function App({ Component, pageProps, router }: AppProps) {
                       left: 0,
                       bottom: 0,
                       zIndex: 100,
-                      display: ['flex', 'flex', 'none'],
+                      display: mobileOnlyBreakpoints('flex'),
                       overflow: 'hidden',
-                      width: '35vw',
+                      width: sidebarPosition,
                     }}
                     animate={{
                       x: 0,
                     }}
-                    initial={{ x: '-35vw' }}
+                    initial={{ x: `-${sidebarPosition}` }}
                     exit={{
-                      x: '-35vw',
+                      x: `-${sidebarPosition}`,
                     }}
                     transition={{ ease: 'easeInOut', duration: 0.2 }}
                   >
@@ -77,50 +80,60 @@ function App({ Component, pageProps, router }: AppProps) {
                 </>
               )}
             </AnimatePresence>
-            <Flex wrap="nowrap" sx={{ minHeight: '100vh' }}>
-              <Box
-                sx={{
-                  flexBasis: '15rem',
-                  flexGrow: 0,
-                  display: desktopOnlyBreakpoints('flex'),
-                }}
-              >
-                <SideNav />
-              </Box>
+            <Flex wrap="nowrap" sx={{ height: '100vh', overflow: 'hidden' }}>
+              {nav && (
+                <Box
+                  sx={{
+                    flexBasis: '15rem',
+                    flexGrow: 0,
+                    display: desktopOnlyBreakpoints('flex'),
+                  }}
+                >
+                  <SideNav />
+                </Box>
+              )}
               <Box
                 as="main"
-                sx={{ flexBasis: 0, flexGrow: 1, overflow: 'scroll' }}
+                sx={{
+                  flexBasis: 0,
+                  flexGrow: 1,
+                  overflow: 'scroll',
+                  height: '100%',
+                }}
               >
-                {header && (
-                  <Flex
-                    align="center"
-                    justify="space-between"
-                    p={2}
-                    sx={{
-                      height: 16,
-                      bg: 'white',
-                      position: 'sticky',
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      zIndex: 98,
-                      borderBottom: '1px solid',
-                      borderColor: 'divider',
-                    }}
-                  >
-                    <MobileOnly>
-                      <MenuButton onClick={() => setSidebarOpen(true)} />
-                    </MobileOnly>
-                    <DesktopOnly>
+                {/* wrapper div fixes safari position: sticky bug */}
+                <div>
+                  {nav && (
+                    <Flex
+                      align="center"
+                      justify="space-between"
+                      p={2}
+                      sx={{
+                        height: 16,
+                        bg: 'white',
+                        position: 'sticky',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        zIndex: 98,
+                        borderBottom: '1px solid',
+                        borderColor: 'divider',
+                      }}
+                    >
+                      <MobileOnly>
+                        <MenuButton onClick={() => setSidebarOpen(true)} />
+                      </MobileOnly>
+                      <DesktopOnly>
+                        <Box />
+                      </DesktopOnly>
+                      <Text fontSize={2} fontWeight="semibold">
+                        {title}
+                      </Text>
                       <Box />
-                    </DesktopOnly>
-                    <Text fontSize={2} fontWeight="semibold">
-                      {title}
-                    </Text>
-                    <Box />
-                  </Flex>
-                )}
-                <Component {...pageProps} />
+                    </Flex>
+                  )}
+                  <Component {...pageProps} />
+                </div>
               </Box>
             </Flex>
           </ThemeProvider>

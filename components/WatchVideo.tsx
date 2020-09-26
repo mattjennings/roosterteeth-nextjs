@@ -42,7 +42,6 @@ export default function WatchVideo({
   const { error, url, attributes } = data ?? {}
 
   useEffect(() => {
-    debugger
     if (player.current && ready) {
       player.current.seekTo(progress)
     }
@@ -89,7 +88,7 @@ export default function WatchVideo({
                 setProgress(getProgress())
               }}
               onProgress={({ played }) => {
-                // setProgress(played)
+                setProgress(played)
               }}
               onReady={() => setReady(true)}
             />
