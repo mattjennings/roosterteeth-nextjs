@@ -24,7 +24,8 @@ const fetchEpisodes = (channel, page = 0, params = {}, ctx?: any) =>
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const queryCache = new QueryCache()
 
-  await queryCache.prefetchQuery('episodes', () =>
+  const channel = ctx.query.id
+  await queryCache.prefetchQuery(`${channel}-episodes`, () =>
     fetchEpisodes(
       ctx.query.id,
       0,
@@ -35,13 +36,27 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
   function channelToTitle(channel) {
     switch (channel) {
-      case 'achievement-hunter':
-        return 'Achievement Hunter'
-      case 'funhaus':
-        return 'Funhaus'
+      case `achievement-hunter`:
+        return `Achievement Hunter`
+      case `rooster-teeth`:
+        return `Rooster Teeth`
+      case `inside-gaming`:
+        return `Inside Gaming`
+      case `death-battle`:
+        return `Death Battle`
+      case `the-yogscast`:
+        return `The Yogscast`
+      case `kinda-funny`:
+        return `Kinda Funny`
+      case `friends-of-rt`:
+        return `Freinds of RT`
+      case `sugar-pine-7`:
+        return `Sugar Pine 7`
+      case `cow-chop`:
+        return `Chow Chop`
+      default:
+        return channel.slice(0, 1).toUpperCase() + channel.slice(1)
     }
-
-    return ''
   }
   return {
     props: {
@@ -54,8 +69,8 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
 export default function Channel({ channel }) {
   const router = useRouter()
-  const [search, setSearch] = useState((router.query.search as string) ?? '')
-  const [debouncedSearch, setDebouncedSearch] = useState('')
+  const [search, setSearch] = useState((router.query.search as string) ?? ``)
+  const [debouncedSearch, setDebouncedSearch] = useState(``)
 
   const {
     data = [],
@@ -65,7 +80,7 @@ export default function Channel({ channel }) {
     canFetchMore,
     clear,
   } = useInfiniteQuery(
-    `episodes`,
+    `${channel}-episodes`,
     (key, page: number) =>
       fetchEpisodes(channel, page, { query: debouncedSearch }),
     {
@@ -84,7 +99,7 @@ export default function Channel({ channel }) {
         setDebouncedSearch(search)
 
         router.replace(
-          search ? `/?${qs.stringify({ search })}` : '/',
+          search ? `/?${qs.stringify({ search })}` : `/`,
           undefined,
           {
             shallow: true,
@@ -111,13 +126,13 @@ export default function Channel({ channel }) {
           id: info.id,
           title: info.attributes.title,
           caption: info.attributes.caption,
-          img: info.included.images[0].attributes.medium,
+          img: info.included.images[0].attributes.small,
           date: new Date(info.attributes.original_air_date),
           publicDate: new Date(info.attributes.public_golive_at),
           isRTFirst:
             isBefore(new Date(), new Date(info.attributes.public_golive_at)) ||
             info.attributes.is_sponsors_only,
-          link: info.canonical_links.self.split('/watch/')[1],
+          link: info.canonical_links.self.split(`/watch/`)[1],
         }))
       )
     }
@@ -133,7 +148,7 @@ export default function Channel({ channel }) {
             setSearch(e.currentTarget.value)
           }}
           placeholder="Search"
-          sx={{ width: '100%' }}
+          sx={{ width: `100%` }}
         />
       </Box>
       <AnimatePresence initial={false} exitBeforeEnter>
