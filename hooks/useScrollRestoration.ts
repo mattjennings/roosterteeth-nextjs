@@ -3,14 +3,16 @@ import { useEffect } from 'react'
 import Router from 'next/router'
 
 function saveScrollPos(url) {
-  const scrollPos = { x: window.scrollX, y: window.scrollY }
+  const el = document.querySelector('main')
+  const scrollPos = { x: el.scrollLeft, y: el.scrollTop }
   sessionStorage.setItem(url, JSON.stringify(scrollPos))
 }
 
 function restoreScrollPos(url) {
   const scrollPos = JSON.parse(sessionStorage.getItem(url))
   if (scrollPos) {
-    window.scrollTo(scrollPos.x, scrollPos.y)
+    const el = document.querySelector('main')
+    el.scrollTo(scrollPos.x, scrollPos.y)
   }
 }
 

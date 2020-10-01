@@ -20,3 +20,10 @@ export default function MobileOnly({
     </Box>
   )
 }
+
+export const mobileOnlyBreakpoints = (display: string = 'block') => [
+  display,
+  display,
+  display,
+  `none`,
+]
