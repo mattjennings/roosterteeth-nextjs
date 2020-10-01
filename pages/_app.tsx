@@ -1,4 +1,3 @@
-// import App from "next/app";
 import { AnimatePresence, AnimateSharedLayout } from 'framer-motion'
 import type { AppProps } from 'next/app'
 import { Box, MenuButton, ThemeProvider } from 'theme-ui'
@@ -21,13 +20,13 @@ import { useResponsiveValue } from '@theme-ui/match-media'
 function App({ Component, pageProps, router }: AppProps) {
   const { nav = true, title } = pageProps
   const [isSidebarOpen, setSidebarOpen] = useState(false)
-  const sidebarPosition = useResponsiveValue(['75vw', '50vw', '35vw'])
+  const sidebarPosition = useResponsiveValue([`75vw`, `50vw`, `35vw`])
   useScrollRestoration(router)
 
   return (
     <React.StrictMode>
       <Head>
-        <title>{title ?? 'RT'}</title>
+        <title>{title ?? `RT`}</title>
       </Head>
       <ReactQueryCacheProvider>
         <Hydrate state={pageProps.dehydratedState}>
@@ -37,14 +36,14 @@ function App({ Component, pageProps, router }: AppProps) {
                 <>
                   <MotionBox
                     sx={{
-                      position: 'fixed',
+                      position: `fixed`,
                       top: 0,
                       left: 0,
                       right: 0,
                       bottom: 0,
                       zIndex: 99,
                       display: mobileOnlyBreakpoints(),
-                      bg: 'black',
+                      bg: `black`,
                     }}
                     animate={{
                       opacity: 0.35,
@@ -57,13 +56,13 @@ function App({ Component, pageProps, router }: AppProps) {
                   />
                   <MotionBox
                     sx={{
-                      position: 'fixed',
+                      position: `fixed`,
                       top: 0,
                       left: 0,
                       bottom: 0,
                       zIndex: 100,
-                      display: mobileOnlyBreakpoints('flex'),
-                      overflow: 'hidden',
+                      display: mobileOnlyBreakpoints(`flex`),
+                      overflow: `hidden`,
                       width: sidebarPosition,
                     }}
                     animate={{
@@ -73,20 +72,20 @@ function App({ Component, pageProps, router }: AppProps) {
                     exit={{
                       x: `-${sidebarPosition}`,
                     }}
-                    transition={{ ease: 'easeInOut', duration: 0.2 }}
+                    transition={{ ease: `easeInOut`, duration: 0.2 }}
                   >
                     <SideNav />
                   </MotionBox>
                 </>
               )}
             </AnimatePresence>
-            <Flex wrap="nowrap" sx={{ height: '100vh', overflow: 'hidden' }}>
+            <Flex wrap="nowrap" sx={{ height: `100vh`, overflow: `hidden` }}>
               {nav && (
                 <Box
                   sx={{
-                    flexBasis: '15rem',
+                    flexBasis: `15rem`,
                     flexGrow: 0,
-                    display: desktopOnlyBreakpoints('flex'),
+                    display: desktopOnlyBreakpoints(`flex`),
                   }}
                 >
                   <SideNav />
@@ -97,8 +96,8 @@ function App({ Component, pageProps, router }: AppProps) {
                 sx={{
                   flexBasis: 0,
                   flexGrow: 1,
-                  overflow: 'scroll',
-                  height: '100%',
+                  overflow: `scroll`,
+                  height: `100%`,
                 }}
               >
                 {/* wrapper div fixes safari position: sticky bug */}
@@ -110,14 +109,14 @@ function App({ Component, pageProps, router }: AppProps) {
                       p={2}
                       sx={{
                         height: 16,
-                        bg: 'white',
-                        position: 'sticky',
+                        bg: `white`,
+                        position: `sticky`,
                         top: 0,
                         left: 0,
                         right: 0,
                         zIndex: 98,
-                        borderBottom: '1px solid',
-                        borderColor: 'divider',
+                        borderBottom: `1px solid`,
+                        borderColor: `divider`,
                       }}
                     >
                       <MobileOnly>
@@ -137,7 +136,7 @@ function App({ Component, pageProps, router }: AppProps) {
               </Box>
             </Flex>
           </ThemeProvider>
-          {process.env.NODE_ENV === 'development' && (
+          {process.env.NODE_ENV === `development` && (
             <ReactQueryDevtools initialIsOpen />
           )}
         </Hydrate>
