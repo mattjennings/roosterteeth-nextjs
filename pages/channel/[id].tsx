@@ -1,6 +1,5 @@
-import EpisodeCard, { Episode } from 'components/EpisodeCard'
+import EpisodeCard from 'components/EpisodeCard'
 import { MotionGrid } from 'components/MotionComponents'
-import { isBefore } from 'date-fns'
 import { AnimatePresence } from 'framer-motion'
 import useInfiniteScroll from 'hooks/useInfiniteScroll'
 import { fetcher } from 'lib/fetcher'
@@ -10,6 +9,7 @@ import qs from 'qs'
 import React, { useEffect, useMemo, useState } from 'react'
 import { QueryCache, useInfiniteQuery } from 'react-query'
 import { dehydrate } from 'react-query/hydration'
+import { Episode } from 'RT'
 import { Box, Input } from 'theme-ui'
 
 const PER_PAGE = 30
@@ -109,6 +109,8 @@ export default function Channel({ channel }) {
     }, 250)
 
     return () => clearTimeout(timeout)
+
+    // eslint-disable-next-line
   }, [search])
 
   useInfiniteScroll({
@@ -121,20 +123,7 @@ export default function Channel({ channel }) {
 
   const episodes = useMemo<Episode[]>(() => {
     if (data) {
-      return data.flatMap(({ data }) =>
-        data.map((info) => ({
-          id: info.id,
-          title: info.attributes.title,
-          caption: info.attributes.caption,
-          img: info.included.images[0].attributes.small,
-          date: new Date(info.attributes.original_air_date),
-          publicDate: new Date(info.attributes.public_golive_at),
-          isRTFirst:
-            isBefore(new Date(), new Date(info.attributes.public_golive_at)) ||
-            info.attributes.is_sponsors_only,
-          link: info.canonical_links.self.split(`/watch/`)[1],
-        }))
-      )
+      return data.flatMap(({ data }) => data)
     }
     return []
   }, [data])
@@ -162,7 +151,7 @@ export default function Channel({ channel }) {
         >
           {episodes.map((episode) => (
             <EpisodeCard
-              {...episode}
+              episode={episode}
               key={`${debouncedSearch}-${episode.id}`}
             />
           ))}

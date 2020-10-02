@@ -10,6 +10,7 @@ export default function SideNav(props: FlexProps) {
       as="nav"
       direction="column"
       align="stretch"
+      wrap="nowrap"
       {...(props as any)}
       sx={{
         bg: `background`,
@@ -19,6 +20,7 @@ export default function SideNav(props: FlexProps) {
         pt: [2, 2, 2, `4.5rem`],
         width: `100%`,
         height: `100vh`,
+        overflow: `scroll`,
         ...(props.sx ?? {}),
       }}
     >

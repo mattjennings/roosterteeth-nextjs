@@ -15,7 +15,6 @@ import { Box, Close } from 'theme-ui'
 
 export interface WatchVideoProps extends MotionBoxProps {
   link: string
-  thumbnail?: string
   initialData?: {
     attributes: any
     url: string
@@ -26,12 +25,12 @@ export interface WatchVideoProps extends MotionBoxProps {
 
 export default function WatchVideo({
   link,
-  thumbnail,
   initialData,
   onClose,
   ...props
 }: WatchVideoProps) {
   const player = useRef<ReactPlayer>()
+
   const [playing, setPlaying] = useState(false)
   const [ready, setReady] = useState(false)
   const { data } = useQuery(`watch-${link}`, () => getVideoInfo(link), {
@@ -65,15 +64,15 @@ export default function WatchVideo({
     <MotionBox
       {...(props as any)}
       sx={{
-        width: '100vw',
-        height: '100vh',
-        bg: 'black',
-        position: 'relative',
+        width: `100vw`,
+        height: `100vh`,
+        bg: `black`,
+        position: `relative`,
       }}
     >
       {data && (
         <Box
-          sx={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+          sx={{ position: `absolute`, top: 0, left: 0, right: 0, bottom: 0 }}
         >
           {!error && (
             <ReactPlayer
@@ -103,11 +102,10 @@ export default function WatchVideo({
                   bottom: 0,
                   left: 0,
                   right: 0,
-                  position: 'absolute',
-                  pointerEvents: 'none',
+                  position: `absolute`,
+                  pointerEvents: `none`,
                   p: 4,
-                  background:
-                    'linear-gradient(180deg, rgba(2,0,36,1) 0%, rgba(255,255,255,0) 100%)',
+                  background: `linear-gradient(180deg, rgba(2,0,36,1) 0%, rgba(255,255,255,0) 100%)`,
                 }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -116,7 +114,7 @@ export default function WatchVideo({
                 <Flex
                   align="center"
                   justify="space-between"
-                  sx={{ width: '100%' }}
+                  sx={{ width: `100%` }}
                 >
                   <Text color="white" fontSize={4}>
                     {error ? error : attributes.title}
@@ -126,10 +124,10 @@ export default function WatchVideo({
                       sx={{
                         width: 8,
                         height: 8,
-                        color: 'white',
-                        cursor: 'pointer',
+                        color: `white`,
+                        cursor: `pointer`,
                         zIndex: 1000,
-                        pointerEvents: 'all',
+                        pointerEvents: `all`,
                       }}
                       onClick={(ev) => {
                         ev.stopPropagation()
