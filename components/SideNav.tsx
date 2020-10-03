@@ -1,10 +1,22 @@
-import React from 'react'
+import React, { ElementType } from 'react'
 import Flex, { FlexProps } from './Flex'
 import NextLink from 'next/link'
-import { Box, Divider, Link as ThemeLink, LinkProps } from 'theme-ui'
+import {
+  Box,
+  Divider,
+  IconButton,
+  Link as ThemeLink,
+  LinkProps,
+  useColorMode,
+} from 'theme-ui'
 import { useRouter } from 'next/router'
+import { AiFillHome } from 'react-icons/ai'
+import { HiSun as SunIcon, HiMoon as MoonIcon } from 'react-icons/hi'
+import Switch from './Switch'
 
 export default function SideNav(props: FlexProps) {
+  const [colorMode, setColorMode] = useColorMode(`light` as 'light' | 'dark')
+
   return (
     <Flex
       as="nav"
@@ -24,8 +36,25 @@ export default function SideNav(props: FlexProps) {
         ...(props.sx ?? {}),
       }}
     >
-      <Link href="/">Home</Link>
-      <Divider />
+      <Flex align="center" justify="space-between" px={2}>
+        <IconLink href="/" icon={AiFillHome} />
+        <Flex align="center">
+          <Box
+            as={colorMode === `dark` ? SunIcon : MoonIcon}
+            mr={1}
+            color={colorMode === `dark` ? `yellow.5` : `text`}
+            sx={{
+              fontSize: 2,
+            }}
+          />
+          <Switch
+            checked={colorMode !== `dark`}
+            onChange={(e) =>
+              setColorMode(colorMode === `dark` ? `light` : `dark`)
+            }
+          />
+        </Flex>
+      </Flex>
       <Link href="/channel/achievement-hunter">Achievement Hunter</Link>
       <Link href="/channel/funhaus">Funhaus</Link>
       <Link href="/channel/rooster-teeth">Rooster Teeth</Link>
@@ -67,6 +96,29 @@ function Link({ href, ...props }: LinkProps) {
           },
         }}
       />
+    </NextLink>
+  )
+}
+
+function IconLink({
+  href,
+  icon,
+  activeIcon,
+  ...props
+}: LinkProps & { activeIcon?: ElementType<any>; icon: ElementType<any> }) {
+  const { asPath } = useRouter()
+
+  const isActive = asPath === href || asPath === props.as
+
+  return (
+    <NextLink href={href} passHref>
+      <IconButton as="a">
+        <Box
+          as={(isActive && activeIcon) || icon}
+          color={isActive ? `text` : `textMuted`}
+          sx={{ fontSize: 2 }}
+        />
+      </IconButton>
     </NextLink>
   )
 }
