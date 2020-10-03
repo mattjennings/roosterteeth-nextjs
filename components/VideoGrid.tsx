@@ -8,7 +8,7 @@ export default function VideoGrid(props: MotionGridProps) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       initial={{ opacity: 0 }}
-      {...props}
+      {...(props as any)}
     />
   )
 }
