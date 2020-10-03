@@ -5,8 +5,8 @@ import React from 'react'
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const [watchRes, metaRes] = await Promise.all([
-    fetcher(`${process.env.API_BASE_URL}/api/v1/watch/${ctx.query.id}/videos`),
-    fetcher(`${process.env.API_BASE_URL}/api/v1/watch/${ctx.query.id}`),
+    fetcher(`/api/watch/${ctx.query.id}/videos`, { ctx }),
+    fetcher(`/api/watch/${ctx.query.id}`, { ctx }),
   ])
 
   const attributes = metaRes.data?.[0]?.attributes
@@ -25,5 +25,5 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 }
 
 export default function Watch({ id, url, error, attributes }) {
-  return <WatchVideo link={id} initialData={{ url, error, attributes }} />
+  return <WatchVideo slug={id} initialData={{ url, error, attributes }} />
 }
