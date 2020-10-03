@@ -48,7 +48,7 @@ export default function Home({
     <Box>
       <AnimatePresence initial={false} exitBeforeEnter>
         <Box p={3}>
-          {unfinishedVideos?.length && (
+          {unfinishedVideos?.length > 0 && (
             <Box mb={2}>
               <Text fontWeight="medium" fontSize={4} mb={1}>
                 Keep Watching
