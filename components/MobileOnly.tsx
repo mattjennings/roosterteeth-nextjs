@@ -21,7 +21,7 @@ export default function MobileOnly({
   )
 }
 
-export const mobileOnlyBreakpoints = (display: string = 'block') => [
+export const mobileOnlyBreakpoints = (display = `block`) => [
   display,
   display,
   display,

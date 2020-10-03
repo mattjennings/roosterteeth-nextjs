@@ -5,6 +5,6 @@ import { forwardApiRoute } from 'lib/forwardApiRoute'
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   await cors(req, res)
 
-  const fetchRes = await forwardApiRoute(`/livestreams`, req)
+  const fetchRes = await forwardApiRoute(`/channels`, req)
   res.status(fetchRes.status).json(await fetchRes.json())
 }

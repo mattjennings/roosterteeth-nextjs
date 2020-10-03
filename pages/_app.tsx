@@ -1,27 +1,31 @@
+import { useResponsiveValue } from '@theme-ui/match-media'
+import { desktopOnlyBreakpoints } from 'components/DesktopOnly'
+import Flex from 'components/Flex'
+import MobileOnly, { mobileOnlyBreakpoints } from 'components/MobileOnly'
+import { MotionBox } from 'components/MotionComponents'
+import SideNav from 'components/SideNav'
 import { AnimatePresence, AnimateSharedLayout } from 'framer-motion'
+import useScrollRestoration from 'hooks/useScrollRestoration'
 import type { AppProps } from 'next/app'
-import { Box, MenuButton, ThemeProvider } from 'theme-ui'
-import { theme } from '../theme'
+import Head from 'next/head'
+import React, { useEffect, useState } from 'react'
 import { ReactQueryCacheProvider } from 'react-query'
 import { ReactQueryDevtools } from 'react-query-devtools'
 import { Hydrate } from 'react-query/hydration'
-import useScrollRestoration from 'hooks/useScrollRestoration'
-import React, { useEffect, useState } from 'react'
-import SideNav from 'components/SideNav'
-import Flex from 'components/Flex'
-import { MotionBox } from 'components/MotionComponents'
-import Text from 'components/Text'
-import Head from 'next/head'
-import MobileOnly, { mobileOnlyBreakpoints } from 'components/MobileOnly'
-import DesktopOnly, { desktopOnlyBreakpoints } from 'components/DesktopOnly'
-import { Global } from '@emotion/core'
-import { useResponsiveValue } from '@theme-ui/match-media'
+import { Box, MenuButton, ThemeProvider } from 'theme-ui'
+import { theme } from '../theme'
 
 function App({ Component, pageProps, router }: AppProps) {
   const { nav = true, title } = pageProps
   const [isSidebarOpen, setSidebarOpen] = useState(false)
   const sidebarPosition = useResponsiveValue([`75vw`, `50vw`, `35vw`])
   useScrollRestoration(router)
+
+  useEffect(() => {
+    router.events.on(`routeChangeStart`, () => {
+      setSidebarOpen(false)
+    })
+  }, [])
 
   return (
     <React.StrictMode>
@@ -83,7 +87,7 @@ function App({ Component, pageProps, router }: AppProps) {
               {nav && (
                 <Box
                   sx={{
-                    flexBasis: `15rem`,
+                    flexBasis: `16rem`,
                     flexGrow: 0,
                     display: desktopOnlyBreakpoints(`flex`),
                   }}
@@ -105,7 +109,6 @@ function App({ Component, pageProps, router }: AppProps) {
                   {nav && (
                     <Flex
                       align="center"
-                      justify="space-between"
                       p={2}
                       sx={{
                         height: 16,
@@ -117,17 +120,12 @@ function App({ Component, pageProps, router }: AppProps) {
                         zIndex: 98,
                         borderBottom: `1px solid`,
                         borderColor: `divider`,
+                        display: mobileOnlyBreakpoints(),
                       }}
                     >
                       <MobileOnly>
                         <MenuButton onClick={() => setSidebarOpen(true)} />
                       </MobileOnly>
-                      <DesktopOnly>
-                        <Box />
-                      </DesktopOnly>
-                      <Text fontSize={2} fontWeight="semibold">
-                        {title}
-                      </Text>
                       <Box />
                     </Flex>
                   )}

@@ -1,6 +1,6 @@
-import EpisodeCard, { Episode } from 'components/EpisodeCard'
+import EpisodeCard from 'components/EpisodeCard'
 import { MotionGrid } from 'components/MotionComponents'
-import { isBefore } from 'date-fns'
+import ImageHeader from 'components/ImageHeader'
 import { AnimatePresence } from 'framer-motion'
 import useInfiniteScroll from 'hooks/useInfiniteScroll'
 import { fetcher } from 'lib/fetcher'
@@ -10,6 +10,7 @@ import qs from 'qs'
 import React, { useEffect, useMemo, useState } from 'react'
 import { QueryCache, useInfiniteQuery } from 'react-query'
 import { dehydrate } from 'react-query/hydration'
+import { Episode, SearchResponse, Channel } from 'RT'
 import { Box, Input } from 'theme-ui'
 
 const PER_PAGE = 30
@@ -24,50 +25,32 @@ const fetchEpisodes = (channel, page = 0, params = {}, ctx?: any) =>
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const queryCache = new QueryCache()
 
-  const channel = ctx.query.id
-  await queryCache.prefetchQuery(`${channel}-episodes`, () =>
-    fetchEpisodes(
-      ctx.query.id,
-      0,
-      { query: ctx.query.search },
-      ctx
-    ).then((res) => [res])
-  )
+  const [
+    {
+      data: [channel],
+    },
+  ] = await Promise.all([
+    fetcher<SearchResponse<Channel>>(`/api/channels/${ctx.query.id}`, { ctx }),
+    queryCache.prefetchQuery(`${ctx.query.id}-episodes`, () =>
+      fetchEpisodes(
+        ctx.query.id,
+        0,
+        { query: ctx.query.search },
+        ctx
+      ).then((res) => [res])
+    ),
+  ])
 
-  function channelToTitle(channel) {
-    switch (channel) {
-      case `achievement-hunter`:
-        return `Achievement Hunter`
-      case `rooster-teeth`:
-        return `Rooster Teeth`
-      case `inside-gaming`:
-        return `Inside Gaming`
-      case `death-battle`:
-        return `Death Battle`
-      case `the-yogscast`:
-        return `The Yogscast`
-      case `kinda-funny`:
-        return `Kinda Funny`
-      case `friends-of-rt`:
-        return `Freinds of RT`
-      case `sugar-pine-7`:
-        return `Sugar Pine 7`
-      case `cow-chop`:
-        return `Chow Chop`
-      default:
-        return channel.slice(0, 1).toUpperCase() + channel.slice(1)
-    }
-  }
   return {
     props: {
-      title: channelToTitle(ctx.query.id),
-      channel: ctx.query.id,
+      title: channel.attributes.name ?? ``,
+      channel,
       dehydratedState: dehydrate(queryCache),
     },
   }
 }
 
-export default function Channel({ channel }) {
+export default function ChannelPage({ channel }: { channel: Channel }) {
   const router = useRouter()
   const [search, setSearch] = useState((router.query.search as string) ?? ``)
   const [debouncedSearch, setDebouncedSearch] = useState(``)
@@ -80,9 +63,9 @@ export default function Channel({ channel }) {
     canFetchMore,
     clear,
   } = useInfiniteQuery(
-    `${channel}-episodes`,
+    `${channel.attributes.name}-episodes`,
     (key, page: number) =>
-      fetchEpisodes(channel, page, { query: debouncedSearch }),
+      fetchEpisodes(channel.attributes.slug, page, { query: debouncedSearch }),
     {
       getFetchMore(prev) {
         const nextPage = prev?.page + 1 ?? 0
@@ -109,6 +92,8 @@ export default function Channel({ channel }) {
     }, 250)
 
     return () => clearTimeout(timeout)
+
+    // eslint-disable-next-line
   }, [search])
 
   useInfiniteScroll({
@@ -121,26 +106,29 @@ export default function Channel({ channel }) {
 
   const episodes = useMemo<Episode[]>(() => {
     if (data) {
-      return data.flatMap(({ data }) =>
-        data.map((info) => ({
-          id: info.id,
-          title: info.attributes.title,
-          caption: info.attributes.caption,
-          img: info.included.images[0].attributes.small,
-          date: new Date(info.attributes.original_air_date),
-          publicDate: new Date(info.attributes.public_golive_at),
-          isRTFirst:
-            isBefore(new Date(), new Date(info.attributes.public_golive_at)) ||
-            info.attributes.is_sponsors_only,
-          link: info.canonical_links.self.split(`/watch/`)[1],
-        }))
-      )
+      return data.flatMap(({ data }) => data)
     }
     return []
   }, [data])
 
   return (
     <Box>
+      <Box mb={2}>
+        <ImageHeader
+          img={channel.included.images[0].attributes.large}
+          title={channel.attributes.name}
+          initial={{
+            backgroundColor: `#${channel.attributes.brand_color}`,
+          }}
+          animate={{
+            backgroundColor: `#${channel.attributes.brand_color}`,
+          }}
+          sx={{
+            objectFit: `contain`,
+            py: 3,
+          }}
+        />
+      </Box>
       <Box p={3}>
         <Input
           value={search}
@@ -162,7 +150,7 @@ export default function Channel({ channel }) {
         >
           {episodes.map((episode) => (
             <EpisodeCard
-              {...episode}
+              episode={episode}
               key={`${debouncedSearch}-${episode.id}`}
             />
           ))}

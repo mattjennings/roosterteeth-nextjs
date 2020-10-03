@@ -1,13 +1,7 @@
-import Flex from 'components/Flex'
-import { MotionBox } from 'components/MotionComponents'
-import Text from 'components/Text'
 import WatchVideo from 'components/WatchVideo'
-import { AnimatePresence } from 'framer-motion'
 import { fetcher } from 'lib/fetcher'
 import { GetServerSideProps } from 'next'
-import React, { useState } from 'react'
-import ReactPlayer from 'react-player'
-import { Box } from 'theme-ui'
+import React from 'react'
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const [watchRes, metaRes] = await Promise.all([
@@ -23,8 +17,8 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       nav: false,
       title: attributes.title,
       id: ctx.query.id,
-      attributes,
       url,
+      attributes,
       error: watchRes.access === false && watchRes.message,
     },
   }
