@@ -63,7 +63,7 @@ export default function ChannelPage({ channel }: { channel: Channel }) {
     canFetchMore,
     clear,
   } = useInfiniteQuery(
-    `${channel.attributes.name}-episodes`,
+    `${router.query.id}-episodes`,
     (key, page: number) =>
       fetchEpisodes(channel.attributes.slug, page, { query: debouncedSearch }),
     {
