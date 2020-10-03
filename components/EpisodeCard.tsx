@@ -16,7 +16,7 @@ export interface EpisodeProps extends MotionFlexProps {
 export default function EpisodeCard({ episode, ...props }: EpisodeProps) {
   const title = episode.attributes.title
   const caption = episode.attributes.caption
-  const img = episode.included.images[0].attributes.medium
+  const img = episode.included.images[0].attributes.small
   const link = episode.canonical_links.self
   const date = new Date(episode.attributes.original_air_date)
   const publicDate = new Date(episode.attributes.public_golive_at)
@@ -27,7 +27,7 @@ export default function EpisodeCard({ episode, ...props }: EpisodeProps) {
   const [progress] = useLocalStorage(`video-progress-${link}`, 0)
 
   return (
-    <Link href={`/watch/[id]`} as={`/watch/${link}`}>
+    <Link href={link}>
       <MotionFlex
         as="a"
         direction="column"

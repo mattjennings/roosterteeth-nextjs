@@ -7,7 +7,7 @@ export const fetcher = (
   const { ctx, ...opts } = config
 
   return fetch(
-    `${ctx && url.startsWith('/') ? getHostUrl(ctx) : ''}${url}`,
+    `${ctx && url.startsWith(`/`) ? getHostUrl(ctx) : ``}${url}`,
     opts
   ).then((res) => res.json())
 }

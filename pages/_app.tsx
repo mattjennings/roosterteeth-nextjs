@@ -23,6 +23,12 @@ function App({ Component, pageProps, router }: AppProps) {
   const sidebarPosition = useResponsiveValue([`75vw`, `50vw`, `35vw`])
   useScrollRestoration(router)
 
+  useEffect(() => {
+    router.events.on(`routeChangeStart`, () => {
+      setSidebarOpen(false)
+    })
+  }, [])
+
   return (
     <React.StrictMode>
       <Head>

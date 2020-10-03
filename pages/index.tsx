@@ -1,15 +1,15 @@
 import { MotionGrid } from 'components/MotionComponents'
-import SeriesCard from 'components/SeriesCard'
+import ShowCard from 'components/ShowCard'
 import Text from 'components/Text'
 import { AnimatePresence } from 'framer-motion'
 import { fetcher } from 'lib/fetcher'
 import { GetServerSideProps } from 'next'
 import React from 'react'
-import { SearchResponse, Series } from 'RT'
+import { SearchResponse, Show } from 'RT'
 import { Box } from 'theme-ui'
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const [popularSeries] = await Promise.all([
+  const [popularShows] = await Promise.all([
     fetcher(`/api/shows?order_by=attributes.trending_score&page=1&per_page=8`, {
       ctx,
     }),
@@ -18,15 +18,15 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   return {
     props: {
       title: `Home`,
-      popularSeries,
+      popularShows,
     },
   }
 }
 
 export default function Home({
-  popularSeries,
+  popularShows,
 }: {
-  popularSeries: SearchResponse<Series>
+  popularShows: SearchResponse<Show>
 }) {
   return (
     <Box>
@@ -41,12 +41,8 @@ export default function Home({
             exit={{ opacity: 0 }}
             initial={{ opacity: 0 }}
           >
-            {popularSeries.data.map((series) => (
-              <SeriesCard
-                key={series.id}
-                series={series}
-                sx={{ height: 300 }}
-              />
+            {popularShows.data.map((show) => (
+              <ShowCard key={show.id} show={show} sx={{ height: 300 }} />
             ))}
           </MotionGrid>
         </Box>

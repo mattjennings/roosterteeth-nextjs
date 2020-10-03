@@ -11,7 +11,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   const fetchRes = await fetch(
     `${process.env.API_BASE_URL}/api/v1/watch/${id}${
-      rest ? '/' + rest.join('/') : ''
+      rest ? `/` + rest.join(`/`) : ``
     }`
   )
 

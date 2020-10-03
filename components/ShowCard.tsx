@@ -1,22 +1,22 @@
 import Link from 'next/link'
 import React from 'react'
-import { Series } from 'RT'
+import { Show } from 'RT'
 import { Box, Progress } from 'theme-ui'
 import Flex from './Flex'
 import { MotionFlex, MotionFlexProps, MotionImage } from './MotionComponents'
 import Text from './Text'
 
-export interface SeriesProps extends MotionFlexProps {
-  series: Series
+export interface ShowProps extends MotionFlexProps {
+  show: Show
 }
 
-export default function SeriesCard({ series, ...props }: SeriesProps) {
-  const title = series.attributes.title
-  const img = series.included.images[0]
-  const link = series.canonical_links.self
+export default function ShowCard({ show, ...props }: ShowProps) {
+  const title = show.attributes.title
+  const img = show.included.images[0]
+  const link = show.canonical_links.self
 
   return (
-    <Link href={`/series/${link}`}>
+    <Link href={link}>
       <MotionFlex
         as="a"
         direction="column"
