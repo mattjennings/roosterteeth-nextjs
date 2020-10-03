@@ -7,6 +7,7 @@ import {
 import Text from 'components/Text'
 import { AnimatePresence } from 'framer-motion'
 import { useLocalStorage } from 'hooks/useLocalStorage'
+import { setUserCookie } from 'lib/cookies'
 import { getVideoInfo } from 'lib/rt'
 import React, { useEffect, useRef, useState } from 'react'
 import ReactPlayer from 'react-player'
@@ -14,7 +15,7 @@ import { useQuery } from 'react-query'
 import { Box, Close } from 'theme-ui'
 
 export interface WatchVideoProps extends MotionBoxProps {
-  link: string
+  slug: string
   initialData?: {
     attributes: any
     url: string
@@ -24,7 +25,7 @@ export interface WatchVideoProps extends MotionBoxProps {
 }
 
 export default function WatchVideo({
-  link,
+  slug,
   initialData,
   onClose,
   ...props
@@ -33,32 +34,49 @@ export default function WatchVideo({
 
   const [playing, setPlaying] = useState(false)
   const [ready, setReady] = useState(false)
-  const { data } = useQuery(`watch-${link}`, () => getVideoInfo(link), {
+  const { data } = useQuery(slug, () => getVideoInfo(slug), {
     initialData,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   })
 
-  const [progress, setProgress] = useLocalStorage(`video-progress-${link}`, 0)
+  const [progress, setProgress] = useLocalStorage(`video-progress-${slug}`, 0)
   const { error, url, attributes } = data ?? {}
 
   useEffect(() => {
-    if (player.current && ready) {
+    if (ready) {
       player.current.seekTo(progress)
     }
+    // eslint-disable-next-line
   }, [ready])
 
   const getProgress = () =>
     player.current.getCurrentTime() / player.current.getDuration()
 
-  useEffect(
-    () => () => {
-      if (playing) {
-        setProgress(getProgress())
-      }
-    },
-    []
-  )
+  function updateProgress(progress = getProgress()) {
+    setProgress(progress)
+
+    if (progress > 0.1 && progress < 0.9) {
+      // add to unfinished
+      setUserCookie((prev) => {
+        const unfinishedVideos = prev.unfinishedVideos ?? []
+
+        const exists = unfinishedVideos?.indexOf(slug) > -1
+
+        return {
+          unfinishedVideos: exists
+            ? unfinishedVideos.sort((vid) => (vid === slug ? -1 : 1))
+            : [slug, ...unfinishedVideos].slice(0, 5),
+        }
+      })
+    } else {
+      // remove from unfinished
+      setUserCookie((prev) => ({
+        unfinishedVideos:
+          prev.unfinishedVideos?.filter((vid) => vid !== slug) ?? [],
+      }))
+    }
+  }
 
   return (
     <MotionBox
@@ -86,12 +104,14 @@ export default function WatchVideo({
               onPlay={() => setPlaying(true)}
               onPause={() => {
                 setPlaying(false)
-                setProgress(getProgress())
+                updateProgress()
               }}
               onProgress={({ played }) => {
-                setProgress(played)
+                updateProgress(played)
               }}
-              onReady={() => setReady(true)}
+              onReady={() => {
+                setReady(true)
+              }}
             />
           )}
           <AnimatePresence initial={false}>

@@ -3,11 +3,12 @@ import format from 'date-fns/format'
 import isBefore from 'date-fns/isBefore'
 import { useLocalStorage } from 'hooks/useLocalStorage'
 import Link from 'next/link'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Episode } from 'RT'
 import { Box, Progress } from 'theme-ui'
 import Flex from './Flex'
 import { MotionFlex, MotionFlexProps, MotionImage } from './MotionComponents'
+import NoSSR from './NoSSR'
 import Text from './Text'
 
 export interface EpisodeProps extends MotionFlexProps {
@@ -34,10 +35,14 @@ export default function EpisodeCard({ episode, ...props }: EpisodeProps) {
     !!episode.attributes.public_golive_at &&
     (isBefore(new Date(), new Date(episode.attributes.public_golive_at)) ||
       episode.attributes.is_sponsors_only)
-  const [progress] = useLocalStorage(`video-progress-${link}`, 0)
+
+  const [progress] = useLocalStorage(
+    `video-progress-${episode.attributes.slug}`,
+    0
+  )
 
   return (
-    <Link href={link}>
+    <Link href={link} passHref>
       <MotionFlex
         as="a"
         direction="column"
@@ -46,6 +51,8 @@ export default function EpisodeCard({ episode, ...props }: EpisodeProps) {
           bg: `gray.2`,
           overflow: `hidden`,
           cursor: `pointer`,
+          color: `inherit`,
+          textDecoration: `none`,
         }}
         {...(props as any)}
       >
@@ -63,17 +70,22 @@ export default function EpisodeCard({ episode, ...props }: EpisodeProps) {
               height: `auto`,
               filter: isRTFirst ? `brightness(30%)` : undefined,
             }}
+            // suppress mismatch error because we change src once on client based on device size
+            suppressHydrationWarning
           />
-          <Progress
-            sx={{
-              position: `absolute`,
-              left: 0,
-              right: 0,
-              bottom: 1,
-            }}
-            max={1}
-            value={progress}
-          />
+          {/* seems to be a bug when rendering different progress value on SSR vs client */}
+          <NoSSR>
+            <Progress
+              sx={{
+                position: `absolute`,
+                left: 0,
+                right: 0,
+                bottom: 1,
+              }}
+              max={1}
+              value={progress}
+            />
+          </NoSSR>
           {isRTFirst && (
             <Flex
               center

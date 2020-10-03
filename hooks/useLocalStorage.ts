@@ -6,7 +6,7 @@ export function useLocalStorage(key, initialValue) {
   // Pass initial state function to useState so logic is only executed once
   const [storedValue, setStoredValue] = useState(() => {
     try {
-      if (typeof window === 'undefined') {
+      if (typeof window === `undefined`) {
         return initialValue
       }
 
@@ -34,7 +34,7 @@ export function useLocalStorage(key, initialValue) {
       window.localStorage.setItem(key, JSON.stringify(valueToStore))
 
       window.dispatchEvent(
-        new CustomEvent('localstorage', { detail: { key, value } })
+        new CustomEvent(`localstorage`, { detail: { key, value } })
       )
     } catch (error) {
       // A more advanced implementation would handle the error case
@@ -43,17 +43,17 @@ export function useLocalStorage(key, initialValue) {
   }
 
   useIsoLayoutEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== `undefined`) {
       const cb = (e) => {
         if (e.detail.key === key && e.detail.value !== storedValue) {
           setValue(e.detail.value)
         }
       }
 
-      window.addEventListener('localstorage', cb)
+      window.addEventListener(`localstorage`, cb)
 
       return () => {
-        window.removeEventListener('localstorage', cb)
+        window.removeEventListener(`localstorage`, cb)
       }
     }
   }, [storedValue])
