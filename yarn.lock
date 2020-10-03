@@ -5284,6 +5284,11 @@ react-player@^2.6.0:
     prop-types "^15.7.2"
     react-fast-compare "^3.0.1"
 
+react-progressive-image@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/react-progressive-image/-/react-progressive-image-0.6.0.tgz#56b1c7153a6e1ebbe2a3bbf8f98c37410fbc67c2"
+  integrity sha512-/yc8N3lHskPQkubm+QH5RIQHA89Sigv7p9UkvbHzKVE2OBb6njhmquk7GW/f2Y//mzk5DesFHN/hV5RWhd6IXA==
+
 react-query-devtools@^2.4.5:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/react-query-devtools/-/react-query-devtools-2.5.0.tgz#9f9da1a676365d527b87a76d797b9df3ea79a2a2"

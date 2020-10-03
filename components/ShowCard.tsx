@@ -5,6 +5,7 @@ import { Box, Progress } from 'theme-ui'
 import Flex from './Flex'
 import { MotionFlex, MotionFlexProps, MotionImage } from './MotionComponents'
 import Text from './Text'
+import ProgressiveImage from 'react-progressive-image'
 
 export interface ShowProps extends MotionFlexProps {
   show: Show
@@ -31,10 +32,17 @@ export default function ShowCard({ show, ...props }: ShowProps) {
         }}
       >
         <Box sx={{ overflow: `hidden`, flexGrow: 1 }}>
-          <MotionImage
+          <ProgressiveImage
             src={img.attributes.medium}
-            sx={{ height: `100%`, width: `100%`, objectFit: `cover` }}
-          />
+            placeholder={img.attributes.small}
+          >
+            {(src) => (
+              <MotionImage
+                src={src}
+                sx={{ height: `100%`, width: `100%`, objectFit: `cover` }}
+              />
+            )}
+          </ProgressiveImage>
         </Box>
         <Flex
           p={2}

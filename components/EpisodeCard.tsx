@@ -10,22 +10,13 @@ import Flex from './Flex'
 import { MotionFlex, MotionFlexProps, MotionImage } from './MotionComponents'
 import NoSSR from './NoSSR'
 import Text from './Text'
+import ProgressiveImage from 'react-progressive-image'
 
 export interface EpisodeProps extends MotionFlexProps {
   episode: Episode
 }
 
 export default function EpisodeCard({ episode, ...props }: EpisodeProps) {
-  const img = useResponsiveValue(
-    [
-      episode.included.images[0].attributes.small,
-      episode.included.images[0].attributes.small,
-      episode.included.images[0].attributes.medium,
-    ],
-    {
-      defaultIndex: 0,
-    }
-  )
   const title = episode.attributes.title
   const caption = episode.attributes.caption
   const link = episode.canonical_links.self
@@ -63,17 +54,22 @@ export default function EpisodeCard({ episode, ...props }: EpisodeProps) {
             position: `relative`,
           }}
         >
-          <MotionImage
-            src={img}
-            sx={{
-              width: `100%`,
-              height: `auto`,
-              filter: isRTFirst ? `brightness(30%)` : undefined,
-            }}
-            // suppress mismatch error because we change src once on client based on device size
-            suppressHydrationWarning
-          />
-          {/* seems to be a bug when rendering different progress value on SSR vs client */}
+          <ProgressiveImage
+            src={episode.included.images[0].attributes.medium}
+            placeholder={episode.included.images[0].attributes.small}
+          >
+            {(src) => (
+              <MotionImage
+                src={src}
+                sx={{
+                  width: `100%`,
+                  height: `auto`,
+                  filter: isRTFirst ? `brightness(30%)` : undefined,
+                }}
+              />
+            )}
+          </ProgressiveImage>
+
           <NoSSR>
             <Progress
               sx={{
