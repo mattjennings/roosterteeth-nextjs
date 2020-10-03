@@ -106,30 +106,29 @@ function App({ Component, pageProps, router }: AppProps) {
               >
                 {/* wrapper div fixes safari position: sticky bug */}
                 <div>
-                  <MobileOnly>
-                    {nav && (
-                      <Flex
-                        align="center"
-                        p={2}
-                        sx={{
-                          height: 16,
-                          bg: `white`,
-                          position: `sticky`,
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                          zIndex: 98,
-                          borderBottom: `1px solid`,
-                          borderColor: `divider`,
-                        }}
-                      >
-                        <MobileOnly>
-                          <MenuButton onClick={() => setSidebarOpen(true)} />
-                        </MobileOnly>
-                        <Box />
-                      </Flex>
-                    )}
-                  </MobileOnly>
+                  {nav && (
+                    <Flex
+                      align="center"
+                      p={2}
+                      sx={{
+                        height: 16,
+                        bg: `white`,
+                        position: `sticky`,
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        zIndex: 98,
+                        borderBottom: `1px solid`,
+                        borderColor: `divider`,
+                        display: mobileOnlyBreakpoints(),
+                      }}
+                    >
+                      <MobileOnly>
+                        <MenuButton onClick={() => setSidebarOpen(true)} />
+                      </MobileOnly>
+                      <Box />
+                    </Flex>
+                  )}
                   <Component {...pageProps} />
                 </div>
               </Box>
