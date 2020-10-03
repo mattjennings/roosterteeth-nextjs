@@ -136,6 +136,34 @@ declare module 'RT' {
     }
   }
 
+  export interface Channel {
+    _index: string
+    _type: string
+    _id: string
+    _score?: any
+    sort: number[]
+    id: number
+    type: string
+    uuid: string
+    attributes: {
+      name: string
+      importance: number
+      slug: string
+      brand_color: string
+    }
+    included: {
+      images: Image[]
+    }
+    links: {
+      self: string
+      shows: string
+      product_collections: string
+      featured_items: string
+      episodes: string
+      livestreams: string
+    }
+  }
+
   export interface Links {
     self: string
     show: string
@@ -239,7 +267,6 @@ declare module 'RT' {
       cast_members: CastMember[]
     }
   }
-
   export interface Image {
     id: number
     uuid: string

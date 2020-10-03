@@ -1,3 +1,4 @@
+import { useResponsiveValue } from '@theme-ui/match-media'
 import format from 'date-fns/format'
 import isBefore from 'date-fns/isBefore'
 import { useLocalStorage } from 'hooks/useLocalStorage'
@@ -14,9 +15,18 @@ export interface EpisodeProps extends MotionFlexProps {
 }
 
 export default function EpisodeCard({ episode, ...props }: EpisodeProps) {
+  const img = useResponsiveValue(
+    [
+      episode.included.images[0].attributes.small,
+      episode.included.images[0].attributes.small,
+      episode.included.images[0].attributes.medium,
+    ],
+    {
+      defaultIndex: 0,
+    }
+  )
   const title = episode.attributes.title
   const caption = episode.attributes.caption
-  const img = episode.included.images[0].attributes.small
   const link = episode.canonical_links.self
   const date = new Date(episode.attributes.original_air_date)
   const publicDate = new Date(episode.attributes.public_golive_at)

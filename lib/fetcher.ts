@@ -1,9 +1,14 @@
 import { getHostUrl } from './config'
 
-export const fetcher = (
+/**
+ * node-fetch wrapper
+ *
+ * Relative URLs are supported for the server when `ctx` is provided
+ */
+export function fetcher<T = any>(
   url: string,
   config: RequestInit & { ctx?: any } = {}
-) => {
+): Promise<T> {
   const { ctx, ...opts } = config
 
   return fetch(

@@ -16,6 +16,7 @@ import { humanize } from 'util/humanize'
 import slug from 'slug'
 import Flex from 'components/Flex'
 import Text from 'components/Text'
+import ImageHeader from 'components/ImageHeader'
 
 const PER_PAGE = 30
 const fetchEpisodes = (season, page = 0, params = {}, ctx?: any) => {
@@ -113,10 +114,9 @@ export default function Series({
   return (
     <Box>
       <Box mb={2}>
-        <Image
-          src={show.included.images[0].attributes.large}
-          alt={show.attributes.title}
-          sx={{ width: `100%`, height: `25vh`, objectFit: `cover` }}
+        <ImageHeader
+          img={show.included.images[0].attributes.large}
+          title={show.attributes.title}
         />
       </Box>
       <Flex my={2} px={3}>

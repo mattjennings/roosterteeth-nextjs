@@ -17,7 +17,7 @@ export default function SideNav(props: FlexProps) {
         borderRight: `1px solid`,
         borderColor: `gray.5`,
         px: 2,
-        pt: [2, 2, 2, `4.5rem`],
+        pt: 2,
         width: `100%`,
         height: `100vh`,
         overflow: `scroll`,
