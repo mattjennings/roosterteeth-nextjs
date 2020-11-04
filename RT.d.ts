@@ -1,4 +1,4 @@
-declare module 'RT' {
+declare namespace RT {
   export interface SearchResponse<T> {
     data: T[]
     page: number

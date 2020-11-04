@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import React from 'react'
-import { Show } from 'RT'
 import { Box } from 'theme-ui'
 import Flex from './Flex'
 import { MotionFlex, MotionFlexProps } from './MotionComponents'
@@ -8,7 +7,7 @@ import RTImage from './RTImage'
 import Text from './Text'
 
 export interface ShowProps extends MotionFlexProps {
-  show: Show
+  show: RT.Show
 }
 
 export default function ShowCard({ show, ...props }: ShowProps) {

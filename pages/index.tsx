@@ -8,7 +8,6 @@ import { getUserCookie } from 'lib/cookies'
 import { fetcher } from 'lib/fetcher'
 import { GetServerSideProps } from 'next'
 import React from 'react'
-import { SearchResponse, Show, Episode } from 'RT'
 import { Box } from 'theme-ui'
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
@@ -41,8 +40,8 @@ export default function Home({
   popularShows,
   unfinishedVideos,
 }: {
-  popularShows: SearchResponse<Show>
-  unfinishedVideos: Episode[]
+  popularShows: RT.SearchResponse<RT.Show>
+  unfinishedVideos: RT.Episode[]
 }) {
   return (
     <Box>

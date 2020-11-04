@@ -10,7 +10,6 @@ import qs from 'qs'
 import React, { useEffect, useMemo, useState } from 'react'
 import { QueryCache, useInfiniteQuery } from 'react-query'
 import { dehydrate } from 'react-query/hydration'
-import { Episode, SearchResponse, Show } from 'RT'
 import { Box, Image, Input, Label, Select } from 'theme-ui'
 import { humanize } from 'util/humanize'
 import slug from 'slug'
@@ -73,7 +72,7 @@ export default function Series({
   show,
   seasons,
 }: {
-  show: Show
+  show: RT.Show
   seasons: Array<{ title: string; slug: string }>
 }) {
   const [season, setSeason] = useState(seasons[0].slug)
@@ -84,7 +83,7 @@ export default function Series({
     isFetchingMore,
     fetchMore,
     canFetchMore,
-  } = useInfiniteQuery<SearchResponse<Episode>>(
+  } = useInfiniteQuery<RT.SearchResponse<RT.Episode>>(
     `${season}-episodes`,
     (key, page: number) => fetchEpisodes(season, page),
     {

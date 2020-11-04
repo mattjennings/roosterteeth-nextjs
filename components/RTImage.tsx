@@ -1,11 +1,10 @@
 import React from 'react'
 import ProgressiveImage from 'react-progressive-image'
-import { Image } from 'RT'
 import { SxStyleProp } from 'theme-ui'
 import { MotionImage, MotionImageProps } from './MotionComponents'
 
 export interface RTImageProps extends MotionImageProps {
-  img: Image
+  img: RT.Image
   sx?: SxStyleProp
 }
 

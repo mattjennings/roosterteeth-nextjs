@@ -4,7 +4,6 @@ import isBefore from 'date-fns/isBefore'
 import { useLocalStorage } from 'hooks/useLocalStorage'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
-import { Episode } from 'RT'
 import { Box, Progress } from 'theme-ui'
 import Flex from './Flex'
 import { MotionFlex, MotionFlexProps, MotionImage } from './MotionComponents'
@@ -14,7 +13,7 @@ import ProgressiveImage from 'react-progressive-image'
 import RTImage from './RTImage'
 
 export interface EpisodeProps extends MotionFlexProps {
-  episode: Episode
+  episode: RT.Episode
 }
 
 export default function EpisodeCard({ episode, ...props }: EpisodeProps) {
@@ -55,15 +54,16 @@ export default function EpisodeCard({ episode, ...props }: EpisodeProps) {
             position: `relative`,
           }}
         >
-          <RTImage
-            img={episode.included.images[0]}
-            sx={{
-              width: `100%`,
-              height: `auto`,
-              filter: isRTFirst ? `brightness(30%)` : undefined,
-            }}
-          />
-
+          <Box sx={{ position: `static` }}>
+            <RTImage
+              img={episode.included.images[0]}
+              sx={{
+                width: `100%`,
+                height: `auto`,
+                filter: isRTFirst ? `brightness(30%)` : undefined,
+              }}
+            />
+          </Box>
           <NoSSR>
             <Progress
               sx={{

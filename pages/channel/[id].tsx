@@ -10,7 +10,6 @@ import qs from 'qs'
 import React, { useEffect, useMemo, useState } from 'react'
 import { QueryCache, useInfiniteQuery } from 'react-query'
 import { dehydrate } from 'react-query/hydration'
-import { Episode, SearchResponse, Channel } from 'RT'
 import { Box, Input } from 'theme-ui'
 
 const PER_PAGE = 30
@@ -30,7 +29,9 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       data: [channel],
     },
   ] = await Promise.all([
-    fetcher<SearchResponse<Channel>>(`/api/channels/${ctx.query.id}`, { ctx }),
+    fetcher<RT.SearchResponse<RT.Channel>>(`/api/channels/${ctx.query.id}`, {
+      ctx,
+    }),
     queryCache.prefetchQuery(`${ctx.query.id}-episodes`, () =>
       fetchEpisodes(
         ctx.query.id,
@@ -50,7 +51,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   }
 }
 
-export default function ChannelPage({ channel }: { channel: Channel }) {
+export default function ChannelPage({ channel }: { channel: RT.Channel }) {
   const router = useRouter()
   const [search, setSearch] = useState((router.query.search as string) ?? ``)
   const [debouncedSearch, setDebouncedSearch] = useState(``)
@@ -104,7 +105,7 @@ export default function ChannelPage({ channel }: { channel: Channel }) {
     scrollPercentage: 75,
   })
 
-  const episodes = useMemo<Episode[]>(() => {
+  const episodes = useMemo<RT.Episode[]>(() => {
     if (data) {
       return data.flatMap(({ data }) => data)
     }
