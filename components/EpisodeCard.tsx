@@ -11,6 +11,7 @@ import { MotionFlex, MotionFlexProps, MotionImage } from './MotionComponents'
 import NoSSR from './NoSSR'
 import Text from './Text'
 import ProgressiveImage from 'react-progressive-image'
+import RTImage from './RTImage'
 
 export interface EpisodeProps extends MotionFlexProps {
   episode: Episode
@@ -54,21 +55,14 @@ export default function EpisodeCard({ episode, ...props }: EpisodeProps) {
             position: `relative`,
           }}
         >
-          <ProgressiveImage
-            src={episode.included.images[0].attributes.medium}
-            placeholder={episode.included.images[0].attributes.small}
-          >
-            {(src) => (
-              <MotionImage
-                src={src}
-                sx={{
-                  width: `100%`,
-                  height: `auto`,
-                  filter: isRTFirst ? `brightness(30%)` : undefined,
-                }}
-              />
-            )}
-          </ProgressiveImage>
+          <RTImage
+            img={episode.included.images[0]}
+            sx={{
+              width: `100%`,
+              height: `auto`,
+              filter: isRTFirst ? `brightness(30%)` : undefined,
+            }}
+          />
 
           <NoSSR>
             <Progress

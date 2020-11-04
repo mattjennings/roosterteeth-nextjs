@@ -1,11 +1,11 @@
 import Link from 'next/link'
 import React from 'react'
 import { Show } from 'RT'
-import { Box, Progress } from 'theme-ui'
+import { Box } from 'theme-ui'
 import Flex from './Flex'
-import { MotionFlex, MotionFlexProps, MotionImage } from './MotionComponents'
+import { MotionFlex, MotionFlexProps } from './MotionComponents'
+import RTImage from './RTImage'
 import Text from './Text'
-import ProgressiveImage from 'react-progressive-image'
 
 export interface ShowProps extends MotionFlexProps {
   show: Show
@@ -13,7 +13,7 @@ export interface ShowProps extends MotionFlexProps {
 
 export default function ShowCard({ show, ...props }: ShowProps) {
   const title = show.attributes.title
-  const img = show.included.images[0]
+  const img = show.included.images[6]
   const link = show.canonical_links.self
 
   return (
@@ -31,18 +31,14 @@ export default function ShowCard({ show, ...props }: ShowProps) {
           ...(props.sx ?? {}),
         }}
       >
-        <Box sx={{ overflow: `hidden`, flexGrow: 1 }}>
-          <ProgressiveImage
-            src={img.attributes.medium}
-            placeholder={img.attributes.small}
-          >
-            {(src) => (
-              <MotionImage
-                src={src}
-                sx={{ height: `100%`, width: `100%`, objectFit: `cover` }}
-              />
-            )}
-          </ProgressiveImage>
+        <Box sx={{ overflow: `hidden`, flexGrow: 1, bg: `black` }}>
+          <RTImage
+            img={img}
+            sx={{
+              height: `100%`,
+              width: `100%`,
+            }}
+          />
         </Box>
         <Flex
           p={2}
