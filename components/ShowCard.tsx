@@ -28,9 +28,7 @@ export default function ShowCard({ show, ...props }: ShowProps) {
           overflow: `hidden`,
           cursor: `pointer`,
           textDecoration: `none`,
-          '&:visited': {
-            color: `inherit`,
-          },
+          color: `inherit`,
           ...(props.sx ?? {}),
         }}
       >

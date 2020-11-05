@@ -11,6 +11,7 @@
     "@theme-ui/match-media": "^0.3.1",
     "@theme-ui/presets": "^0.3.0",
     "@types/theme-ui": "^0.3.6",
+    "@vercel/fetch-retry": "^5.0.3",
     "cors": "^2.8.5",
     "date-fns": "^2.15.0",
     "framer-motion": "^2.4.2",

@@ -127,15 +127,20 @@ export default function Series({
     return []
   }, [data])
 
+  const banner = show.included.images.find(
+    (img) => img.attributes.image_type === `hero`
+  )
+
+  // todo: use this on an overlay somewhere
+  const logo = show.included.images.find(
+    (img) => img.attributes.image_type === `logo`
+  )
+
   return (
     <Box>
-      <Box mb={2} backgroundColor="black">
-        {/* 
-        todo: better image headers for series. combine whatever bg img looks best and overlay the logo image
-         (image in included with attributes.type "logo") 
-         */}
+      <Box mb={2}>
         <ImageHeader
-          img={show.included.images[0].attributes.large}
+          img={banner.attributes.large}
           title={show.attributes.title}
         />
       </Box>
