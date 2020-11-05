@@ -20,12 +20,25 @@ const fetchEpisodes = (channel, page = 0, params = {}) =>
     )}`
   )
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
+import { GetStaticProps } from 'next'
+
+export const getStaticPaths = async () => {
+  const { data: channels } = await fetcher(`/api/channels`)
+
+  return {
+    paths: channels.map((channel) => ({
+      params: {
+        id: channel.attributes.slug,
+      },
+    })),
+    fallback: false,
+  }
+}
+
+export const getStaticProps: GetStaticProps = async ({ params: { id } }) => {
   const {
     data: [channel],
-  } = await fetcher<RT.SearchResponse<RT.Channel>>(
-    `/api/channels/${ctx.query.id}`
-  )
+  } = await fetcher<RT.SearchResponse<RT.Channel>>(`/api/channels/${id}`)
 
   return {
     props: {

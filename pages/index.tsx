@@ -1,14 +1,14 @@
 import EpisodeCard from 'components/EpisodeCard'
 import { MotionGrid } from 'components/MotionComponents'
 import ShowCard from 'components/ShowCard'
-import Skeleton from 'components/Skeleton'
 import Text from 'components/Text'
 import VideoGrid from 'components/VideoGrid'
 import { AnimatePresence } from 'framer-motion'
+import useIsoLayoutEffect from 'hooks/useIsoLayoutEffect'
 import { getUserCookie } from 'lib/cookies'
 import { fetcher } from 'lib/fetcher'
-import { GetServerSideProps, GetStaticProps } from 'next'
-import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react'
+import { GetStaticProps } from 'next'
+import React, { useState } from 'react'
 import { useQuery } from 'react-query'
 import { Box } from 'theme-ui'
 
@@ -33,7 +33,7 @@ export default function Home({
 }) {
   const [hasIncomplete, setHasIncomplete] = useState(false)
 
-  useLayoutEffect(() => {
+  useIsoLayoutEffect(() => {
     const user = getUserCookie()
 
     setHasIncomplete(user.incompleteVideos?.length > 0)
