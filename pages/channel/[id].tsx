@@ -1,6 +1,7 @@
 import EpisodeCard from 'components/EpisodeCard'
-import { MotionGrid } from 'components/MotionComponents'
 import ImageHeader from 'components/ImageHeader'
+import { MotionGrid } from 'components/MotionComponents'
+import Skeleton from 'components/Skeleton'
 import { AnimatePresence } from 'framer-motion'
 import useInfiniteScroll from 'hooks/useInfiniteScroll'
 import { fetcher } from 'lib/fetcher'
@@ -8,12 +9,11 @@ import { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import qs from 'qs'
 import React, { useEffect, useMemo, useState } from 'react'
-import { QueryCache, useInfiniteQuery } from 'react-query'
-import { dehydrate } from 'react-query/hydration'
+import { useInfiniteQuery } from 'react-query'
 import { Box, Input } from 'theme-ui'
 
 const PER_PAGE = 30
-const fetchEpisodes = (channel, page = 0, params = {}, ctx?: any) =>
+const fetchEpisodes = (channel, page = 0, params = {}) =>
   fetcher(
     `/api/episodes?per_page=${PER_PAGE}&channel_id=${channel}&order=desc&page=${page}&${qs.stringify(
       params
@@ -21,31 +21,16 @@ const fetchEpisodes = (channel, page = 0, params = {}, ctx?: any) =>
   )
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const queryCache = new QueryCache()
-
-  const [
-    {
-      data: [channel],
-    },
-  ] = await Promise.all([
-    fetcher<RT.SearchResponse<RT.Channel>>(`/api/channels/${ctx.query.id}`, {
-      ctx,
-    }),
-    queryCache.prefetchQuery(`${ctx.query.id}-episodes`, () =>
-      fetchEpisodes(
-        ctx.query.id,
-        0,
-        { query: ctx.query.search },
-        ctx
-      ).then((res) => [res])
-    ),
-  ])
+  const {
+    data: [channel],
+  } = await fetcher<RT.SearchResponse<RT.Channel>>(
+    `/api/channels/${ctx.query.id}`
+  )
 
   return {
     props: {
       title: channel.attributes.name ?? ``,
       channel,
-      dehydratedState: dehydrate(queryCache),
     },
   }
 }
@@ -75,19 +60,24 @@ export default function ChannelPage({ channel }: { channel: RT.Channel }) {
     }
   )
 
+  // update URL params
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (search !== debouncedSearch) {
         clear()
         setDebouncedSearch(search)
 
-        router.replace(
-          search ? `/?${qs.stringify({ search })}` : `/`,
-          undefined,
-          {
-            shallow: true,
-          }
-        )
+        const query = { ...router.query, search }
+
+        // remove from URL params if search is empty
+        if (!search) {
+          delete query.search
+        }
+
+        router.replace({
+          pathname: router.pathname,
+          query,
+        })
       }
     }, 250)
 
@@ -148,12 +138,16 @@ export default function ChannelPage({ channel }: { channel: RT.Channel }) {
           exit={{ opacity: 0 }}
           initial={{ opacity: 0 }}
         >
-          {episodes.map((episode) => (
-            <EpisodeCard
-              episode={episode}
-              key={`${debouncedSearch}-${episode.id}`}
-            />
-          ))}
+          {isFetching && !data?.length
+            ? new Array(10)
+                .fill(null)
+                .map((_, i) => <Skeleton key={i} height={[300, 400, 375]} />)
+            : episodes.map((episode) => (
+                <EpisodeCard
+                  episode={episode}
+                  key={`${debouncedSearch}-${episode.id}`}
+                />
+              ))}
         </MotionGrid>
       </AnimatePresence>
     </Box>

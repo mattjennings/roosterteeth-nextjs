@@ -4,14 +4,24 @@ import LoadingSkeleton, {
   SkeletonProps as LoadingSkeletonProps,
   SkeletonTheme,
 } from 'react-loading-skeleton'
+import { useResponsiveValue } from '@theme-ui/match-media'
 
-export interface SkeletonProps extends BoxProps, LoadingSkeletonProps {
-  width?: number
-  height?: number
+export interface SkeletonProps
+  extends BoxProps,
+    Omit<LoadingSkeletonProps, 'height' | 'width'> {
+  width?: number | string | Array<number | string>
+  height?: number | string | Array<number | string>
 }
 
-export default function Skeleton({ sx, ...props }: SkeletonProps) {
+export default function Skeleton({ width, height, ...props }: SkeletonProps) {
   const { theme } = useThemeUI()
+
+  const responsiveWidth = useResponsiveValue(
+    Array.isArray(width) ? width : [width]
+  )
+  const responsiveHeight = useResponsiveValue(
+    Array.isArray(height) ? height : [height]
+  )
 
   return (
     <SkeletonTheme
@@ -20,10 +30,9 @@ export default function Skeleton({ sx, ...props }: SkeletonProps) {
     >
       <Box
         as={LoadingSkeleton}
+        width={responsiveWidth}
+        height={responsiveHeight}
         {...(props as any)}
-        sx={{
-          ...(sx ?? {}),
-        }}
       />
     </SkeletonTheme>
   )

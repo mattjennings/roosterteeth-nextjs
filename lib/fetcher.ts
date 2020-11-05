@@ -11,5 +11,6 @@ export function fetcher<T = any>(
       : `https://${process.env.VERCEL_URL}`
     : ``
 
+  console.log(`${baseUrl}${url}`)
   return fetch(`${baseUrl}${url}`, opts).then((res) => res.json())
 }

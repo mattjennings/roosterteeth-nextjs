@@ -22,6 +22,7 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
       title: `Home`,
       popularShows,
     },
+    revalidate: 60 * 60, // regenerate every hour
   }
 }
 
