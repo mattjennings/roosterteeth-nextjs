@@ -5,8 +5,8 @@ import React from 'react'
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const [watchRes, metaRes] = await Promise.all([
-    fetcher(`/api/watch/${ctx.query.id}/videos`, { ctx }),
-    fetcher(`/api/watch/${ctx.query.id}`, { ctx }),
+    fetcher(`/api/watch/${ctx.query.id}/videos`),
+    fetcher(`/api/watch/${ctx.query.id}`),
   ])
 
   const attributes = metaRes.data?.[0]?.attributes

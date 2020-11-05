@@ -27,14 +27,13 @@ const fetchEpisodes = (key, page = 0, params = {}, ctx?: any) =>
   fetcher(
     `/api/episodes?per_page=${PER_PAGE}&channel_id=achievement-hunter&order=desc&page=${page}&${qs.stringify(
       params
-    )}`,
-    { ctx }
+    )}`
   )
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const queryCache = new QueryCache()
 
-  await queryCache.prefetchQuery('episodes', () =>
+  await queryCache.prefetchQuery(`episodes`, () =>
     fetchEpisodes(null, 0, { query: ctx.query.search }, ctx).then((res) => [
       res,
     ])
@@ -60,8 +59,8 @@ type Episode = {
 
 export default function Home() {
   const router = useRouter()
-  const [search, setSearch] = useState((router.query.search as string) ?? '')
-  const [debouncedSearch, setDebouncedSearch] = useState('')
+  const [search, setSearch] = useState((router.query.search as string) ?? ``)
+  const [debouncedSearch, setDebouncedSearch] = useState(``)
 
   const {
     data = [],
@@ -89,7 +88,7 @@ export default function Home() {
         setDebouncedSearch(search)
 
         router.replace(
-          search ? `/?${qs.stringify({ search })}` : '/',
+          search ? `/?${qs.stringify({ search })}` : `/`,
           undefined,
           {
             shallow: true,
@@ -122,7 +121,7 @@ export default function Home() {
           isRTFirst:
             isBefore(new Date(), new Date(info.attributes.public_golive_at)) ||
             info.attributes.is_sponsors_only,
-          link: info.canonical_links.self.split('/watch/')[1],
+          link: info.canonical_links.self.split(`/watch/`)[1],
         }))
       )
     }
@@ -138,7 +137,7 @@ export default function Home() {
             setSearch(e.currentTarget.value)
           }}
           placeholder="Search"
-          sx={{ width: '100%' }}
+          sx={{ width: `100%` }}
         />
       </Box>
       <AnimatePresence initial={false} exitBeforeEnter>
@@ -181,31 +180,31 @@ function EpisodeCard({
         as="a"
         direction="column"
         sx={{
-          borderRadius: 'lg',
-          bg: 'gray.2',
-          overflow: 'hidden',
-          cursor: 'pointer',
+          borderRadius: `lg`,
+          bg: `gray.2`,
+          overflow: `hidden`,
+          cursor: `pointer`,
         }}
         {...(props as any)}
       >
         <Box
           sx={{
-            overflow: 'hidden',
-            width: '100%',
-            position: 'relative',
+            overflow: `hidden`,
+            width: `100%`,
+            position: `relative`,
           }}
         >
           <MotionImage
             src={img}
             sx={{
-              width: '100%',
-              height: 'auto',
-              filter: isRTFirst ? 'brightness(30%)' : undefined,
+              width: `100%`,
+              height: `auto`,
+              filter: isRTFirst ? `brightness(30%)` : undefined,
             }}
           />
           <Progress
             sx={{
-              position: 'absolute',
+              position: `absolute`,
               left: 0,
               right: 0,
               bottom: 1,
@@ -217,7 +216,7 @@ function EpisodeCard({
             <Flex
               center
               sx={{
-                position: 'absolute',
+                position: `absolute`,
                 top: 0,
                 left: 0,
                 right: 0,
@@ -243,7 +242,7 @@ function EpisodeCard({
             <Text fontSize={0}>{caption}</Text>
           </Box>
           <Text fontSize={0} mt={2} color="textMuted">
-            {format(isRTFirst ? publicDate : date, 'MMM dd / yy')}
+            {format(isRTFirst ? publicDate : date, `MMM dd / yy`)}
           </Text>
         </Flex>
       </MotionFlex>

@@ -22,8 +22,7 @@ const fetchEpisodes = (season, page = 0, params = {}, ctx?: any) => {
   return fetcher(
     `/api/seasons/${season}/episodes?per_page=${PER_PAGE}&order=desc&page=${page}&${qs.stringify(
       params
-    )}`,
-    { ctx }
+    )}`
   )
 }
 
@@ -39,8 +38,8 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     },
     { data: seasonsData },
   ] = await Promise.all([
-    fetcher(`/api/shows/${series}`, { ctx }),
-    fetcher(`/api/shows/${series}/seasons?order=desc`, { ctx }),
+    fetcher(`/api/shows/${series}`),
+    fetcher(`/api/shows/${series}/seasons?order=desc`),
   ])
 
   const seasons = seasonsData.map((season) => ({

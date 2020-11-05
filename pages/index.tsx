@@ -1,60 +1,78 @@
 import EpisodeCard from 'components/EpisodeCard'
 import { MotionGrid } from 'components/MotionComponents'
 import ShowCard from 'components/ShowCard'
+import Skeleton from 'components/Skeleton'
 import Text from 'components/Text'
 import VideoGrid from 'components/VideoGrid'
 import { AnimatePresence } from 'framer-motion'
 import { getUserCookie } from 'lib/cookies'
 import { fetcher } from 'lib/fetcher'
-import { GetServerSideProps } from 'next'
-import React from 'react'
+import { GetServerSideProps, GetStaticProps } from 'next'
+import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react'
+import { useQuery } from 'react-query'
 import { Box } from 'theme-ui'
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const user = getUserCookie(ctx)
+export const getStaticProps: GetStaticProps = async (ctx) => {
+  const popularShows = await fetcher(
+    `/api/shows?order_by=attributes.trending_score&page=1&per_page=8`
+  )
 
-  const [popularShows, unfinishedVideos] = await Promise.all([
-    fetcher(`/api/shows?order_by=attributes.trending_score&page=1&per_page=8`, {
-      ctx,
-    }),
-    user.unfinishedVideos?.length > 0
-      ? Promise.all(
-          user.unfinishedVideos.map((link) =>
-            fetcher(`/api/watch/${link}`, { ctx }).then((res) => res.data?.[0])
-          )
-        )
-      : Promise.resolve([]),
-  ])
-
-  // console.log(unfinishedVideos)
   return {
     props: {
       title: `Home`,
       popularShows,
-      unfinishedVideos,
     },
   }
 }
 
 export default function Home({
   popularShows,
-  unfinishedVideos,
 }: {
   popularShows: RT.SearchResponse<RT.Show>
-  unfinishedVideos: RT.Episode[]
 }) {
+  const [hasIncomplete, setHasIncomplete] = useState(false)
+
+  useLayoutEffect(() => {
+    const user = getUserCookie()
+
+    setHasIncomplete(user.incompleteVideos?.length > 0)
+  }, [])
+
+  const { data } = useQuery<RT.Episode[]>(
+    `incomplete-videos`,
+    async () => {
+      const user = getUserCookie()
+      return Promise.all(
+        user.incompleteVideos.map((link) =>
+          fetcher(`/api/watch/${link}`)
+            .then((res) => res.data?.[0])
+            .catch((e) => null)
+        )
+      )
+    },
+    {
+      enabled: hasIncomplete,
+    }
+  )
+
   return (
     <Box>
       <AnimatePresence initial={false} exitBeforeEnter>
         <Box p={3}>
-          {unfinishedVideos?.length > 0 && (
+          {hasIncomplete && (
             <Box mb={2}>
               <Text fontWeight="medium" fontSize={4} mb={1}>
                 Keep Watching
               </Text>
-              <VideoGrid>
-                {unfinishedVideos.map((episode) => (
-                  <EpisodeCard key={episode.id} episode={episode} />
+              <VideoGrid sx={{ minHeight: 400 }}>
+                {data?.map((episode, index) => (
+                  <EpisodeCard
+                    key={index}
+                    episode={episode}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  />
                 ))}
               </VideoGrid>
             </Box>

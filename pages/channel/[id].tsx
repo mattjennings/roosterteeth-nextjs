@@ -17,8 +17,7 @@ const fetchEpisodes = (channel, page = 0, params = {}, ctx?: any) =>
   fetcher(
     `/api/episodes?per_page=${PER_PAGE}&channel_id=${channel}&order=desc&page=${page}&${qs.stringify(
       params
-    )}`,
-    { ctx }
+    )}`
   )
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
