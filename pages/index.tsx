@@ -1,9 +1,10 @@
 import EpisodeCard from 'components/EpisodeCard'
-import { MotionGrid } from 'components/MotionComponents'
+import { MotionBox, MotionGrid } from 'components/MotionComponents'
+import NoSSR from 'components/NoSSR'
 import ShowCard from 'components/ShowCard'
 import Text from 'components/Text'
 import VideoGrid from 'components/VideoGrid'
-import { AnimatePresence } from 'framer-motion'
+import { AnimatePresence, AnimateSharedLayout } from 'framer-motion'
 import useIsoLayoutEffect from 'hooks/useIsoLayoutEffect'
 import { getUserCookie } from 'lib/cookies'
 import { fetcher } from 'lib/fetcher'
@@ -31,15 +32,7 @@ export default function Home({
 }: {
   popularShows: RT.SearchResponse<RT.Show>
 }) {
-  const [hasIncomplete, setHasIncomplete] = useState(false)
-
-  useIsoLayoutEffect(() => {
-    const user = getUserCookie()
-
-    setHasIncomplete(user.incompleteVideos?.length > 0)
-  }, [])
-
-  const { data } = useQuery<RT.Episode[]>(
+  const { data: incompleteVideos, isFetching } = useQuery<RT.Episode[]>(
     `incomplete-videos`,
     async () => {
       const user = getUserCookie()
@@ -52,49 +45,54 @@ export default function Home({
       )
     },
     {
-      enabled: hasIncomplete,
+      enabled: getUserCookie().incompleteVideos?.length > 0,
     }
   )
 
+  // if we either have data or we're fetching it, show section
+  const showingIncomplete = incompleteVideos?.length || isFetching
+
   return (
     <Box>
-      <AnimatePresence initial={false} exitBeforeEnter>
-        <Box p={3}>
-          {hasIncomplete && (
-            <Box mb={2}>
-              <Text fontWeight="medium" fontSize={4} mb={1}>
-                Keep Watching
-              </Text>
-              <VideoGrid sx={{ minHeight: 400 }}>
-                {data?.map((episode, index) => (
-                  <EpisodeCard
-                    key={index}
-                    episode={episode}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                  />
-                ))}
-              </VideoGrid>
-            </Box>
-          )}
-          <Box mb={2}>
-            <Text fontWeight="medium" fontSize={4} mb={1}>
-              Popular Series
-            </Text>
-            <MotionGrid
-              columns={[1, 2, 3, 3, 4]}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              initial={{ opacity: 0 }}
-            >
-              {popularShows.data.map((show) => (
-                <ShowCard key={show.id} show={show} sx={{ height: 300 }} />
-              ))}
-            </MotionGrid>
-          </Box>
-        </Box>
-      </AnimatePresence>
+      <Box p={3}>
+        <NoSSR>
+          <AnimatePresence initial={false} exitBeforeEnter>
+            {showingIncomplete && (
+              <Box mb={2}>
+                <Text fontWeight="medium" fontSize={4} mb={1}>
+                  Keep Watching
+                </Text>
+                <VideoGrid sx={{ minHeight: 400 }}>
+                  {incompleteVideos?.map((episode, index) => (
+                    <EpisodeCard
+                      key={index}
+                      episode={episode}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                    />
+                  ))}
+                </VideoGrid>
+              </Box>
+            )}
+          </AnimatePresence>
+        </NoSSR>
+        <MotionBox mb={2}>
+          <Text fontWeight="medium" fontSize={4} mb={1}>
+            Popular Series
+          </Text>
+          <MotionGrid
+            columns={[1, 2, 3, 3, 4]}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }}
+          >
+            {popularShows.data.map((show) => (
+              <ShowCard key={show.id} show={show} sx={{ height: 300 }} />
+            ))}
+          </MotionGrid>
+        </MotionBox>
+      </Box>
     </Box>
   )
 }

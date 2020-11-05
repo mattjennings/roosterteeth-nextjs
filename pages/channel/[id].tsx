@@ -5,7 +5,6 @@ import Skeleton from 'components/Skeleton'
 import { AnimatePresence } from 'framer-motion'
 import useInfiniteScroll from 'hooks/useInfiniteScroll'
 import { fetcher } from 'lib/fetcher'
-import { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import qs from 'qs'
 import React, { useEffect, useMemo, useState } from 'react'
@@ -23,7 +22,9 @@ const fetchEpisodes = (channel, page = 0, params = {}) =>
 import { GetStaticProps } from 'next'
 
 export const getStaticPaths = async () => {
-  const { data: channels } = await fetcher(`/api/channels`)
+  const { data: channels } = await fetcher<RT.SearchResponse<RT.Channel>>(
+    `/api/channels`
+  )
 
   return {
     paths: channels.map((channel) => ({
