@@ -16,7 +16,7 @@ export default function ShowCard({ show, ...props }: ShowProps) {
   const link = show.canonical_links.self
 
   return (
-    <Link href={link}>
+    <Link href={link} passHref>
       <MotionFlex
         as="a"
         direction="column"
@@ -27,6 +27,10 @@ export default function ShowCard({ show, ...props }: ShowProps) {
           bg: `gray.2`,
           overflow: `hidden`,
           cursor: `pointer`,
+          textDecoration: `none`,
+          '&:visited': {
+            color: `inherit`,
+          },
           ...(props.sx ?? {}),
         }}
       >

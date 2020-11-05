@@ -5,18 +5,25 @@ import { MotionImage, MotionImageProps } from './MotionComponents'
 
 export interface RTImageProps extends MotionImageProps {
   img: RT.Image
+  size?: 'thumb' | 'small' | 'medium' | 'large'
   sx?: SxStyleProp
 }
 
-export default function RTImage({ img, sx }: RTImageProps) {
+export default function RTImage({
+  img,
+  sx,
+  size = `medium`,
+  ...props
+}: RTImageProps) {
   return (
     <ProgressiveImage
-      src={img.attributes.medium}
+      src={img.attributes[size]}
       placeholder={img.attributes.small}
     >
       {(src) => (
         <MotionImage
           src={src}
+          {...(props as any)}
           sx={{
             ...getImgStyles(img.attributes.image_type),
             ...(sx ?? {}),

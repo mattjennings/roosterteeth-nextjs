@@ -1,10 +1,12 @@
 import EpisodeCard from 'components/EpisodeCard'
 import ImageHeader from 'components/ImageHeader'
 import { MotionGrid } from 'components/MotionComponents'
+import NoSSR from 'components/NoSSR'
 import Skeleton from 'components/Skeleton'
 import { AnimatePresence } from 'framer-motion'
 import useInfiniteScroll from 'hooks/useInfiniteScroll'
 import { fetcher } from 'lib/fetcher'
+import { GetStaticProps } from 'next'
 import { useRouter } from 'next/router'
 import qs from 'qs'
 import React, { useEffect, useMemo, useState } from 'react'
@@ -18,8 +20,6 @@ const fetchEpisodes = (channel, page = 0, params = {}) =>
       params
     )}`
   )
-
-import { GetStaticProps } from 'next'
 
 export const getStaticPaths = async () => {
   const { data: channels } = await fetcher<RT.SearchResponse<RT.Channel>>(
@@ -154,16 +154,18 @@ export default function ChannelPage({ channel }: { channel: RT.Channel }) {
           exit={{ opacity: 0 }}
           initial={{ opacity: 0 }}
         >
-          {isFetching && !data?.length
-            ? new Array(10)
-                .fill(null)
-                .map((_, i) => <Skeleton key={i} height={[300, 400, 375]} />)
-            : episodes.map((episode) => (
-                <EpisodeCard
-                  episode={episode}
-                  key={`${debouncedSearch}-${episode.id}`}
-                />
-              ))}
+          <NoSSR>
+            {isFetching && !data?.length
+              ? new Array(10)
+                  .fill(null)
+                  .map((_, i) => <Skeleton key={i} height={[300, 400, 375]} />)
+              : episodes.map((episode) => (
+                  <EpisodeCard
+                    episode={episode}
+                    key={`${debouncedSearch}-${episode.id}`}
+                  />
+                ))}
+          </NoSSR>
         </MotionGrid>
       </AnimatePresence>
     </Box>

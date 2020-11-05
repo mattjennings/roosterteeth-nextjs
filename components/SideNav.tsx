@@ -46,7 +46,7 @@ function Link({ href, ...props }: LinkProps) {
 
   const isActive = asPath === href || asPath === props.as
   return (
-    <NextLink href={href}>
+    <NextLink href={href} passHref>
       <ThemeLink
         {...props}
         sx={{
@@ -65,6 +65,7 @@ function Link({ href, ...props }: LinkProps) {
 
             bg: `gray.2`,
           },
+          textDecoration: `none`,
         }}
       />
     </NextLink>
