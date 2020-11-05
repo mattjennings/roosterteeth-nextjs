@@ -127,7 +127,7 @@ export default function Series({
     return []
   }, [data])
 
-  const banner = show.included.images.find(
+  const hero = show.included.images.find(
     (img) => img.attributes.image_type === `hero`
   )
 
@@ -136,11 +136,17 @@ export default function Series({
     (img) => img.attributes.image_type === `logo`
   )
 
+  const fallback =
+    show.included.images.find(
+      (img) => img.attributes.image_type === `title_card`
+    ) ?? show.included.images[0]
+
+  const headerImg = hero || fallback
   return (
     <Box>
       <Box mb={2}>
         <ImageHeader
-          img={banner.attributes.large}
+          img={headerImg.attributes.large}
           title={show.attributes.title}
         />
       </Box>
