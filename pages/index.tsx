@@ -13,9 +13,9 @@ import React, { useState } from 'react'
 import { useQuery } from 'react-query'
 import { Box } from 'theme-ui'
 
-export const getStaticProps: GetStaticProps = async (ctx) => {
+export const getStaticProps: GetStaticProps = async () => {
   const popularShows = await fetcher(
-    `/api/shows?order_by=attributes.trending_score&page=1&per_page=8`
+    `${process.env.API_BASE_URL}/shows?order_by=attributes.trending_score&page=1&per_page=8`
   )
 
   return {

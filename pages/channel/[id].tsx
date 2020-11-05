@@ -23,7 +23,7 @@ import { GetStaticProps } from 'next'
 
 export const getStaticPaths = async () => {
   const { data: channels } = await fetcher<RT.SearchResponse<RT.Channel>>(
-    `/api/channels`
+    `${process.env.API_BASE_URL}/channels`
   )
 
   return {
@@ -39,7 +39,9 @@ export const getStaticPaths = async () => {
 export const getStaticProps: GetStaticProps = async ({ params: { id } }) => {
   const {
     data: [channel],
-  } = await fetcher<RT.SearchResponse<RT.Channel>>(`/api/channels/${id}`)
+  } = await fetcher<RT.SearchResponse<RT.Channel>>(
+    `${process.env.API_BASE_URL}/channels/${id}`
+  )
 
   return {
     props: {
