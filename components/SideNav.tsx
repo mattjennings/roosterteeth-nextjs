@@ -13,6 +13,7 @@ import Switch from './Switch'
 import { FaSun as LightIcon, FaMoon as DarkIcon } from 'react-icons/fa'
 import { AnimatePresence } from 'framer-motion'
 import { MotionBox, MotionBoxProps } from './MotionComponents'
+import NoSSR from './NoSSR'
 
 export default function SideNav(props: FlexProps) {
   return (
@@ -35,7 +36,9 @@ export default function SideNav(props: FlexProps) {
       }}
     >
       <Flex justify="flex-end" sx={{ p: 2 }}>
-        <ThemeSwitch />
+        <NoSSR>
+          <ThemeSwitch />
+        </NoSSR>
       </Flex>
       <Link href="/">Home</Link>
       <Divider />
