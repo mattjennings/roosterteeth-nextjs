@@ -2,7 +2,6 @@ import { tailwind } from '@theme-ui/presets'
 
 const colors = { ...tailwind.colors, divider: tailwind.colors.gray[5] }
 
-console.log(tailwind.buttons)
 export const theme = {
   ...tailwind,
   colors,

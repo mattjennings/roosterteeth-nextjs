@@ -2,6 +2,7 @@ import EpisodeCard from 'components/EpisodeCard'
 import ImageHeader from 'components/ImageHeader'
 import { MotionGrid } from 'components/MotionComponents'
 import NoSSR from 'components/NoSSR'
+import SearchBar from 'components/SearchBar'
 import Skeleton from 'components/Skeleton'
 import { AnimatePresence } from 'framer-motion'
 import useInfiniteScroll from 'hooks/useInfiniteScroll'
@@ -136,13 +137,11 @@ export default function ChannelPage({ channel }: { channel: RT.Channel }) {
         />
       </Box>
       <Box p={3}>
-        <Input
+        <SearchBar
           value={search}
           onChange={(e) => {
             setSearch(e.currentTarget.value)
           }}
-          placeholder="Search"
-          sx={{ width: `100%` }}
         />
       </Box>
       <AnimatePresence initial={false} exitBeforeEnter>
