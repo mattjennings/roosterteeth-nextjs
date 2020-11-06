@@ -68,7 +68,7 @@ export default function EpisodeCard({ episode, ...props }: EpisodeProps) {
           }}
         >
           <Image
-            src={img.attributes.large}
+            src={img.attributes.medium}
             width={300 * (16 / 9)}
             height={300}
             layout="responsive"
