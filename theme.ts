@@ -19,6 +19,7 @@ export const theme = {
   ...tailwind,
   colors: {
     ...colors,
+    divider: colors.gray[3],
     modes: {
       dark: {
         background: darkModeGray[0],
@@ -38,10 +39,15 @@ export const theme = {
   },
   styles: {
     ...tailwind.styles,
+    hr: {
+      ...tailwind.styles.hr,
+      backgroundColor: `divider`,
+    },
     progress: {
       color: `red.6`,
       backgroundColor: `white`,
     },
+
     a: {
       color: colors.blue[6],
       '&:hover': {

@@ -15,7 +15,6 @@ import { AnimatePresence } from 'framer-motion'
 import { MotionBox, MotionBoxProps } from './MotionComponents'
 
 export default function SideNav(props: FlexProps) {
-  const [colorMode, setColorMode] = useColorMode()
   return (
     <Flex
       as="nav"
@@ -26,7 +25,7 @@ export default function SideNav(props: FlexProps) {
       sx={{
         bg: `background`,
         borderRight: `1px solid`,
-        borderColor: `gray.5`,
+        borderColor: `divider`,
         px: 2,
         pt: 2,
         width: `100%`,
