@@ -1,51 +1,24 @@
+import NextImage from 'next/image'
 import React from 'react'
-import ProgressiveImage from 'react-progressive-image'
 import { SxStyleProp } from 'theme-ui'
-import { MotionImage, MotionImageProps } from './MotionComponents'
 
-export interface RTImageProps extends MotionImageProps {
+export interface RTImageProps extends ImageProps {
   img: RT.Image
-  size?: 'thumb' | 'small' | 'medium' | 'large'
-  sx?: SxStyleProp
 }
 
-export default function RTImage({
-  img,
-  sx,
-  size = `medium`,
-  ...props
-}: RTImageProps) {
-  return (
-    <ProgressiveImage
-      src={img.attributes[size]}
-      placeholder={img.attributes.small}
-    >
-      {(src) => (
-        <MotionImage
-          src={src}
-          {...(props as any)}
-          sx={{
-            ...getImgStyles(img.attributes.image_type),
-            ...(sx ?? {}),
-          }}
-        />
-      )}
-    </ProgressiveImage>
-  )
+export default function RTImage({ img, ...props }: RTImageProps) {
+  return <NextImage src={img.attributes.large} {...(props as any)} />
 }
 
-function getImgStyles(imgType: string): SxStyleProp {
-  switch (imgType) {
-    case `mobile_hero`:
-    case `cover`:
-    case `title_card`:
-    case `profile`:
-      return { objectFit: `cover` }
-    case `wide`:
-      return { objectFit: `fill` }
-    case `logo`:
-      return { px: 2, objectFit: `contain` }
-    default:
-      return { objectFit: `contain` }
-  }
+type ImageProps = Omit<
+  JSX.IntrinsicElements['img'],
+  'src' | 'srcSet' | 'ref' | 'width' | 'height' | 'loading'
+> & {
+  quality?: number | string
+  priority?: boolean
+  loading?: 'lazy' | 'eager'
+  unoptimized?: boolean
+  width?: number | string
+  height?: number | string
+  layout?: 'fill' | 'fixed' | 'intrinsic' | 'responsive'
 }

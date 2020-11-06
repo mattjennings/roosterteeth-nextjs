@@ -87,7 +87,7 @@ export default function Home({
             initial={{ opacity: 0 }}
           >
             {popularShows.data.map((show) => (
-              <ShowCard key={show.id} show={show} sx={{ height: 300 }} />
+              <ShowCard key={show.id} show={show} />
             ))}
           </MotionGrid>
         </MotionBox>

@@ -277,7 +277,15 @@ declare namespace RT {
       medium: string
       large: string
       orientation: string
-      image_type: string
+      image_type:
+        | 'cover'
+        | 'hero'
+        | 'mobile_hero'
+        | 'poster'
+        | 'profile'
+        | 'logo'
+        | 'title_card'
+        | 'cover'
     }
     links: unknown
     included: unknown
