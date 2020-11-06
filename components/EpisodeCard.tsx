@@ -43,6 +43,7 @@ export default function EpisodeCard({ episode, ...props }: EpisodeProps) {
         as="a"
         direction="column"
         sx={{
+          position: `relative`,
           borderRadius: `lg`,
           bg: `gray.2`,
           overflow: `hidden`,
@@ -122,6 +123,7 @@ export default function EpisodeCard({ episode, ...props }: EpisodeProps) {
             {format(isRTFirst ? publicDate : date, `MMM dd / yy`)}
           </Text>
         </Flex>
+        {props.children}
       </MotionFlex>
     </Link>
   )
