@@ -10,9 +10,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   const [id, ...rest] = params as string[]
 
   const fetchRes = await fetch(
-    `${process.env.API_BASE_URL}/api/v1/watch/${id}${
-      rest ? `/` + rest.join(`/`) : ``
-    }`
+    `${process.env.API_BASE_URL}/watch/${id}${rest ? `/` + rest.join(`/`) : ``}`
   )
 
   res.status(fetchRes.status).json(await fetchRes.json())

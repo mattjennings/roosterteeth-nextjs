@@ -1,18 +1,18 @@
-import { getHostUrl } from './config'
+const fetch = require(`@vercel/fetch-retry`)()
 
 /**
- * node-fetch wrapper
- *
- * Relative URLs are supported for the server when `ctx` is provided
+ * node-fetch wrapper that supports relative urls on server
  */
 export function fetcher<T = any>(
   url: string,
-  config: RequestInit & { ctx?: any } = {}
+  opts: RequestInit = {}
 ): Promise<T> {
-  const { ctx, ...opts } = config
+  const baseUrl =
+    url.startsWith(`/`) && !process.browser
+      ? process.env.NODE_ENV === `development`
+        ? `http://${process.env.VERCEL_URL}`
+        : `https://${process.env.VERCEL_URL}`
+      : ``
 
-  return fetch(
-    `${ctx && url.startsWith(`/`) ? getHostUrl(ctx) : ``}${url}`,
-    opts
-  ).then((res) => res.json())
+  return fetch(`${baseUrl}${url}`, opts).then((res) => res.json())
 }

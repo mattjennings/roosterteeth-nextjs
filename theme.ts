@@ -1,6 +1,7 @@
 import { tailwind } from '@theme-ui/presets'
 
 const colors = { ...tailwind.colors, divider: tailwind.colors.gray[5] }
+
 export const theme = {
   ...tailwind,
   colors,
@@ -14,13 +15,13 @@ export const theme = {
   styles: {
     ...tailwind.styles,
     progress: {
-      color: 'red.6',
-      backgroundColor: 'white',
+      color: `red.6`,
+      backgroundColor: `white`,
     },
     a: {
       color: colors.blue[6],
       '&:hover': {
-        cursor: 'pointer',
+        cursor: `pointer`,
         color: colors.blue[4],
       },
     },

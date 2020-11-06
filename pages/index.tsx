@@ -1,65 +1,122 @@
 import EpisodeCard from 'components/EpisodeCard'
-import { MotionGrid } from 'components/MotionComponents'
+import { MotionBox, MotionGrid } from 'components/MotionComponents'
+import NoSSR from 'components/NoSSR'
 import ShowCard from 'components/ShowCard'
 import Text from 'components/Text'
 import VideoGrid from 'components/VideoGrid'
-import { AnimatePresence } from 'framer-motion'
-import { getUserCookie } from 'lib/cookies'
+import { AnimatePresence, AnimateSharedLayout } from 'framer-motion'
+import { getUserCookie, setUserCookie } from 'lib/cookies'
 import { fetcher } from 'lib/fetcher'
-import { GetServerSideProps } from 'next'
+import { GetStaticProps } from 'next'
 import React from 'react'
-import { Box } from 'theme-ui'
+import { useQuery, useQueryCache } from 'react-query'
+import { Box, Button } from 'theme-ui'
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const user = getUserCookie(ctx)
+export const getStaticProps: GetStaticProps = async () => {
+  const popularShows = await fetcher(
+    `${process.env.API_BASE_URL}/shows?order_by=attributes.trending_score&page=1&per_page=8`
+  )
 
-  const [popularShows, unfinishedVideos] = await Promise.all([
-    fetcher(`/api/shows?order_by=attributes.trending_score&page=1&per_page=8`, {
-      ctx,
-    }),
-    user.unfinishedVideos?.length > 0
-      ? Promise.all(
-          user.unfinishedVideos.map((link) =>
-            fetcher(`/api/watch/${link}`, { ctx }).then((res) => res.data?.[0])
-          )
-        )
-      : Promise.resolve([]),
-  ])
-
-  // console.log(unfinishedVideos)
   return {
     props: {
       title: `Home`,
       popularShows,
-      unfinishedVideos,
     },
+    revalidate: 60 * 60, // regenerate every hour
   }
 }
 
 export default function Home({
   popularShows,
-  unfinishedVideos,
 }: {
   popularShows: RT.SearchResponse<RT.Show>
-  unfinishedVideos: RT.Episode[]
 }) {
+  const cache = useQueryCache()
+  const { data: incompleteVideos, isFetching } = useQuery<
+    Array<RT.Episode & { slug: string }>
+  >(`incomplete-videos`, async () => {
+    const user = getUserCookie()
+
+    if (user.incompleteVideos?.length) {
+      return Promise.all(
+        user.incompleteVideos.map((link) =>
+          fetcher(`/api/watch/${link}`)
+            .then((res) => ({ ...res.data?.[0], slug: link }))
+            .catch((e) => null)
+        )
+      )
+    }
+    return []
+  })
+
+  // if we either have data or we're fetching it, show section
+  const showingIncomplete = getUserCookie().incompleteVideos?.length > 0
+
   return (
-    <Box>
-      <AnimatePresence initial={false} exitBeforeEnter>
+    <AnimateSharedLayout>
+      <Box>
         <Box p={3}>
-          {unfinishedVideos?.length > 0 && (
-            <Box mb={2}>
-              <Text fontWeight="medium" fontSize={4} mb={1}>
-                Keep Watching
-              </Text>
-              <VideoGrid>
-                {unfinishedVideos.map((episode) => (
-                  <EpisodeCard key={episode.id} episode={episode} />
-                ))}
-              </VideoGrid>
-            </Box>
-          )}
-          <Box mb={2}>
+          <NoSSR>
+            <AnimatePresence initial={false} exitBeforeEnter>
+              {showingIncomplete && (
+                <Box mb={2}>
+                  <Text fontWeight="medium" fontSize={4} mb={1}>
+                    Keep Watching
+                  </Text>
+                  <VideoGrid sx={{ minHeight: 400 }}>
+                    {incompleteVideos?.map((episode) => (
+                      <EpisodeCard
+                        key={episode._id}
+                        episode={episode}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        layout
+                      >
+                        <Box sx={{ position: `absolute`, right: 1, bottom: 1 }}>
+                          <Button
+                            variant="pill"
+                            onClick={(e) => {
+                              e.preventDefault()
+
+                              setUserCookie((prev) => {
+                                return {
+                                  ...prev,
+                                  incompleteVideos: prev.incompleteVideos.filter(
+                                    (vid) => vid !== episode.slug
+                                  ),
+                                }
+                              })
+
+                              cache.setQueryData(
+                                `incomplete-videos`,
+                                incompleteVideos.filter(
+                                  (vid) => vid.slug !== episode.slug
+                                )
+                              )
+                            }}
+                            sx={{
+                              py: 1,
+                              px: 3,
+                              color: `gray.5`,
+                              background: `none`,
+                              '&:hover': {
+                                color: `gray.4`,
+                                background: `none`,
+                              },
+                            }}
+                          >
+                            Remove
+                          </Button>
+                        </Box>
+                      </EpisodeCard>
+                    ))}
+                  </VideoGrid>
+                </Box>
+              )}
+            </AnimatePresence>
+          </NoSSR>
+          <MotionBox mb={2} layout>
             <Text fontWeight="medium" fontSize={4} mb={1}>
               Popular Series
             </Text>
@@ -70,12 +127,12 @@ export default function Home({
               initial={{ opacity: 0 }}
             >
               {popularShows.data.map((show) => (
-                <ShowCard key={show.id} show={show} sx={{ height: 300 }} />
+                <ShowCard key={show.id} show={show} />
               ))}
             </MotionGrid>
-          </Box>
+          </MotionBox>
         </Box>
-      </AnimatePresence>
-    </Box>
+      </Box>
+    </AnimateSharedLayout>
   )
 }

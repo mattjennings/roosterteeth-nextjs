@@ -57,23 +57,23 @@ export default function WatchVideo({
     setProgress(progress)
 
     if (progress > 0.1 && progress < 0.9) {
-      // add to unfinished
+      // add to incomplete
       setUserCookie((prev) => {
-        const unfinishedVideos = prev.unfinishedVideos ?? []
+        const incompleteVideos = prev.incompleteVideos ?? []
 
-        const exists = unfinishedVideos?.indexOf(slug) > -1
+        const exists = incompleteVideos?.indexOf(slug) > -1
 
         return {
-          unfinishedVideos: exists
-            ? unfinishedVideos.sort((vid) => (vid === slug ? -1 : 1))
-            : [slug, ...unfinishedVideos].slice(0, 5),
+          incompleteVideos: exists
+            ? incompleteVideos.sort((vid) => (vid === slug ? -1 : 1))
+            : [slug, ...incompleteVideos].slice(0, 5),
         }
       })
     } else {
-      // remove from unfinished
+      // remove from incomplete
       setUserCookie((prev) => ({
-        unfinishedVideos:
-          prev.unfinishedVideos?.filter((vid) => vid !== slug) ?? [],
+        incompleteVideos:
+          prev.incompleteVideos?.filter((vid) => vid !== slug) ?? [],
       }))
     }
   }

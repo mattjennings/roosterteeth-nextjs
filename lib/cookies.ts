@@ -1,7 +1,7 @@
 import { setCookie, parseCookies } from 'nookies'
 
 export interface UserCookie {
-  unfinishedVideos?: string[]
+  incompleteVideos?: string[]
   favouriteChannels?: string[]
 }
 

@@ -10,7 +10,7 @@ import { MotionFlex, MotionFlexProps, MotionImage } from './MotionComponents'
 import NoSSR from './NoSSR'
 import Text from './Text'
 import ProgressiveImage from 'react-progressive-image'
-import RTImage from './RTImage'
+import Image from 'next/image'
 
 export interface EpisodeProps extends MotionFlexProps {
   episode: RT.Episode
@@ -32,18 +32,32 @@ export default function EpisodeCard({ episode, ...props }: EpisodeProps) {
     0
   )
 
+  const img =
+    episode.included.images.find(
+      (img) => img.attributes.image_type === `title_card`
+    ) ?? episode.included.images[0]
+
   return (
     <Link href={link} passHref>
       <MotionFlex
         as="a"
         direction="column"
         sx={{
+          position: `relative`,
           borderRadius: `lg`,
           bg: `gray.2`,
           overflow: `hidden`,
           cursor: `pointer`,
           color: `inherit`,
           textDecoration: `none`,
+          boxShadow: `default`,
+          '& img': {
+            transition: `0.2s ease transform`,
+            filter: isRTFirst ? `brightness(30%)` : undefined,
+          },
+          '&:hover img': {
+            transform: `scale(1.025, 1.025)`,
+          },
         }}
         {...(props as any)}
       >
@@ -54,27 +68,27 @@ export default function EpisodeCard({ episode, ...props }: EpisodeProps) {
             position: `relative`,
           }}
         >
-          <Box sx={{ position: `static` }}>
-            <RTImage
-              img={episode.included.images[0]}
-              sx={{
-                width: `100%`,
-                height: `auto`,
-                filter: isRTFirst ? `brightness(30%)` : undefined,
-              }}
-            />
-          </Box>
+          <Image
+            src={img.attributes.medium}
+            width={300 * (16 / 9)}
+            height={300}
+            layout="responsive"
+            alt={title}
+          />
           <NoSSR>
-            <Progress
-              sx={{
-                position: `absolute`,
-                left: 0,
-                right: 0,
-                bottom: 1,
-              }}
-              max={1}
-              value={progress}
-            />
+            {progress > 0 && (
+              <Progress
+                sx={{
+                  position: `absolute`,
+                  borderRadius: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                }}
+                max={1}
+                value={progress}
+              />
+            )}
           </NoSSR>
           {isRTFirst && (
             <Flex
@@ -109,6 +123,7 @@ export default function EpisodeCard({ episode, ...props }: EpisodeProps) {
             {format(isRTFirst ? publicDate : date, `MMM dd / yy`)}
           </Text>
         </Flex>
+        {props.children}
       </MotionFlex>
     </Link>
   )

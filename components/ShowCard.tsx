@@ -1,10 +1,7 @@
 import Link from 'next/link'
 import React from 'react'
-import { Box } from 'theme-ui'
-import Flex from './Flex'
-import { MotionFlex, MotionFlexProps } from './MotionComponents'
-import RTImage from './RTImage'
-import Text from './Text'
+import { MotionBox, MotionFlexProps } from './MotionComponents'
+import Image from 'next/image'
 
 export interface ShowProps extends MotionFlexProps {
   show: RT.Show
@@ -12,44 +9,45 @@ export interface ShowProps extends MotionFlexProps {
 
 export default function ShowCard({ show, ...props }: ShowProps) {
   const title = show.attributes.title
-  const img = show.included.images[6]
+  const img =
+    show.included.images.find(
+      (img) => img.attributes.image_type === `title_card`
+    ) ?? show.included.images[0]
+
   const link = show.canonical_links.self
 
+  const size = 300
+
   return (
-    <Link href={link}>
-      <MotionFlex
+    <Link href={link} passHref>
+      <MotionBox
         as="a"
-        direction="column"
-        wrap="nowrap"
         {...(props as any)}
         sx={{
+          overflow: `hidden`,
           borderRadius: `lg`,
           bg: `gray.2`,
-          overflow: `hidden`,
           cursor: `pointer`,
+          textDecoration: `none`,
+          color: `inherit`,
+          boxShadow: `md`,
           ...(props.sx ?? {}),
         }}
+        whileHover={{
+          scale: 1.05,
+        }}
+        whileTap={{
+          scale: 1,
+        }}
       >
-        <Box sx={{ overflow: `hidden`, flexGrow: 1, bg: `black` }}>
-          <RTImage
-            img={img}
-            sx={{
-              height: `100%`,
-              width: `100%`,
-            }}
-          />
-        </Box>
-        <Flex
-          p={2}
-          direction="column"
-          justify="space-between"
-          sx={{ flexShrink: 1 }}
-        >
-          <Text fontSize={2} fontWeight="semibold">
-            {title}
-          </Text>
-        </Flex>
-      </MotionFlex>
+        <Image
+          src={img.attributes.large}
+          width={size * (16 / 9)}
+          height={size}
+          layout="responsive"
+          alt={title}
+        />
+      </MotionBox>
     </Link>
   )
 }

@@ -35,8 +35,6 @@ export default function SideNav(props: FlexProps) {
       <Link href="/channel/the-yogscast">The Yogscast</Link>
       <Link href="/channel/kinda-funny">Kinda Funny</Link>
       <Link href="/channel/friends-of-rt">Friends of RT</Link>
-      <Link href="/channel/sugar-pine-7">Sugar Pine 7</Link>
-      <Link href="/channel/cow-chop">Cow Chop</Link>
     </Flex>
   )
 }
@@ -46,7 +44,7 @@ function Link({ href, ...props }: LinkProps) {
 
   const isActive = asPath === href || asPath === props.as
   return (
-    <NextLink href={href}>
+    <NextLink href={href} passHref>
       <ThemeLink
         {...props}
         sx={{
@@ -65,6 +63,7 @@ function Link({ href, ...props }: LinkProps) {
 
             bg: `gray.2`,
           },
+          textDecoration: `none`,
         }}
       />
     </NextLink>
