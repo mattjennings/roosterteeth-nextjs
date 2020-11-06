@@ -1,3 +1,4 @@
+import './_app.css'
 import { useResponsiveValue } from '@theme-ui/match-media'
 import { desktopOnlyBreakpoints } from 'components/DesktopOnly'
 import Flex from 'components/Flex'
@@ -112,7 +113,7 @@ function App({ Component, pageProps, router }: AppProps) {
                       p={2}
                       sx={{
                         height: 16,
-                        bg: `white`,
+                        bg: `background`,
                         position: `sticky`,
                         top: 0,
                         left: 0,
