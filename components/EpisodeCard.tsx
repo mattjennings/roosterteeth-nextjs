@@ -4,7 +4,7 @@ import isBefore from 'date-fns/isBefore'
 import { useLocalStorage } from 'hooks/useLocalStorage'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
-import { Box, Progress } from 'theme-ui'
+import { Box, Progress, useColorMode } from 'theme-ui'
 import Flex from './Flex'
 import { MotionFlex, MotionFlexProps, MotionImage } from './MotionComponents'
 import NoSSR from './NoSSR'
@@ -17,6 +17,7 @@ export interface EpisodeProps extends MotionFlexProps {
 }
 
 export default function EpisodeCard({ episode, ...props }: EpisodeProps) {
+  const [colorMode] = useColorMode()
   const title = episode.attributes.title
   const caption = episode.attributes.caption
   const link = episode.canonical_links.self
@@ -45,7 +46,7 @@ export default function EpisodeCard({ episode, ...props }: EpisodeProps) {
         sx={{
           position: `relative`,
           borderRadius: `lg`,
-          bg: `gray.2`,
+          bg: colorMode === `dark` ? `gray.1` : `gray.2`,
           overflow: `hidden`,
           cursor: `pointer`,
           color: `inherit`,

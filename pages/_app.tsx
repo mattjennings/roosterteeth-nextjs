@@ -1,3 +1,4 @@
+import './_app.css'
 import { useResponsiveValue } from '@theme-ui/match-media'
 import { desktopOnlyBreakpoints } from 'components/DesktopOnly'
 import Flex from 'components/Flex'
@@ -14,14 +15,22 @@ import { ReactQueryDevtools } from 'react-query-devtools'
 import { Hydrate } from 'react-query/hydration'
 import { Box, MenuButton, ThemeProvider } from 'theme-ui'
 import { theme } from '../theme'
+import NoSSR from 'components/NoSSR'
+import { Global } from '@emotion/core'
 
 function App({ Component, pageProps, router }: AppProps) {
   const { nav = true, title } = pageProps
   const [isSidebarOpen, setSidebarOpen] = useState(false)
   const sidebarPosition = useResponsiveValue([`75vw`, `50vw`, `35vw`])
+  const [applyTransitionCss, setApplyTransitionCss] = useState(false)
+
   useScrollRestoration(router)
 
   useEffect(() => {
+    // we want to have a background color transition on all elements,
+    // but not on the initial render as it sets your color mode, otherwise you get a FOUC
+    setTimeout(() => setApplyTransitionCss(true))
+
     router.events.on(`routeChangeStart`, () => {
       setSidebarOpen(false)
     })
@@ -32,6 +41,15 @@ function App({ Component, pageProps, router }: AppProps) {
       <Head>
         <title>{title ?? `RT`}</title>
       </Head>
+      {applyTransitionCss && (
+        <Global
+          styles={{
+            '*': {
+              transition: `background-color 0.3s ease`,
+            },
+          }}
+        />
+      )}
       <ReactQueryCacheProvider>
         <Hydrate state={pageProps.dehydratedState}>
           <ThemeProvider theme={theme}>
@@ -112,7 +130,7 @@ function App({ Component, pageProps, router }: AppProps) {
                       p={2}
                       sx={{
                         height: 16,
-                        bg: `white`,
+                        bg: `background`,
                         position: `sticky`,
                         top: 0,
                         left: 0,

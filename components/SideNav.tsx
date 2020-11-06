@@ -1,8 +1,19 @@
 import React from 'react'
 import Flex, { FlexProps } from './Flex'
 import NextLink from 'next/link'
-import { Box, Divider, Link as ThemeLink, LinkProps } from 'theme-ui'
+import {
+  Box,
+  Divider,
+  Link as ThemeLink,
+  LinkProps,
+  useColorMode,
+} from 'theme-ui'
 import { useRouter } from 'next/router'
+import Switch from './Switch'
+import { FaSun as LightIcon, FaMoon as DarkIcon } from 'react-icons/fa'
+import { AnimatePresence } from 'framer-motion'
+import { MotionBox, MotionBoxProps } from './MotionComponents'
+import NoSSR from './NoSSR'
 
 export default function SideNav(props: FlexProps) {
   return (
@@ -15,7 +26,7 @@ export default function SideNav(props: FlexProps) {
       sx={{
         bg: `background`,
         borderRight: `1px solid`,
-        borderColor: `gray.5`,
+        borderColor: `divider`,
         px: 2,
         pt: 2,
         width: `100%`,
@@ -24,6 +35,11 @@ export default function SideNav(props: FlexProps) {
         ...(props.sx ?? {}),
       }}
     >
+      <Flex justify="flex-end" sx={{ p: 2 }}>
+        <NoSSR>
+          <ThemeSwitch />
+        </NoSSR>
+      </Flex>
       <Link href="/">Home</Link>
       <Divider />
       <Link href="/channel/achievement-hunter">Achievement Hunter</Link>
@@ -55,11 +71,11 @@ function Link({ href, ...props }: LinkProps) {
           borderRadius: `default`,
           bg: isActive ? `gray.2` : `none`,
 
-          color: `gray.9`,
+          color: `text`,
           fontWeight: isActive ? `semibold` : `normal`,
           fontSize: [1, 2],
           '&:hover': {
-            color: `gray.9`,
+            color: `text`,
 
             bg: `gray.2`,
           },
@@ -67,5 +83,59 @@ function Link({ href, ...props }: LinkProps) {
         }}
       />
     </NextLink>
+  )
+}
+
+function ThemeSwitch() {
+  const [colorMode, setColorMode] = useColorMode()
+
+  const iconProps: MotionBoxProps = {
+    variants: {
+      initial: { opacity: 0 },
+      animate: { opacity: 1 },
+      exit: { opacity: 0 },
+    },
+    initial: `initial`,
+    animate: `animate`,
+    exit: `exit`,
+    transition: {
+      duration: 0.15,
+    },
+    sx: {
+      position: `absolute`,
+      left: -4,
+      right: 0,
+      top: 0,
+      bottom: 0,
+    },
+  }
+  return (
+    <Flex>
+      <Box sx={{ position: `relative` }}>
+        <AnimatePresence initial={false} exitBeforeEnter>
+          {colorMode === `dark` ? (
+            <MotionBox key="dark" {...(iconProps as any)}>
+              <Box
+                as={DarkIcon}
+                sx={{ color: `gray.4`, width: 5, height: 5, mt: `2px` }}
+              />
+            </MotionBox>
+          ) : (
+            <MotionBox key="light" {...(iconProps as any)}>
+              <Box
+                as={LightIcon}
+                sx={{ color: `yellow.5`, width: 6, height: 6 }}
+              />
+            </MotionBox>
+          )}
+        </AnimatePresence>
+      </Box>
+      <Switch
+        checked={colorMode === `dark`}
+        onChange={(e) => {
+          setColorMode(e.currentTarget.checked ? `dark` : `default`)
+        }}
+      />
+    </Flex>
   )
 }
