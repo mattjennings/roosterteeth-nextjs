@@ -2,6 +2,7 @@ import EpisodeCard from 'components/EpisodeCard'
 import { MotionBox, MotionGrid } from 'components/MotionComponents'
 import NoSSR from 'components/NoSSR'
 import ShowCard from 'components/ShowCard'
+import Skeleton from 'components/Skeleton'
 import Text from 'components/Text'
 import VideoGrid from 'components/VideoGrid'
 import { AnimatePresence, AnimateSharedLayout } from 'framer-motion'
@@ -50,7 +51,7 @@ export default function Home({
   })
 
   // if we either have data or we're fetching it, show section
-  const showingIncomplete = getUserCookie().incompleteVideos?.length > 0
+  const numIncompleteVideos = getUserCookie().incompleteVideos?.length
 
   return (
     <AnimateSharedLayout>
@@ -58,59 +59,72 @@ export default function Home({
         <Box p={3}>
           <NoSSR>
             <AnimatePresence initial={false} exitBeforeEnter>
-              {showingIncomplete && (
+              {numIncompleteVideos > 0 && (
                 <Box mb={2}>
                   <Text fontWeight="medium" fontSize={4} mb={1}>
                     Keep Watching
                   </Text>
-                  <VideoGrid sx={{ minHeight: 400 }}>
-                    {incompleteVideos?.map((episode) => (
-                      <EpisodeCard
-                        key={episode._id}
-                        episode={episode}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        layout
-                      >
-                        <Box sx={{ position: `absolute`, right: 1, bottom: 1 }}>
-                          <Button
-                            variant="pill"
-                            onClick={(e) => {
-                              e.preventDefault()
-
-                              setUserCookie((prev) => {
-                                return {
-                                  ...prev,
-                                  incompleteVideos: prev.incompleteVideos.filter(
-                                    (vid) => vid !== episode.slug
-                                  ),
-                                }
-                              })
-
-                              cache.setQueryData(
-                                `incomplete-videos`,
-                                incompleteVideos.filter(
-                                  (vid) => vid.slug !== episode.slug
-                                )
-                              )
-                            }}
-                            sx={{
-                              py: 1,
-                              px: 3,
-                              color: `gray.5`,
-                              background: `none`,
-                              '&:hover': {
-                                color: `gray.4`,
-                                background: `none`,
-                              },
-                            }}
+                  <VideoGrid>
+                    {isFetching && !incompleteVideos?.length
+                      ? new Array(numIncompleteVideos)
+                          .fill(null)
+                          .map((_, i) => (
+                            <Skeleton
+                              key={i}
+                              // best estimates at the height of the videos given the width of device
+                              height={[`65vw`, `40vw`, `30vw`, `23vw`, `18vw`]}
+                            />
+                          ))
+                      : incompleteVideos?.map((episode) => (
+                          <EpisodeCard
+                            key={episode._id}
+                            episode={episode}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            layout
+                            showDescription={false}
                           >
-                            Remove
-                          </Button>
-                        </Box>
-                      </EpisodeCard>
-                    ))}
+                            <Box
+                              sx={{ position: `absolute`, right: 1, bottom: 1 }}
+                            >
+                              <Button
+                                variant="pill"
+                                onClick={(e) => {
+                                  e.preventDefault()
+
+                                  setUserCookie((prev) => {
+                                    return {
+                                      ...prev,
+                                      incompleteVideos: prev.incompleteVideos.filter(
+                                        (vid) => vid !== episode.slug
+                                      ),
+                                    }
+                                  })
+
+                                  cache.setQueryData(
+                                    `incomplete-videos`,
+                                    incompleteVideos.filter(
+                                      (vid) => vid.slug !== episode.slug
+                                    )
+                                  )
+                                }}
+                                sx={{
+                                  py: 1,
+                                  px: 3,
+                                  color: `gray.5`,
+                                  background: `none`,
+                                  '&:hover': {
+                                    color: `gray.4`,
+                                    background: `none`,
+                                  },
+                                }}
+                              >
+                                Remove
+                              </Button>
+                            </Box>
+                          </EpisodeCard>
+                        ))}
                   </VideoGrid>
                 </Box>
               )}

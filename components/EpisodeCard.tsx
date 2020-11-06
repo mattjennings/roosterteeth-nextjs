@@ -14,9 +14,14 @@ import Image from 'next/image'
 
 export interface EpisodeProps extends MotionFlexProps {
   episode: RT.Episode
+  showDescription?: boolean
 }
 
-export default function EpisodeCard({ episode, ...props }: EpisodeProps) {
+export default function EpisodeCard({
+  episode,
+  showDescription = true,
+  ...props
+}: EpisodeProps) {
   const [colorMode] = useColorMode()
   const title = episode.attributes.title
   const caption = episode.attributes.caption
@@ -118,7 +123,7 @@ export default function EpisodeCard({ episode, ...props }: EpisodeProps) {
             <Text fontSize={2} fontWeight="semibold">
               {title}
             </Text>
-            <Text fontSize={0}>{caption}</Text>
+            {showDescription && <Text fontSize={0}>{caption}</Text>}
           </Box>
           <Text fontSize={0} mt={2} color="textMuted">
             {format(isRTFirst ? publicDate : date, `MMM dd / yy`)}
