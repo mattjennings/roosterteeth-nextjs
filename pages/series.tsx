@@ -1,3 +1,4 @@
+import Flex from 'components/Flex'
 import { MotionGrid } from 'components/MotionComponents'
 import NoSSR from 'components/NoSSR'
 import ShowCard from 'components/ShowCard'
@@ -12,15 +13,13 @@ import qs from 'qs'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useInfiniteQuery } from 'react-query'
 import slug from 'slug'
-import { Box, Label, Select } from 'theme-ui'
+import { Box, Grid, Label, Select } from 'theme-ui'
 import { filterFalsey } from 'util/filter'
 
 const PER_PAGE = 30
 const fetchShows = (page = 0, params: any = {}) => {
   return fetcher(
-    `/api/shows?per_page=${PER_PAGE}&order=desc&page=${page}&${qs.stringify(
-      params
-    )}`
+    `/api/shows?per_page=${PER_PAGE}&page=${page}&${qs.stringify(params)}`
   )
 }
 
@@ -47,26 +46,49 @@ export default function Series() {
     return filters.find((f) => f.name === (query.filter as string))
   })
 
+  const [sort, setSort] = useState<string>(() => {
+    const query = qs.parse(router.asPath.split(`?`)[1])
+
+    return query.sort as string
+  })
+
   const {
     data = [],
     isFetching,
     isFetchingMore,
     fetchMore,
     canFetchMore,
-    refetch,
   } = useInfiniteQuery(
-    `shows-${filter?.name}`,
+    `shows-${filter?.name}-${sort}`,
     (key, page: number) => {
+      const sortParams: any = {}
+      console.log(`shows-${filter?.name}-${sort}`)
+      switch (sort) {
+        case `newest`:
+          sortParams.order = `desc`
+          break
+        case `oldest`:
+          sortParams.order = `asc`
+          break
+        case `a-z`:
+          sortParams.title_order = `asc`
+          break
+        case `z-a`:
+          sortParams.title_order = `desc`
+      }
       if (filter?.channel) {
-        return fetchShows(page, { channel_id: slug(filter.name) })
+        return fetchShows(page, {
+          channel_id: slug(filter.name),
+          ...sortParams,
+        })
       }
 
       if (filter?.genre) {
-        return fetchShows(page, { genres: filter.name })
+        return fetchShows(page, { genres: filter.name, ...sortParams })
       }
 
       if (filter?.params) {
-        return fetchShows(page, filter.params)
+        return fetchShows(page, { ...filter.params, ...sortParams })
       }
 
       return fetchShows(page)
@@ -87,11 +109,12 @@ export default function Series() {
       query: filterFalsey({
         ...router.query,
         filter: filter?.name,
+        sort,
       }),
     })
 
     // eslint-disable-next-line
-  }, [filter])
+  }, [filter, sort])
 
   useInfiniteScroll({
     enabled: canFetchMore && !isFetching && !isFetchingMore,
@@ -115,10 +138,14 @@ export default function Series() {
         mx: `auto`,
       }}
     >
-      <Box p={3}>
-        <Label sx={{ display: `inline-flex`, flexDirection: `column` }}>
+      <Grid columns={[1, 1, 2, 4]} my={2} p={3}>
+        <Label
+          sx={{
+            display: `inline-flex`,
+            flexDirection: `column`,
+          }}
+        >
           <Text fontWeight="medium">Filter</Text>
-
           <Select
             value={filter?.name}
             onChange={(e) => {
@@ -134,7 +161,26 @@ export default function Series() {
             ))}
           </Select>
         </Label>
-      </Box>
+        <Label
+          sx={{
+            display: `inline-flex`,
+            flexDirection: `column`,
+          }}
+        >
+          <Text fontWeight="medium">Sort</Text>
+          <Select
+            value={sort}
+            onChange={(e) => {
+              setSort(e.currentTarget.value)
+            }}
+          >
+            <option value="newest">Newest - Oldest</option>
+            <option value="oldest">Oldest - Newest</option>
+            <option value="a-z">A-Z</option>
+            <option value="z-a">Z-A</option>
+          </Select>
+        </Label>
+      </Grid>
       <AnimatePresence initial={false} exitBeforeEnter>
         <MotionGrid
           columns={[1, 2, 3, 3, 4]}
