@@ -20,7 +20,7 @@ import { Global } from '@emotion/core'
 function App({ Component, pageProps, router }: AppProps) {
   const { nav = true, title } = pageProps
   const [isSidebarOpen, setSidebarOpen] = useState(false)
-  const sidebarPosition = useResponsiveValue([`75vw`, `50vw`, `35vw`])
+  const sidebarPosition = useResponsiveValue([`65vw`, `50vw`, `35vw`])
   const [applyTransitionCss, setApplyTransitionCss] = useState(false)
 
   useScrollRestoration(router)
