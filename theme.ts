@@ -1,4 +1,5 @@
 import { tailwind } from '@theme-ui/presets'
+import { Theme } from 'theme-ui'
 
 const colors = { ...tailwind.colors, divider: tailwind.colors.gray[5] }
 
@@ -15,23 +16,32 @@ const darkModeGray = [
   `#fafafa`,
 ]
 
-export const theme = {
+export const theme: Theme = {
+  initialColorModeName: `dark`,
   ...tailwind,
   colors: {
     ...colors,
-    divider: colors.gray[3],
+    // default color is dark mode
+    background: darkModeGray[0],
+    text: darkModeGray[6],
+    textMuted: darkModeGray[4],
+    divider: darkModeGray[2],
+    gray: darkModeGray,
+
     modes: {
-      dark: {
-        background: darkModeGray[0],
-        text: darkModeGray[6],
-        textMuted: darkModeGray[4],
-        divider: darkModeGray[2],
-        gray: darkModeGray,
+      light: {
+        ...colors,
+        divider: colors.gray[3],
       },
     },
   },
   buttons: {
     ...tailwind.buttons,
+    primary: {
+      '&:not([disabled])': {
+        cursor: `pointer`,
+      },
+    },
     menu: {
       height: 10,
       width: 10,

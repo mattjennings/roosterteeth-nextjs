@@ -150,42 +150,51 @@ export default function Series({
           title={show.attributes.title}
         />
       </Box>
-      <Flex my={2} px={3}>
-        <Box sx={{ width: [`100%`, `100%`, `120px`], mx: `auto` }}>
-          <Label sx={{ display: `inline-flex`, flexDirection: `column` }}>
-            <Text fontWeight="medium">Season</Text>
-            <Select
-              value={season}
-              onChange={(e) => setSeason(e.currentTarget.value)}
-            >
-              {seasons.map((season) => (
-                <option key={season.slug} value={season.slug}>
-                  {season.title}
-                </option>
-              ))}
-            </Select>
-          </Label>
-        </Box>
-      </Flex>
-      <AnimatePresence initial={false} exitBeforeEnter>
-        <MotionGrid
-          columns={[1, 2, 3, 3, 4]}
-          p={3}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          initial={{ opacity: 0 }}
-        >
-          <NoSSR>
-            {isFetching && !data?.length
-              ? new Array(10)
-                  .fill(null)
-                  .map((_, i) => <Skeleton key={i} height={[300, 400, 375]} />)
-              : episodes.map((episode) => (
-                  <EpisodeCard episode={episode} key={episode.id} />
+      <Box
+        sx={{
+          maxWidth: 1920,
+          mx: `auto`,
+        }}
+      >
+        <Flex my={2} px={3}>
+          <Box sx={{ width: [`100%`, `100%`, `120px`], mx: `auto` }}>
+            <Label sx={{ display: `inline-flex`, flexDirection: `column` }}>
+              <Text fontWeight="medium">Season</Text>
+              <Select
+                value={season}
+                onChange={(e) => setSeason(e.currentTarget.value)}
+              >
+                {seasons.map((season) => (
+                  <option key={season.slug} value={season.slug}>
+                    {season.title}
+                  </option>
                 ))}
-          </NoSSR>
-        </MotionGrid>
-      </AnimatePresence>
+              </Select>
+            </Label>
+          </Box>
+        </Flex>
+        <AnimatePresence initial={false} exitBeforeEnter>
+          <MotionGrid
+            columns={[1, 2, 3, 3, 4]}
+            p={3}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }}
+          >
+            <NoSSR>
+              {isFetching && !data?.length
+                ? new Array(10)
+                    .fill(null)
+                    .map((_, i) => (
+                      <Skeleton key={i} height={[300, 400, 375]} />
+                    ))
+                : episodes.map((episode) => (
+                    <EpisodeCard episode={episode} key={episode.id} />
+                  ))}
+            </NoSSR>
+          </MotionGrid>
+        </AnimatePresence>
+      </Box>
     </Box>
   )
 }
