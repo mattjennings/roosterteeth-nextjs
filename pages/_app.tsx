@@ -15,7 +15,6 @@ import { ReactQueryDevtools } from 'react-query-devtools'
 import { Hydrate } from 'react-query/hydration'
 import { Box, MenuButton, ThemeProvider } from 'theme-ui'
 import { theme } from '../theme'
-import NoSSR from 'components/NoSSR'
 import { Global } from '@emotion/core'
 
 function App({ Component, pageProps, router }: AppProps) {
@@ -101,7 +100,7 @@ function App({ Component, pageProps, router }: AppProps) {
                 </>
               )}
             </AnimatePresence>
-            <Flex wrap="nowrap" sx={{ height: `100vh`, overflow: `hidden` }}>
+            <Flex wrap="nowrap">
               {nav && (
                 <Box
                   sx={{
@@ -118,8 +117,6 @@ function App({ Component, pageProps, router }: AppProps) {
                 sx={{
                   flexBasis: 0,
                   flexGrow: 1,
-                  overflow: `scroll`,
-                  height: `100%`,
                 }}
               >
                 {/* wrapper div fixes safari position: sticky bug */}
@@ -160,5 +157,4 @@ function App({ Component, pageProps, router }: AppProps) {
     </React.StrictMode>
   )
 }
-
 export default App
