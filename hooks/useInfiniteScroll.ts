@@ -10,21 +10,22 @@ const useInfiniteScroll = ({
   onLoadMore: () => any
 }) => {
   useEffect(() => {
-    const el = document.querySelector('main')
-    el.addEventListener('scroll', handleScroll)
-    return () => el.removeEventListener('scroll', handleScroll)
+    window.addEventListener(`scroll`, handleScroll)
+    return () => window.removeEventListener(`scroll`, handleScroll)
   }, [onLoadMore, enabled])
 
   function handleScroll() {
-    const el = document.querySelector('main')
+    const scrollPosition =
+      window.innerHeight * 2 -
+      window.innerHeight * (scrollPercentage / 100) +
+      document.documentElement.scrollTop
 
-    const isTriggered =
-      el.scrollTop + el.clientHeight >
-      el.scrollHeight * (scrollPercentage / 100)
+    const triggerPoint = document.documentElement.offsetHeight
 
-    if (enabled && isTriggered) {
-      onLoadMore()
+    if (!enabled || scrollPosition <= triggerPoint) {
+      return
     }
+    onLoadMore()
   }
 }
 

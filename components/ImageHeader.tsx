@@ -16,9 +16,8 @@ export default function ImageHeader({
       {...(props as any)}
       sx={{
         width: `100%`,
-        height: `30vh`,
+        height: `10vw`,
         objectFit: `cover`,
-        maxHeight: `150px`,
         ...(props.sx ?? {}),
       }}
     />

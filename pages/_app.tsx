@@ -104,6 +104,8 @@ function App({ Component, pageProps, router }: AppProps) {
               {nav && (
                 <Box
                   sx={{
+                    position: `sticky`,
+                    top: 0,
                     flexBasis: `16rem`,
                     flexGrow: 0,
                     display: desktopOnlyBreakpoints(`flex`),

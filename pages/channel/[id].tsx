@@ -136,37 +136,46 @@ export default function ChannelPage({ channel }: { channel: RT.Channel }) {
           }}
         />
       </Box>
-      <Box p={3}>
-        <SearchBar
-          value={search}
-          onChange={(e) => {
-            setSearch(e.currentTarget.value)
-          }}
-        />
+      <Box
+        sx={{
+          maxWidth: 1920,
+          mx: `auto`,
+        }}
+      >
+        <Box p={3}>
+          <SearchBar
+            value={search}
+            onChange={(e) => {
+              setSearch(e.currentTarget.value)
+            }}
+          />
+        </Box>
+        <AnimatePresence initial={false} exitBeforeEnter>
+          <MotionGrid
+            columns={[1, 2, 3, 3, 4]}
+            p={3}
+            key={debouncedSearch}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }}
+          >
+            <NoSSR>
+              {isFetching && !data?.length
+                ? new Array(10)
+                    .fill(null)
+                    .map((_, i) => (
+                      <Skeleton key={i} height={[300, 400, 375]} />
+                    ))
+                : episodes.map((episode) => (
+                    <EpisodeCard
+                      episode={episode}
+                      key={`${debouncedSearch}-${episode.id}`}
+                    />
+                  ))}
+            </NoSSR>
+          </MotionGrid>
+        </AnimatePresence>
       </Box>
-      <AnimatePresence initial={false} exitBeforeEnter>
-        <MotionGrid
-          columns={[1, 2, 3, 3, 4]}
-          p={3}
-          key={debouncedSearch}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          initial={{ opacity: 0 }}
-        >
-          <NoSSR>
-            {isFetching && !data?.length
-              ? new Array(10)
-                  .fill(null)
-                  .map((_, i) => <Skeleton key={i} height={[300, 400, 375]} />)
-              : episodes.map((episode) => (
-                  <EpisodeCard
-                    episode={episode}
-                    key={`${debouncedSearch}-${episode.id}`}
-                  />
-                ))}
-          </NoSSR>
-        </MotionGrid>
-      </AnimatePresence>
     </Box>
   )
 }
