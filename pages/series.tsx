@@ -62,7 +62,6 @@ export default function Series() {
     `shows-${filter?.name}-${sort}`,
     (key, page: number) => {
       const sortParams: any = {}
-      console.log(`shows-${filter?.name}-${sort}`)
       switch (sort) {
         case `newest`:
           sortParams.order = `desc`

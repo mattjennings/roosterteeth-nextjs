@@ -2,6 +2,7 @@ import Link from 'next/link'
 import React from 'react'
 import { MotionBox, MotionFlexProps } from './MotionComponents'
 import Image from 'next/image'
+import { useResponsiveValue } from '@theme-ui/match-media'
 
 export interface ShowProps extends MotionFlexProps {
   show: RT.Show
@@ -16,7 +17,8 @@ export default function ShowCard({ show, ...props }: ShowProps) {
 
   const link = show.canonical_links.self
 
-  const size = 300
+  const size = 200
+  const quality = useResponsiveValue([30, 30, 10])
 
   return (
     <Link href={link} passHref>
@@ -31,6 +33,11 @@ export default function ShowCard({ show, ...props }: ShowProps) {
           textDecoration: `none`,
           color: `inherit`,
           boxShadow: `md`,
+          fontSize: 0,
+          lineHeight: 0,
+          '& img': {
+            verticalAlign: `bottom`,
+          },
           ...(props.sx ?? {}),
         }}
         whileHover={{
@@ -41,11 +48,13 @@ export default function ShowCard({ show, ...props }: ShowProps) {
         }}
       >
         <Image
-          src={img.attributes.large}
-          width={size * (16 / 9)}
+          src={img.attributes.medium}
+          width={Math.round(size * (16 / 9))}
           height={size}
           layout="responsive"
           alt={title}
+          quality={quality}
+          loading="eager"
         />
       </MotionBox>
     </Link>

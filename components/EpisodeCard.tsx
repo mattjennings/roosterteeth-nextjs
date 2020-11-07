@@ -42,6 +42,7 @@ export default function EpisodeCard({
     episode.included.images.find(
       (img) => img.attributes.image_type === `title_card`
     ) ?? episode.included.images[0]
+  const imgQuality = useResponsiveValue([30, 30, 10])
 
   return (
     <Link href={link} passHref>
@@ -79,7 +80,9 @@ export default function EpisodeCard({
             width={300 * (16 / 9)}
             height={300}
             layout="responsive"
+            quality={imgQuality}
             alt={title}
+            loading="eager"
           />
           <NoSSR>
             {progress > 0 && (
