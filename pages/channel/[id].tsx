@@ -49,7 +49,7 @@ export const getStaticProps: GetStaticProps = async ({ params: { id } }) => {
       title: channel.attributes.name ?? ``,
       channel,
     },
-    revalidate: 60 * 60,
+    revalidate: 1,
   }
 }
 

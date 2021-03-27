@@ -64,7 +64,7 @@ export const getStaticProps: GetStaticProps = async ({ params: { id } }) => {
       show,
       seasons,
     },
-    revalidate: 60 * 60,
+    revalidate: 1,
   }
 }
 
