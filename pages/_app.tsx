@@ -16,6 +16,7 @@ import { Hydrate } from 'react-query/hydration'
 import { Box, MenuButton, ThemeProvider } from 'theme-ui'
 import { theme } from '../theme'
 import { Global } from '@emotion/core'
+import 'tailwindcss/tailwind.css'
 
 function App({ Component, pageProps, router }: AppProps) {
   const { nav = true, title } = pageProps
