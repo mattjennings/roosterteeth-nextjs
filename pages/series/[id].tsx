@@ -147,7 +147,8 @@ export default function Series({
     <Box>
       <Box mb={2}>
         <ImageHeader
-          img={headerImg.attributes.large}
+          className="object-cover"
+          src={headerImg.attributes.large}
           title={show.attributes.title}
         />
       </Box>

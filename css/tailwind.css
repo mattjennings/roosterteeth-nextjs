@@ -19,5 +19,5 @@
 }
 
 .border-background {
-  @apply border-gray-500 dark:border-dark-gray-700;
+  @apply border-gray-400 dark:border-dark-gray-700;
 }

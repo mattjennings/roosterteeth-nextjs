@@ -13,10 +13,7 @@ export default function ImageHeader({
     <motion.img
       alt={title}
       {...(props as any)}
-      className={clsx(
-        `w-full object-cover h-[25vw] sm:h[10vw] xl:h-[5vw]`,
-        props.className
-      )}
+      className={clsx(props.className, `w-full h-[25vw] sm:h[10vw] xl:h-[5vw]`)}
     />
   )
 }

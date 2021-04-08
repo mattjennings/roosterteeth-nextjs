@@ -1,17 +1,15 @@
 import { useResponsiveValue } from '@theme-ui/match-media'
+import clsx from 'clsx'
 import format from 'date-fns/format'
 import isBefore from 'date-fns/isBefore'
+import { motion } from 'framer-motion'
 import { useLocalStorage } from 'hooks/useLocalStorage'
-import Link from 'next/link'
-import React, { useEffect, useState } from 'react'
-import { Box, Progress, useColorMode } from 'theme-ui'
-import Flex from './Flex'
-import { MotionFlex, MotionFlexProps, MotionImage } from './MotionComponents'
-import NoSSR from './NoSSR'
-import Text from './Text'
-import ProgressiveImage from 'react-progressive-image'
 import Image from 'next/image'
-
+import Link from 'next/link'
+import React from 'react'
+import { Progress, useColorMode } from 'theme-ui'
+import { MotionFlexProps } from './MotionComponents'
+import NoSSR from './NoSSR'
 export interface EpisodeProps extends MotionFlexProps {
   episode: RT.Episode
   showDescription?: boolean
@@ -46,36 +44,27 @@ export default function EpisodeCard({
 
   return (
     <Link href={link} passHref>
-      <MotionFlex
-        as="a"
-        direction="column"
-        sx={{
-          position: `relative`,
-          borderRadius: `lg`,
-          bg: colorMode === `dark` ? `gray.1` : `gray.2`,
-          overflow: `hidden`,
-          cursor: `pointer`,
-          color: `inherit`,
-          textDecoration: `none`,
-          boxShadow: `default`,
-          '& img': {
-            transition: `0.2s ease transform`,
-            filter: isRTFirst ? `brightness(30%)` : undefined,
-          },
-          '&:hover img': {
-            transform: `scale(1.025, 1.025)`,
-          },
-        }}
+      <motion.a
+        aria-label={
+          isRTFirst
+            ? `FIRST members only, available ${format(
+                publicDate,
+                `MMMM dd, yyyy`
+              )}`
+            : ``
+        }
+        className={clsx(
+          `flex flex-col relative rounded-lg overlfow-hidden cursor-pointer overflow-hidden`,
+          `bg-gray-200 border border-gray-200 dark:border-none dark:bg-dark-gray-800 focus`
+        )}
         {...(props as any)}
       >
-        <Box
-          sx={{
-            overflow: `hidden`,
-            width: `100%`,
-            position: `relative`,
-          }}
-        >
+        <div className="w-full relative">
           <Image
+            className={clsx(
+              `transform transition-transform duration-200 ease-linear`,
+              `hover:scale-[1.025]`
+            )}
             src={img.attributes.medium}
             width={300 * (16 / 9)}
             height={300}
@@ -100,40 +89,33 @@ export default function EpisodeCard({
             )}
           </NoSSR>
           {isRTFirst && (
-            <Flex
-              center
-              sx={{
-                position: `absolute`,
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-              }}
-            >
-              <Text fontWeight="bold" color="white" fontSize={3}>
-                RT FIRST
-              </Text>
-            </Flex>
+            <>
+              <div className="flex justify-center items-center absolute inset-0 bg-black opacity-80" />
+              <div className="flex flex-col justify-center items-center absolute inset-0">
+                <p className="font-bold text-white text-5xl opacity-80">
+                  FIRST
+                </p>
+                <p className="font-bold text-white text-xl opacity-60">
+                  available for everyone on {format(publicDate, `MMMM dd / yy`)}
+                </p>
+              </div>
+            </>
           )}
-        </Box>
-        <Flex
-          p={2}
-          direction="column"
-          justify="space-between"
-          sx={{ flexGrow: 1 }}
-        >
-          <Box>
-            <Text fontSize={2} fontWeight="semibold">
-              {title}
-            </Text>
-            {showDescription && <Text fontSize={0}>{caption}</Text>}
-          </Box>
-          <Text fontSize={0} mt={2} color="textMuted">
+        </div>
+        <div className="p-2 flex flex-col justify-between flex-grow">
+          <div>
+            <h6 className="text-lg font-semibold">{title}</h6>
+            {showDescription && <p className="text-sm">{caption}</p>}
+          </div>
+          <time
+            className="mt-1 text-gray-700 dark:text-dark-gray-600"
+            dateTime={isRTFirst ? publicDate.toISOString() : date.toISOString()}
+          >
             {format(isRTFirst ? publicDate : date, `MMM dd / yy`)}
-          </Text>
-        </Flex>
+          </time>
+        </div>
         {props.children}
-      </MotionFlex>
+      </motion.a>
     </Link>
   )
 }
