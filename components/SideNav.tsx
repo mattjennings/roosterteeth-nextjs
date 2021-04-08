@@ -1,52 +1,31 @@
-import React, { useEffect, useState } from 'react'
-import Flex, { FlexProps } from './Flex'
-import NextLink from 'next/link'
-import {
-  Box,
-  Button,
-  Divider,
-  Link as ThemeLink,
-  LinkProps,
-  SxStyleProp,
-  useColorMode,
-} from 'theme-ui'
-import { useRouter } from 'next/router'
-import Switch from './Switch'
-import { FaSun as LightIcon, FaMoon as DarkIcon } from 'react-icons/fa'
-import { AnimatePresence } from 'framer-motion'
-import { MotionBox, MotionBoxProps, MotionFlex } from './MotionComponents'
-import NoSSR from './NoSSR'
-import { HiHome as HomeIcon } from 'react-icons/hi'
+import { HomeIcon, MoonIcon, SunIcon } from '@heroicons/react/solid'
+import clsx from 'clsx'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useTheme } from 'next-themes'
+import NextLink from 'next/link'
+import { useRouter } from 'next/router'
+import React, { HTMLProps, useEffect, useState } from 'react'
+import NoSSR from './NoSSR'
+import Switch from './Switch'
 
-export default function SideNav(props: FlexProps) {
+export default function SideNav(props: HTMLProps<HTMLDivElement>) {
   return (
-    <Flex
-      as="nav"
-      direction="column"
-      align="stretch"
-      wrap="nowrap"
-      {...(props as any)}
-      sx={{
-        bg: `background`,
-        borderRight: `1px solid`,
-        borderColor: `divider`,
-        px: 2,
-        pt: 2,
-        width: `100%`,
-        height: `100vh`,
-        overflow: `scroll`,
-        ...(props.sx ?? {}),
-      }}
+    <nav
+      {...props}
+      className={clsx(
+        `flex flex-col items-stretch flex-nowrap px-2 pt-2 w-full h-screen overflow-scroll`,
+        `border-r bg-background border-background`,
+        props.className
+      )}
     >
-      <Flex justify="space-between" align="center" sx={{ p: 2 }}>
+      <div className="flex justify-between items-center p-2">
         <Link href="/">
-          <Box as={HomeIcon} sx={{ width: 6, height: 6, mt: `4px` }} />
+          <HomeIcon className="w-6 h-6" />
         </Link>
         <NoSSR>
           <ThemeSwitch />
         </NoSSR>
-      </Flex>
+      </div>
       <LinkGroup name="Channels" basePath="/channel">
         <Link sub href="/channel/achievement-hunter">
           Achievement Hunter
@@ -77,7 +56,7 @@ export default function SideNav(props: FlexProps) {
         </Link>
       </LinkGroup>
       <Link href="/series">Series</Link>
-    </Flex>
+    </nav>
   )
 }
 
@@ -101,84 +80,56 @@ function LinkGroup({
 
   return (
     <>
-      <Button
+      <button
         onClick={() => setOpen(!isOpen)}
-        sx={{
-          textAlign: `left`,
-          textTransform: `uppercase`,
-          background: `none`,
-          color: `text`,
-          fontWeight: `bold`,
-          mx: 2,
-          my: 1,
-          py: 1,
-          px: 2,
-          '&:not([disabled]):hover': {
-            bg: `gray.2`,
-          },
-          '&:not([disabled]):focus': {
-            outline: `none`,
-            bg: `gray.2`,
-          },
-        }}
+        className={clsx(
+          `text-left uppercase rounded-md focus`,
+          `mx-2 my-1 py-1 px-2`,
+          `bg-none text-gray-600 dark:text-dark-gray-300 font-bold`,
+          `hover:bg-dark-gray-200 dark:hover:bg-dark-gray-700`
+        )}
       >
         {name}
-      </Button>
+      </button>
       <AnimatePresence initial={false}>
         {isOpen && (
-          <MotionFlex
-            direction="column"
-            align="stretch"
-            wrap="nowrap"
+          <motion.div
+            className="flex flex-col items-stretch flex-nowrap ml-3 pt-1 overflow-hidden"
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: `auto`, opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            sx={{ overflow: `hidden`, ml: 3, pt: 1 }}
             transition={{
               duration: 0.3,
             }}
           >
             {children}
-          </MotionFlex>
+          </motion.div>
         )}
       </AnimatePresence>
     </>
   )
 }
 
-function Link({ href, sub, ...props }: LinkProps & { sub?: boolean }) {
+function Link({
+  href,
+  sub,
+  ...props
+}: HTMLProps<HTMLAnchorElement> & { sub?: boolean }) {
   const { asPath } = useRouter()
   const isActive = asPath === href || asPath === props.as
 
   return (
     <NextLink href={href} passHref>
-      <ThemeLink
+      <a
         {...props}
-        sx={{
-          textAlign: `left`,
-          textTransform: !sub ? `uppercase` : `unset`,
-          background: `none`,
-          color: `text`,
-          fontWeight: sub ? (isActive ? `medium` : `normal`) : `bold`,
-
-          mx: 2,
-          my: 1,
-          py: 1,
-          px: 2,
-          borderRadius: `default`,
-          bg: isActive ? `gray.2` : `none`,
-
-          fontSize: 1,
-          textDecoration: `none`,
-          '&:not([disabled]):hover': {
-            color: `text`,
-            bg: `gray.2`,
-          },
-          '&:not([disabled]):focus': {
-            outline: `none`,
-            bg: `gray.2`,
-          },
-        }}
+        className={clsx(
+          `text-left mx-2 my-1 py-1 px-2 rounded-md focus`,
+          `text-gray-600 dark:text-dark-gray-300`,
+          !sub && `uppercase`,
+          sub ? (isActive ? `font-medium` : `font-normal`) : `font-bold`,
+          isActive ? `bg-dark-gray-200 dark:bg-dark-gray-700` : `bg-none`,
+          `hover:bg-dark-gray-200 dark:hover:bg-dark-gray-700`
+        )}
       />
     </NextLink>
   )
@@ -187,55 +138,40 @@ function Link({ href, sub, ...props }: LinkProps & { sub?: boolean }) {
 function ThemeSwitch() {
   const { theme, setTheme } = useTheme()
 
-  const iconProps: MotionBoxProps = {
-    variants: {
-      initial: { opacity: 0 },
-      animate: { opacity: 1 },
-      exit: { opacity: 0 },
-    },
-    initial: `initial`,
-    animate: `animate`,
-    exit: `exit`,
-    transition: {
-      duration: 0.15,
-    },
-    sx: {
-      position: `absolute`,
-      left: -4,
-      right: 0,
-      top: 0,
-      bottom: 0,
-    },
-  }
-
   const isDarkMode = theme === `dark` || theme === `system`
   return (
-    <Flex>
-      <Box sx={{ position: `relative` }}>
+    <div className="flex">
+      <div className="relative">
         <AnimatePresence initial={false} exitBeforeEnter>
-          {isDarkMode ? (
-            <MotionBox key="dark" {...(iconProps as any)}>
-              <Box
-                as={DarkIcon}
-                sx={{ color: `gray.4`, width: 5, height: 5, mt: `2px` }}
-              />
-            </MotionBox>
-          ) : (
-            <MotionBox key="light" {...(iconProps as any)}>
-              <Box
-                as={LightIcon}
-                sx={{ color: `yellow.5`, width: 6, height: 6 }}
-              />
-            </MotionBox>
-          )}
+          <motion.div
+            key={theme}
+            className="absolute top-0 right-0 bottom-0 -left-8"
+            variants={{
+              initial: { opacity: 0 },
+              animate: { opacity: 1 },
+              exit: { opacity: 0 },
+            }}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={{
+              duration: 0.15,
+            }}
+          >
+            {isDarkMode ? (
+              <MoonIcon className="text-gray-400 w-5 h-5 mt-[2px]" />
+            ) : (
+              <SunIcon className="text-yellow-500 w-6 h-6" />
+            )}
+          </motion.div>
         </AnimatePresence>
-      </Box>
+      </div>
       <Switch
         checked={isDarkMode}
         onChange={() => {
           setTheme(!isDarkMode ? `dark` : `light`)
         }}
       />
-    </Flex>
+    </div>
   )
 }

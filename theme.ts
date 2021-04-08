@@ -67,8 +67,8 @@ export const theme: Theme = {
       },
     },
 
-    '*': {
-      transition: `0.3s background ease`,
-    },
+    // '*': {
+    //   transition: `0.3s background ease`,
+    // },
   },
 }

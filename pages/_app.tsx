@@ -1,5 +1,6 @@
 import '../css/tailwind.css'
 import './_app.css'
+import 'focus-visible'
 import { Global } from '@emotion/core'
 import { useResponsiveValue } from '@theme-ui/match-media'
 import clsx from 'clsx'
@@ -97,7 +98,7 @@ function App({ Component, pageProps, router }: AppProps) {
                         className={clsx(
                           `flex lg:hidden`,
                           `sticky place-items-center border-b p-2 h-16 top-0 left-0 right-0 z-[98]`,
-                          `bg-gray-50 border-gray-300 dark:bg-dark-gray-900 dark:border-dark-gray-700`
+                          `bg-background border-background`
                         )}
                       >
                         <div className="lg:hidden">

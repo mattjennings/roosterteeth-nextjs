@@ -3,13 +3,21 @@
 @tailwind utilities;
 
 .focus {
-  @apply focus:outline-none focus:ring-2 
-  focus:ring-gray-400 dark:focus:ring-blue-300 
-  focus:ring-opacity-75 dark:focus:ring-opacity-60;
+  @apply focus:outline-none focus-visible:ring-2 
+  focus-visible:ring-gray-400 dark:focus-visible:ring-blue-300 
+  focus-visible:ring-opacity-75 dark:focus-visible:ring-opacity-60;
 }
 
 .focus-within {
-  @apply focus-within:outline-none focus-within:ring-2 
-  focus-within:ring-gray-400 dark:focus-within:ring-blue-300 
-  focus-within:ring-opacity-75 dark:focus-within:ring-opacity-60;
+  @apply focus:outline-none focus-visible:focus-within:outline-none focus-visible:focus-within:ring-2 
+  focus-visible:focus-within:ring-gray-400 dark:focus-visible:focus-within:ring-blue-300 
+  focus-visible:focus-within:ring-opacity-75 dark:focus-visible:focus-within:ring-opacity-60;
+}
+
+.bg-background {
+  @apply bg-gray-50 dark:bg-dark-gray-900;
+}
+
+.border-background {
+  @apply border-gray-500 dark:border-dark-gray-700;
 }
