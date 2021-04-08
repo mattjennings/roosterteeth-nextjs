@@ -159,16 +159,16 @@ function ThemeSwitch() {
             }}
           >
             {isDarkMode ? (
-              <MoonIcon className="text-gray-400 w-5 h-5 mt-[2px]" />
+              <MoonIcon className="text-gray-400 w-5 h-5" />
             ) : (
-              <SunIcon className="text-yellow-500 w-6 h-6" />
+              <SunIcon className="text-yellow-500 w-6 h-6 mt-[-2px]" />
             )}
           </motion.div>
         </AnimatePresence>
       </div>
       <Switch
         checked={isDarkMode}
-        onChange={() => {
+        onChecked={() => {
           setTheme(!isDarkMode ? `dark` : `light`)
         }}
       />
