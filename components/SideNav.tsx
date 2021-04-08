@@ -17,6 +17,7 @@ import { AnimatePresence } from 'framer-motion'
 import { MotionBox, MotionBoxProps, MotionFlex } from './MotionComponents'
 import NoSSR from './NoSSR'
 import { HiHome as HomeIcon } from 'react-icons/hi'
+import { useTheme } from 'next-themes'
 
 export default function SideNav(props: FlexProps) {
   return (
@@ -184,7 +185,7 @@ function Link({ href, sub, ...props }: LinkProps & { sub?: boolean }) {
 }
 
 function ThemeSwitch() {
-  const [colorMode, setColorMode] = useColorMode()
+  const { theme, setTheme } = useTheme()
 
   const iconProps: MotionBoxProps = {
     variants: {
@@ -207,11 +208,12 @@ function ThemeSwitch() {
     },
   }
 
+  const isDarkMode = theme === `dark` || theme === `system`
   return (
     <Flex>
       <Box sx={{ position: `relative` }}>
         <AnimatePresence initial={false} exitBeforeEnter>
-          {colorMode === `dark` ? (
+          {isDarkMode ? (
             <MotionBox key="dark" {...(iconProps as any)}>
               <Box
                 as={DarkIcon}
@@ -229,30 +231,11 @@ function ThemeSwitch() {
         </AnimatePresence>
       </Box>
       <Switch
-        checked={colorMode === `dark`}
+        checked={isDarkMode}
         onChange={() => {
-          setColorMode(colorMode === `light` ? `dark` : `light`)
+          setTheme(!isDarkMode ? `dark` : `light`)
         }}
       />
     </Flex>
   )
-}
-
-const styles: Record<string, (isActive: boolean) => SxStyleProp> = {
-  mainLink: (isActive: boolean) => ({
-    textAlign: `left`,
-    textTransform: `uppercase`,
-    background: `none`,
-    color: `text`,
-    fontWeight: `bold`,
-    mx: 2,
-    py: 1,
-    '&:not([disabled]):hover': {
-      bg: `gray.2`,
-    },
-    '&:not([disabled]):focus': {
-      outline: `none`,
-      bg: `gray.2`,
-    },
-  }),
 }

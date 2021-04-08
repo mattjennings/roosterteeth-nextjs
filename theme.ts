@@ -3,6 +3,7 @@ import { Theme } from 'theme-ui'
 
 const colors = { ...tailwind.colors, divider: tailwind.colors.gray[5] }
 
+console.log(colors)
 const darkModeGray = [
   `#111`,
   `#212121`,

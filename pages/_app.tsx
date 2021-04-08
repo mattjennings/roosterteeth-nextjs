@@ -1,11 +1,11 @@
+import '../css/tailwind.css'
 import './_app.css'
+import { Global } from '@emotion/core'
 import { useResponsiveValue } from '@theme-ui/match-media'
-import { desktopOnlyBreakpoints } from 'components/DesktopOnly'
-import Flex from 'components/Flex'
-import MobileOnly, { mobileOnlyBreakpoints } from 'components/MobileOnly'
-import { MotionBox } from 'components/MotionComponents'
+import clsx from 'clsx'
+import MobileOnly from 'components/MobileOnly'
 import SideNav from 'components/SideNav'
-import { AnimatePresence, AnimateSharedLayout } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import useScrollRestoration from 'hooks/useScrollRestoration'
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
@@ -13,11 +13,10 @@ import React, { useEffect, useState } from 'react'
 import { ReactQueryCacheProvider } from 'react-query'
 import { ReactQueryDevtools } from 'react-query-devtools'
 import { Hydrate } from 'react-query/hydration'
-import { Box, MenuButton, ThemeProvider } from 'theme-ui'
+import { MenuButton, ThemeProvider as ThemeUIProvider } from 'theme-ui'
 import { theme } from '../theme'
-import { Global } from '@emotion/core'
-import 'tailwindcss/tailwind.css'
-
+import { ThemeProvider } from 'next-themes'
+import { MenuIcon, XIcon } from '@heroicons/react/outline'
 function App({ Component, pageProps, router }: AppProps) {
   const { nav = true, title } = pageProps
   const [isSidebarOpen, setSidebarOpen] = useState(false)
@@ -52,105 +51,80 @@ function App({ Component, pageProps, router }: AppProps) {
       )}
       <ReactQueryCacheProvider>
         <Hydrate state={pageProps.dehydratedState}>
-          <ThemeProvider theme={theme}>
-            <AnimatePresence>
-              {isSidebarOpen && (
-                <>
-                  <MotionBox
-                    sx={{
-                      position: `fixed`,
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      zIndex: 99,
-                      display: mobileOnlyBreakpoints(),
-                      bg: `black`,
-                    }}
-                    animate={{
-                      opacity: 0.35,
-                    }}
-                    initial={{ opacity: 0 }}
-                    exit={{
-                      opacity: 0,
-                    }}
-                    onClick={() => setSidebarOpen(false)}
-                  />
-                  <MotionBox
-                    sx={{
-                      position: `fixed`,
-                      top: 0,
-                      left: 0,
-                      bottom: 0,
-                      zIndex: 100,
-                      display: mobileOnlyBreakpoints(`flex`),
-                      overflow: `hidden`,
-                      width: sidebarPosition,
-                    }}
-                    animate={{
-                      x: 0,
-                    }}
-                    initial={{ x: `-${sidebarPosition}` }}
-                    exit={{
-                      x: `-${sidebarPosition}`,
-                    }}
-                    transition={{ ease: `easeInOut`, duration: 0.2 }}
-                  >
-                    <SideNav />
-                  </MotionBox>
-                </>
-              )}
-            </AnimatePresence>
-            <Flex wrap="nowrap">
-              {nav && (
-                <Box
-                  sx={{
-                    position: `sticky`,
-                    top: 0,
-                    flexBasis: `16rem`,
-                    flexGrow: 0,
-                    display: desktopOnlyBreakpoints(`flex`),
-                  }}
-                >
-                  <SideNav />
-                </Box>
-              )}
-              <Box
-                as="main"
-                sx={{
-                  flexBasis: 0,
-                  flexGrow: 1,
-                }}
-              >
-                {/* wrapper div fixes safari position: sticky bug */}
-                <div>
-                  {nav && (
-                    <Flex
-                      align="center"
-                      p={2}
-                      sx={{
-                        height: 16,
-                        bg: `background`,
-                        position: `sticky`,
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        zIndex: 98,
-                        borderBottom: `1px solid`,
-                        borderColor: `divider`,
-                        display: mobileOnlyBreakpoints(),
+          <ThemeProvider defaultTheme="system" attribute="class">
+            <ThemeUIProvider theme={theme}>
+              <AnimatePresence>
+                {isSidebarOpen && (
+                  <>
+                    <motion.div
+                      className="fixed inset-0 z-[99] lg:hidden bg-black"
+                      animate={{
+                        opacity: 0.35,
                       }}
+                      initial={{ opacity: 0 }}
+                      exit={{
+                        opacity: 0,
+                      }}
+                      onClick={() => setSidebarOpen(false)}
+                    />
+                    <motion.div
+                      className="fixed inset-0 z-[100] lg:hidden overflow-hidden w-80 sm:w-96"
+                      animate={{
+                        x: 0,
+                      }}
+                      initial={{ x: `-${sidebarPosition}` }}
+                      exit={{
+                        x: `-${sidebarPosition}`,
+                      }}
+                      transition={{ ease: `easeInOut`, duration: 0.2 }}
                     >
-                      <MobileOnly>
-                        <MenuButton onClick={() => setSidebarOpen(true)} />
-                      </MobileOnly>
-                      <Box />
-                    </Flex>
-                  )}
-                  <Component {...pageProps} />
-                </div>
-              </Box>
-            </Flex>
+                      <SideNav />
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
+              <div className="flex flex-nowrap">
+                {nav && (
+                  <div className="flex-grow-0 hidden lg:flex w-64">
+                    <SideNav />
+                  </div>
+                )}
+                <main className="flex-grow">
+                  {/* wrapper div fixes safari position: sticky bug */}
+                  <div>
+                    {nav && (
+                      <div
+                        className={clsx(
+                          `flex lg:hidden`,
+                          `sticky place-items-center border-b p-2 h-16 top-0 left-0 right-0 z-[98]`,
+                          `bg-gray-50 border-gray-300 dark:bg-dark-gray-900 dark:border-dark-gray-700`
+                        )}
+                      >
+                        <div className="lg:hidden">
+                          {/* <MenuButton onClick={() => setSidebarOpen(true)} /> */}
+                          {/* Mobile menu button*/}
+                          <button
+                            type="button"
+                            className={clsx(
+                              `w-10 h-10 inline-flex items-center justify-center p-2 rounded-md focus`,
+                              `text-gray-700 dark:text-dark-gray-400`
+                            )}
+                            aria-controls="mobile-menu"
+                            aria-expanded={isSidebarOpen}
+                            onClick={() => setSidebarOpen(true)}
+                          >
+                            <span className="sr-only">Open nav menu</span>
+                            <MenuIcon />
+                          </button>
+                        </div>
+                        <div />
+                      </div>
+                    )}
+                    <Component {...pageProps} />
+                  </div>
+                </main>
+              </div>
+            </ThemeUIProvider>
           </ThemeProvider>
           {process.env.NODE_ENV === `development` && (
             <ReactQueryDevtools initialIsOpen />

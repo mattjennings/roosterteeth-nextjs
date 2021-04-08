@@ -1,3 +1,28 @@
 body {
   height: 100vh;
 }
+
+select {
+  -moz-appearance: none;
+  background-color: inherit;
+  background-image: unset;
+  background-size: unset;
+  padding-right: 0;
+  background-repeat: unset;
+  color: var(--colors-text-500);
+}
+
+select::-ms-expand {
+  display: none;
+}
+
+input:disabled,
+textarea:disabled {
+  -webkit-text-fill-color: currentColor;
+  opacity: 1;
+}
+
+input::placeholder {
+  /* placeholder-opacity will not work with placeholder-text, so we apply it here instead */
+  opacity: 0.5;
+}
