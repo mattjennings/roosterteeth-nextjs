@@ -1,25 +1,22 @@
-import React from 'react'
-import { MotionImage, MotionImageProps } from './MotionComponents'
+import clsx from 'clsx'
+import { motion, MotionProps } from 'framer-motion'
+import React, { HTMLProps } from 'react'
 
 export default function ImageHeader({
-  img,
   title,
   ...props
 }: {
-  img: string
   title: string
-} & MotionImageProps) {
+} & HTMLProps<HTMLImageElement> &
+  MotionProps) {
   return (
-    <MotionImage
-      src={img}
+    <motion.img
       alt={title}
       {...(props as any)}
-      sx={{
-        width: `100%`,
-        height: [`25vw`, `10vw`, `10vw`, `10vw`, `5vw`],
-        objectFit: `cover`,
-        ...(props.sx ?? {}),
-      }}
+      className={clsx(
+        `w-full object-cover h-[25vw] sm:h[10vw] xl:h-[5vw]`,
+        props.className
+      )}
     />
   )
 }

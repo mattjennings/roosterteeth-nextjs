@@ -1,10 +1,11 @@
+import clsx from 'clsx'
 import EpisodeCard from 'components/EpisodeCard'
 import ImageHeader from 'components/ImageHeader'
 import { MotionGrid } from 'components/MotionComponents'
 import NoSSR from 'components/NoSSR'
 import SearchBar from 'components/SearchBar'
 import Skeleton from 'components/Skeleton'
-import { AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import useInfiniteScroll from 'hooks/useInfiniteScroll'
 import { fetcher } from 'lib/fetcher'
 import { GetStaticProps } from 'next'
@@ -12,7 +13,6 @@ import { useRouter } from 'next/router'
 import qs from 'qs'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useInfiniteQuery } from 'react-query'
-import { Box, Input } from 'theme-ui'
 
 const PER_PAGE = 30
 const fetchEpisodes = (channel, page = 0, params = {}) =>
@@ -111,7 +111,6 @@ export default function ChannelPage({ channel }: { channel: RT.Channel }) {
     },
     scrollPercentage: 75,
   })
-
   const episodes = useMemo<RT.Episode[]>(() => {
     if (data) {
       return data.flatMap(({ data }) => data)
@@ -120,10 +119,11 @@ export default function ChannelPage({ channel }: { channel: RT.Channel }) {
   }, [data])
 
   return (
-    <Box>
-      <Box mb={2}>
+    <div>
+      <div className="mb-2">
         <ImageHeader
-          img={channel.included.images[0].attributes.large}
+          className="object-contain py-3"
+          src={channel.included.images[0].attributes.large}
           title={channel.attributes.name}
           initial={{
             backgroundColor: `#${channel.attributes.brand_color}`,
@@ -131,30 +131,20 @@ export default function ChannelPage({ channel }: { channel: RT.Channel }) {
           animate={{
             backgroundColor: `#${channel.attributes.brand_color}`,
           }}
-          sx={{
-            objectFit: `contain`,
-            py: 3,
-          }}
         />
-      </Box>
-      <Box
-        sx={{
-          maxWidth: 1920,
-          mx: `auto`,
-        }}
-      >
-        <Box p={3}>
+      </div>
+      <div className="max-w-[1920px] mx-auto">
+        <div className="p-3">
           <SearchBar
             value={search}
             onChange={(e) => {
               setSearch(e.currentTarget.value)
             }}
           />
-        </Box>
+        </div>
         <AnimatePresence initial={false} exitBeforeEnter>
-          <MotionGrid
-            columns={[1, 2, 3, 3, 4]}
-            p={3}
+          <motion.div
+            className="p-3 grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4"
             key={debouncedSearch}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -174,9 +164,9 @@ export default function ChannelPage({ channel }: { channel: RT.Channel }) {
                     />
                   ))}
             </NoSSR>
-          </MotionGrid>
+          </motion.div>
         </AnimatePresence>
-      </Box>
-    </Box>
+      </div>
+    </div>
   )
 }
