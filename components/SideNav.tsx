@@ -123,6 +123,7 @@ function Link({
       <a
         {...props}
         className={clsx(
+          props.className,
           `text-left mx-2 my-1 py-1 px-2 rounded-md focus`,
           `text-gray-600 dark:text-dark-gray-300`,
           !sub && `uppercase`,
@@ -142,36 +143,21 @@ function ThemeSwitch() {
   return (
     <div className="flex">
       <div className="relative">
-        <AnimatePresence initial={false} exitBeforeEnter>
-          <motion.div
-            key={theme}
-            className="absolute top-0 right-0 bottom-0 -left-8"
-            variants={{
-              initial: { opacity: 0 },
-              animate: { opacity: 1 },
-              exit: { opacity: 0 },
-            }}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            transition={{
-              duration: 0.15,
-            }}
-          >
-            {isDarkMode ? (
-              <MoonIcon className="text-gray-400 w-5 h-5" />
-            ) : (
-              <SunIcon className="text-yellow-500 w-6 h-6 mt-[-2px]" />
-            )}
-          </motion.div>
-        </AnimatePresence>
+        <button
+          className={clsx(
+            `px-2 py-1 rounded-md focus`,
+            `text-gray-600 dark:text-dark-gray-300`,
+            `hover:bg-dark-gray-200 dark:hover:bg-dark-gray-700`
+          )}
+          onClick={() => setTheme(!isDarkMode ? `dark` : `light`)}
+        >
+          {isDarkMode ? (
+            <MoonIcon className="text-gray-400 w-6 h-6" />
+          ) : (
+            <SunIcon className="text-yellow-500 w-6 h-6 " />
+          )}
+        </button>
       </div>
-      <Switch
-        checked={isDarkMode}
-        onChecked={() => {
-          setTheme(!isDarkMode ? `dark` : `light`)
-        }}
-      />
     </div>
   )
 }
