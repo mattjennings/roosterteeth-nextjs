@@ -7,9 +7,10 @@ import { useLocalStorage } from 'hooks/useLocalStorage'
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
-import { Progress, useColorMode } from 'theme-ui'
 import { MotionFlexProps } from './MotionComponents'
 import NoSSR from './NoSSR'
+import Progress from './Progress'
+
 export interface EpisodeProps extends MotionFlexProps {
   episode: RT.Episode
   showDescription?: boolean
@@ -20,7 +21,6 @@ export default function EpisodeCard({
   showDescription = true,
   ...props
 }: EpisodeProps) {
-  const [colorMode] = useColorMode()
   const title = episode.attributes.title
   const caption = episode.attributes.caption
   const link = episode.canonical_links.self
@@ -76,14 +76,7 @@ export default function EpisodeCard({
           <NoSSR>
             {progress > 0 && (
               <Progress
-                sx={{
-                  position: `absolute`,
-                  borderRadius: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                }}
-                max={1}
+                className="absolute left-0 right-0 bottom-0"
                 value={progress}
               />
             )}
