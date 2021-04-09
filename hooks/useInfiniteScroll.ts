@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 
 const useInfiniteScroll = ({
   enabled,
@@ -16,13 +16,12 @@ const useInfiniteScroll = ({
 
   function handleScroll() {
     const scrollPosition =
-      window.innerHeight * 2 -
-      window.innerHeight * (scrollPercentage / 100) +
-      document.documentElement.scrollTop
+      ((document.documentElement.scrollTop +
+        document.documentElement.clientHeight) /
+        document.documentElement.scrollHeight) *
+      100
 
-    const triggerPoint = document.documentElement.offsetHeight
-
-    if (!enabled || scrollPosition <= triggerPoint) {
+    if (!enabled || scrollPosition < scrollPercentage) {
       return
     }
     onLoadMore()

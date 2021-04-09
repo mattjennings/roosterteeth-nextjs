@@ -1,21 +1,16 @@
 import EpisodeCard from 'components/EpisodeCard'
-import Flex from 'components/Flex'
 import ImageHeader from 'components/ImageHeader'
-import { MotionGrid } from 'components/MotionComponents'
 import NoSSR from 'components/NoSSR'
 import Skeleton from 'components/Skeleton'
-import Text from 'components/Text'
-import { AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import useInfiniteScroll from 'hooks/useInfiniteScroll'
-import useIsoLayoutEffect from 'hooks/useIsoLayoutEffect'
 import { fetcher } from 'lib/fetcher'
-import { GetServerSideProps, GetStaticProps } from 'next'
+import { GetStaticProps } from 'next'
 import { useRouter } from 'next/router'
 import qs from 'qs'
 import React, { useEffect, useMemo, useState } from 'react'
-import { QueryCache, useInfiniteQuery } from 'react-query'
-import { dehydrate } from 'react-query/hydration'
-import { Box, Label, Select } from 'theme-ui'
+import { useInfiniteQuery } from 'react-query'
+import Select from 'components/Select'
 
 const PER_PAGE = 30
 const fetchEpisodes = (season, page = 0, params = {}, ctx?: any) => {
@@ -143,24 +138,21 @@ export default function Series({
     ) ?? show.included.images[0]
 
   const headerImg = hero || fallback
+
   return (
-    <Box>
-      <Box mb={2}>
+    <div>
+      <div className="mb-2">
         <ImageHeader
-          img={headerImg.attributes.large}
+          className="object-cover"
+          src={headerImg.attributes.large}
           title={show.attributes.title}
         />
-      </Box>
-      <Box
-        sx={{
-          maxWidth: 1920,
-          mx: `auto`,
-        }}
-      >
-        <Flex my={2} px={3}>
-          <Box sx={{ width: [`100%`, `100%`, `120px`], mx: `auto` }}>
-            <Label sx={{ display: `inline-flex`, flexDirection: `column` }}>
-              <Text fontWeight="medium">Season</Text>
+      </div>
+      <div className="max-w-[1920px] mx-auto">
+        <div className="flex my-3 px-3">
+          <div className="w-full sm:w-16 mx-auto">
+            <label className="inline-flex w-full flex-col">
+              <span className="font-medium sm:text-center">Season</span>
               <Select
                 value={season}
                 onChange={(e) => setSeason(e.currentTarget.value)}
@@ -171,13 +163,12 @@ export default function Series({
                   </option>
                 ))}
               </Select>
-            </Label>
-          </Box>
-        </Flex>
+            </label>
+          </div>
+        </div>
         <AnimatePresence initial={false} exitBeforeEnter>
-          <MotionGrid
-            columns={[1, 2, 3, 3, 4]}
-            p={3}
+          <motion.div
+            className="p-3 grid gap-4 grid-cols-2 md:grid-cols-3 xl:grid-cols-4"
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             initial={{ opacity: 0 }}
@@ -187,15 +178,22 @@ export default function Series({
                 ? new Array(10)
                     .fill(null)
                     .map((_, i) => (
-                      <Skeleton key={i} height={[300, 400, 375]} />
+                      <Skeleton
+                        key={i}
+                        className="h-[300px] sm:h-[400px] md:h-[375px]"
+                      />
                     ))
                 : episodes.map((episode) => (
-                    <EpisodeCard episode={episode} key={episode.id} />
+                    <EpisodeCard
+                      episode={episode}
+                      key={episode.id}
+                      showDescription
+                    />
                   ))}
             </NoSSR>
-          </MotionGrid>
+          </motion.div>
         </AnimatePresence>
-      </Box>
-    </Box>
+      </div>
+    </div>
   )
 }

@@ -1,50 +1,25 @@
-import React from 'react'
-import { Box, Input, InputProps } from 'theme-ui'
-import { HiSearch as SearchIcon } from 'react-icons/hi'
-import Flex from './Flex'
+import { SearchIcon } from '@heroicons/react/solid'
+import clsx from 'clsx'
+import React, { HTMLProps } from 'react'
 
-export default function SearchBar(props: InputProps) {
+export default function SearchBar(props: HTMLProps<HTMLInputElement>) {
   return (
-    <Flex
-      wrap="nowrap"
-      align="center"
-      sx={{
-        p: 2,
-        color: `text`,
-        width: `100%`,
-        backgroundColor: `gray.2`,
-        borderRadius: `lg`,
-        boxShadow: `default`,
-        transition: `0.1s ease box-shadow`,
-        '&:focus-within': {
-          boxShadow: `outline`,
-        },
-      }}
+    <label
+      className={clsx(
+        `flex flex-nowrap items-center p-2 w-full rounded-lg focus-within group`,
+        `focus-within:ring-gray-400 dark:focus-within:ring-gray-500 focus-within:ring-opacity-75`,
+        `bg-gray-200 dark:bg-dark-gray-700 shadow`
+      )}
       aria-label="Search Bar"
     >
-      <Box
-        as={SearchIcon}
-        sx={{
-          color: `gray.7`,
-          mr: 2,
-          width: 6,
-          height: 6,
-        }}
+      <SearchIcon className="mr-2 w-6 h-6 text-dark-gray-400 dark:text-gray-400" />
+      <input
+        {...props}
+        className={clsx(
+          `font-medium w-full text-gray-600 dark:text-gray-300  placeholder-gray-600 dark:placeholder-dark-gray-300 bg-transparent focus:outline-none`,
+          props.className
+        )}
       />
-      <Input
-        {...(props as any)}
-        sx={{
-          p: 0,
-          width: `100%`,
-          border: `none`,
-          '&:focus': {
-            outline: `none`,
-          },
-          '&::placeholder': {
-            color: `gray.5`,
-          },
-        }}
-      />
-    </Flex>
+    </label>
   )
 }

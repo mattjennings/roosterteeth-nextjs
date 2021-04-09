@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.focus {
+  @apply focus:outline-none focus-visible:ring-2 
+  focus-visible:ring-blue-500 dark:focus-visible:ring-blue-300 
+  focus-visible:ring-opacity-75 dark:focus-visible:ring-opacity-75;
+}
+
+.focus-big {
+  @apply focus:outline-none focus-visible:ring-4 
+  focus-visible:ring-blue-500 dark:focus-visible:ring-blue-300 
+  focus-visible:ring-opacity-75 dark:focus-visible:ring-opacity-75;
+}
+
+.focus-within {
+  @apply focus:outline-none focus-within:ring-2 
+  focus-within:ring-blue-500 dark:focus-within:ring-blue-300 
+  focus-within:ring-opacity-75 dark:focus-within:ring-opacity-75;
+}
+
+.focus-within-big {
+  @apply focus:outline-none focus-visible:focus-within:outline-none focus-visible:focus-within:ring-4 
+  focus-visible:focus-within:ring-blue-500 dark:focus-visible:focus-within:ring-blue-300 
+  focus-visible:focus-within:ring-opacity-75 dark:focus-visible:focus-within:ring-opacity-75;
+}
+
+.bg-background {
+  @apply bg-gray-50 dark:bg-dark-gray-900;
+}
+
+.border-background {
+  @apply border-gray-400 dark:border-dark-gray-700;
+}

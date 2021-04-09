@@ -1,17 +1,15 @@
+import clsx from 'clsx'
 import EpisodeCard from 'components/EpisodeCard'
-import { MotionBox, MotionGrid } from 'components/MotionComponents'
 import NoSSR from 'components/NoSSR'
 import ShowCard from 'components/ShowCard'
 import Skeleton from 'components/Skeleton'
-import Text from 'components/Text'
 import VideoGrid from 'components/VideoGrid'
-import { AnimatePresence, AnimateSharedLayout } from 'framer-motion'
+import { AnimatePresence, AnimateSharedLayout, motion } from 'framer-motion'
 import { getUserCookie, setUserCookie } from 'lib/cookies'
 import { fetcher } from 'lib/fetcher'
 import { GetStaticProps } from 'next'
 import React from 'react'
 import { useQuery, useQueryCache } from 'react-query'
-import { Box, Button } from 'theme-ui'
 
 export const getStaticProps: GetStaticProps = async () => {
   const popularShows = await fetcher(
@@ -55,15 +53,13 @@ export default function Home({
 
   return (
     <AnimateSharedLayout>
-      <Box>
-        <Box p={3}>
+      <div>
+        <div className="p-3">
           <NoSSR>
             <AnimatePresence initial={false} exitBeforeEnter>
               {numIncompleteVideos > 0 && (
-                <Box mb={2}>
-                  <Text fontWeight="medium" fontSize={4} mb={1}>
-                    Keep Watching
-                  </Text>
+                <div className="mb-2">
+                  <SectionHeader>Keep Watching</SectionHeader>
                   <VideoGrid>
                     {isFetching && !incompleteVideos?.length
                       ? new Array(numIncompleteVideos)
@@ -71,8 +67,7 @@ export default function Home({
                           .map((_, i) => (
                             <Skeleton
                               key={i}
-                              // best estimates at the height of the videos given the width of device
-                              height={[`65vw`, `40vw`, `30vw`, `23vw`, `18vw`]}
+                              className="h-[65vw] sm:h-[40vw] md:h-[30vw] lg:h-[23vw] xl:h-[18vw]"
                             />
                           ))
                       : incompleteVideos?.map((episode) => (
@@ -85,11 +80,12 @@ export default function Home({
                             layout
                             showDescription={false}
                           >
-                            <Box
-                              sx={{ position: `absolute`, right: 1, bottom: 1 }}
-                            >
-                              <Button
-                                variant="pill"
+                            <div className="absolute right-1 bottom-1">
+                              <button
+                                className={clsx(
+                                  `bg-none py-1 px-3  focus rounded-full font-medium`,
+                                  `text-gray-800 hover:text-gray-500 dark:text-gray-400 dark:hover:text-gray-300`
+                                )}
                                 onClick={(e) => {
                                   e.preventDefault()
 
@@ -109,33 +105,21 @@ export default function Home({
                                     )
                                   )
                                 }}
-                                sx={{
-                                  py: 1,
-                                  px: 3,
-                                  color: `gray.5`,
-                                  background: `none`,
-                                  '&:hover': {
-                                    color: `gray.4`,
-                                    background: `none`,
-                                  },
-                                }}
                               >
                                 Remove
-                              </Button>
-                            </Box>
+                              </button>
+                            </div>
                           </EpisodeCard>
                         ))}
                   </VideoGrid>
-                </Box>
+                </div>
               )}
             </AnimatePresence>
           </NoSSR>
-          <MotionBox mb={2} layout>
-            <Text fontWeight="medium" fontSize={4} mb={1}>
-              Popular Series
-            </Text>
-            <MotionGrid
-              columns={[1, 2, 3, 3, 4]}
+          <motion.div className="mb-2" layout>
+            <SectionHeader>Popular Series</SectionHeader>
+            <motion.div
+              className="grid gap-4 grid-cols-2 md:grid-cols-3 xl:grid-cols-4"
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               initial={{ opacity: 0 }}
@@ -143,10 +127,14 @@ export default function Home({
               {popularShows.data.map((show) => (
                 <ShowCard key={show.id} show={show} />
               ))}
-            </MotionGrid>
-          </MotionBox>
-        </Box>
-      </Box>
+            </motion.div>
+          </motion.div>
+        </div>
+      </div>
     </AnimateSharedLayout>
   )
+}
+
+function SectionHeader({ children }) {
+  return <h2 className="font-medium text-3xl py-2">{children}</h2>
 }
