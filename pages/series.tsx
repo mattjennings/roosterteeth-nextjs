@@ -1,9 +1,6 @@
-import Flex from 'components/Flex'
-import { MotionGrid } from 'components/MotionComponents'
 import NoSSR from 'components/NoSSR'
 import ShowCard from 'components/ShowCard'
 import Skeleton from 'components/Skeleton'
-import Text from 'components/Text'
 import { AnimatePresence, motion } from 'framer-motion'
 import useInfiniteScroll from 'hooks/useInfiniteScroll'
 import { fetcher } from 'lib/fetcher'
@@ -13,8 +10,8 @@ import qs from 'qs'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useInfiniteQuery } from 'react-query'
 import slug from 'slug'
-import { Box, Grid, Label, Select } from 'theme-ui'
 import { filterFalsey } from 'util/filter'
+import Select from 'components/Select'
 
 const PER_PAGE = 30
 const fetchShows = (page = 0, params: any = {}) => {
@@ -165,6 +162,7 @@ export default function Series() {
           </Select>
         </label>
       </div>
+
       <AnimatePresence initial={false} exitBeforeEnter>
         <motion.div
           className="p-3 grid gap-4 grid-cols-2 md:grid-cols-3 xl:grid-cols-4"

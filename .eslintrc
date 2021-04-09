@@ -45,20 +45,7 @@
     "react/prop-types": "off",
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
-    "react/react-in-jsx-scope": "off",
-
-    "no-restricted-imports": [
-      "error",
-      {
-        "paths": [
-          {
-            "name": "theme-ui",
-            "importNames": ["Text", "Flex"],
-            "message": "Import from /components instead"
-          }
-        ]
-      }
-    ]
+    "react/react-in-jsx-scope": "off"
   },
   "settings": {
     "react": {

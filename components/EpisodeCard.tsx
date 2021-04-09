@@ -82,12 +82,9 @@ export default function EpisodeCard({
           {isRTFirst && (
             <>
               <div className="flex justify-center items-center absolute inset-0 bg-black opacity-80" />
-              <div className="flex flex-col justify-center items-center absolute inset-0">
-                <p className="font-bold text-white text-5xl opacity-80">
-                  FIRST
-                </p>
-                <p className="font-bold text-white text-xl opacity-60">
-                  available for everyone on {format(publicDate, `MMMM dd / yy`)}
+              <div className="flex flex-col justify-center items-center absolute inset-0 p-4 text-center">
+                <p className="font-bold text-white text-5xl lg:text-3xl opacity-80">
+                  RT FIRST
                 </p>
               </div>
             </>

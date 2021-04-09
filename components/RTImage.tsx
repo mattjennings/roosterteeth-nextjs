@@ -1,6 +1,5 @@
 import NextImage from 'next/image'
 import React from 'react'
-import { SxStyleProp } from 'theme-ui'
 
 export interface RTImageProps extends ImageProps {
   img: RT.Image

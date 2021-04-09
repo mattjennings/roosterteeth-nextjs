@@ -10,7 +10,7 @@ import { useRouter } from 'next/router'
 import qs from 'qs'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useInfiniteQuery } from 'react-query'
-import { Select } from 'theme-ui'
+import Select from 'components/Select'
 
 const PER_PAGE = 30
 const fetchEpisodes = (season, page = 0, params = {}, ctx?: any) => {
@@ -150,9 +150,9 @@ export default function Series({
       </div>
       <div className="max-w-[1920px] mx-auto">
         <div className="flex my-3 px-3">
-          <div className="w-full sm:w-32 mx-auto">
-            <label className="inline-block w-full flex-col">
-              <span className="font-medium">Season</span>
+          <div className="w-full sm:w-16 mx-auto">
+            <label className="inline-flex w-full flex-col">
+              <span className="font-medium sm:text-center">Season</span>
               <Select
                 value={season}
                 onChange={(e) => setSeason(e.currentTarget.value)}
