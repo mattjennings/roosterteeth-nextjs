@@ -15,9 +15,9 @@
 }
 
 .focus-within {
-  @apply focus:outline-none focus-visible:focus-within:outline-none focus-visible:focus-within:ring-2 
-  focus-visible:focus-within:ring-blue-500 dark:focus-visible:focus-within:ring-blue-300 
-  focus-visible:focus-within:ring-opacity-75 dark:focus-visible:focus-within:ring-opacity-75;
+  @apply focus:outline-none focus-within:ring-2 
+  focus-within:ring-blue-500 dark:focus-within:ring-blue-300 
+  focus-within:ring-opacity-75 dark:focus-within:ring-opacity-75;
 }
 
 .focus-within-big {
