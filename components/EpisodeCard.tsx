@@ -3,6 +3,7 @@ import format from 'date-fns/format'
 import isBefore from 'date-fns/isBefore'
 import { HTMLMotionProps, motion } from 'framer-motion'
 import { useLocalStorage } from 'hooks/useLocalStorage'
+import { useSession } from 'next-auth/client'
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
@@ -19,14 +20,16 @@ export default function EpisodeCard({
   showDescription = true,
   ...props
 }: EpisodeProps) {
-  const title = episode.attributes.title
-  const description =
-    // caption is often better, but not always there
-    episode.attributes.caption || episode.attributes.description
-  const link = episode.canonical_links.self
-  const date = new Date(episode.attributes.original_air_date)
-  const publicDate = new Date(episode.attributes.public_golive_at)
-  const isRTFirst =
+  const [session] = useSession()
+
+  const { attributes, canonical_links } = episode
+
+  const isUserFirst = session?.user?.isRTFirst
+  const date = isUserFirst
+    ? new Date(episode.attributes.member_golive_at)
+    : new Date(episode.attributes.public_golive_at)
+
+  const isEpisodeFirst =
     !!episode.attributes.public_golive_at &&
     (isBefore(new Date(), new Date(episode.attributes.public_golive_at)) ||
       episode.attributes.is_sponsors_only)
@@ -42,15 +45,12 @@ export default function EpisodeCard({
     ) ?? episode.included.images[0]
 
   return (
-    <Link href={link} passHref>
+    <Link href={canonical_links.self} passHref>
       <motion.a
         aria-label={
-          isRTFirst
-            ? `FIRST members only, available ${format(
-                publicDate,
-                `MMMM dd, yyyy`
-              )}`
-            : ``
+          isEpisodeFirst && !isUserFirst
+            ? `FIRST members only, available ${format(date, `MMMM dd, yyyy`)}`
+            : attributes.title
         }
         {...(props as any)}
         className={clsx(
@@ -69,7 +69,7 @@ export default function EpisodeCard({
             width={300 * (16 / 9)}
             height={300}
             layout="responsive"
-            alt={title}
+            alt={attributes.title}
           />
           <NoSSR>
             {progress > 0 && (
@@ -79,7 +79,7 @@ export default function EpisodeCard({
               />
             )}
           </NoSSR>
-          {isRTFirst && (
+          {isEpisodeFirst && !isUserFirst && (
             <>
               <div className="flex justify-center items-center absolute inset-0 bg-black opacity-80" />
               <div className="flex flex-col justify-center items-center absolute inset-0 p-4 text-center">
@@ -92,14 +92,21 @@ export default function EpisodeCard({
         </div>
         <div className="p-2 flex flex-col justify-between flex-grow">
           <div>
-            <h6 className="text-lg font-semibold">{title}</h6>
-            {showDescription && <p className="text-sm">{description}</p>}
+            <h6 className="text-lg font-semibold">{attributes.title}</h6>
+            {showDescription && (
+              <p className="text-sm">
+                {
+                  // caption is often better, but not always there
+                  episode.attributes.caption || episode.attributes.description
+                }
+              </p>
+            )}
           </div>
           <time
             className="mt-1 text-gray-700 dark:text-dark-gray-600"
-            dateTime={publicDate.toISOString()}
+            dateTime={date.toISOString()}
           >
-            {format(publicDate, `MMM dd / yy`)}
+            {format(date, `MMM dd / yy`)}
           </time>
         </div>
         {props.children}

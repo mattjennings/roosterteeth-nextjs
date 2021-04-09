@@ -14,5 +14,13 @@ export async function fetcher<T = any>(
         : `https://${process.env.VERCEL_URL}`
       : ``
 
-  return fetch(`${baseUrl}${url}`, opts).then((res) => res.json())
+  return fetch(`${baseUrl}${url}`, opts).then(async (res: Response) => {
+    const json = await res.json()
+
+    if (res.status >= 400) {
+      throw json
+    }
+
+    return json
+  })
 }

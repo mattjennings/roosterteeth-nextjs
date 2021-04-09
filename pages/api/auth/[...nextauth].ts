@@ -47,9 +47,10 @@ export default NextAuth({
 
       return refreshAccessToken(token.refresh_token)
     },
-    async session(session, user: JWT & RT.AuthUser) {
-      session.user = user
-      session.accessToken = user.access_token
+    async session(session, token: JWT & { user: RT.AuthUser }) {
+      // @ts-ignore
+      session.user = token.user
+      session.accessToken = token.user.access_token
 
       // next-auth ts types are wrong
       return session as any
@@ -110,8 +111,7 @@ async function login(username: string, password: string) {
     }
   )
 
-  const isRTFirst = info?.attributes?.is_first_plus
-
+  const isRTFirst = info?.attributes?.member_tier === `first`
   return {
     ...user,
     isRTFirst,

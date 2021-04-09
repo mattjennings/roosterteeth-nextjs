@@ -1,27 +1,28 @@
 import WatchVideo from 'components/WatchVideo'
 import { fetcher } from 'lib/fetcher'
+import { GetServerSideProps } from 'next'
 import React from 'react'
-
-export default function Watch({ id, url, error, attributes }) {
-  return <WatchVideo slug={id} initialData={{ url, error, attributes }} />
-}
-
-Watch.getInitialProps = async (ctx) => {
+import { QueryClient } from 'react-query'
+import { dehydrate } from 'react-query/hydration'
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const id = ctx.query.id
-  const [watchRes, metaRes] = await Promise.all([
-    fetcher(`/api/watch/${id}/videos`),
-    fetcher(`/api/watch/${id}`),
-  ])
 
-  const attributes = metaRes.data?.[0]?.attributes
-  const url = watchRes.data?.[0]?.attributes?.url ?? null
+  const queryClient = new QueryClient()
+
+  // prefetch the meta url for video
+  await queryClient.prefetchQuery(`/api/watch/${id}`, () =>
+    fetcher(`/api/watch/${id}`)
+  )
 
   return {
-    nav: false,
-    title: attributes.title,
-    id,
-    url,
-    attributes,
-    error: watchRes.access === false && watchRes.message,
+    props: {
+      dehydratedState: dehydrate(queryClient),
+      nav: false,
+      id,
+    },
   }
+}
+
+export default function Watch({ id }) {
+  return <WatchVideo slug={id} />
 }

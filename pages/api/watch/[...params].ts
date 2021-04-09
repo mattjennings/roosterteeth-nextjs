@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import qs from 'qs'
 import { cors } from 'lib/cors'
+import { forwardApiRoute } from 'lib/forwardApiRoute'
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   await cors(req, res)
@@ -9,9 +9,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   const [id, ...rest] = params as string[]
 
-  const fetchRes = await fetch(
-    `${process.env.API_BASE_URL}/watch/${id}${rest ? `/` + rest.join(`/`) : ``}`
+  const fetchRes = await forwardApiRoute(
+    `/watch/${id}${rest ? `/` + rest.join(`/`) : ``}`,
+    req
   )
-
   res.status(fetchRes.status).json(await fetchRes.json())
 }

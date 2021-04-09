@@ -34,7 +34,9 @@ function App({ Component, pageProps, router }: AppProps) {
     () =>
       new QueryClient({
         defaultOptions: {
-          queries: {},
+          queries: {
+            retry: 0,
+          },
         },
       }),
     []
