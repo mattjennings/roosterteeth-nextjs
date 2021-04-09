@@ -85,7 +85,7 @@ function LinkGroup({
         className={clsx(
           `text-left uppercase rounded-md focus`,
           `mx-2 my-1 py-1 px-2`,
-          `bg-none text-gray-600 dark:text-dark-gray-300 font-bold`,
+          `bg-none text-gray-800 dark:text-dark-gray-300 font-bold`,
           `hover:bg-dark-gray-200 dark:hover:bg-dark-gray-700`
         )}
       >
@@ -125,7 +125,7 @@ function Link({
         className={clsx(
           props.className,
           `text-left mx-2 my-1 py-1 px-2 rounded-md focus`,
-          `text-gray-600 dark:text-dark-gray-300`,
+          `text-gray-800 dark:text-dark-gray-300`,
           !sub && `uppercase`,
           sub ? (isActive ? `font-medium` : `font-normal`) : `font-bold`,
           isActive ? `bg-dark-gray-200 dark:bg-dark-gray-700` : `bg-none`,

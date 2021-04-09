@@ -26,8 +26,8 @@ export default function ShowCard({ show, ...props }: ShowProps) {
         {...props}
         className={clsx(
           props.className,
-          `overflow-hidden group rounded-lg cursor-pointer focus-big`,
-          `bg-gray-200 border border-gray-200 dark:border-none dark:bg-dark-gray-800`
+          `overflow-hidden group rounded-lg cursor-pointer focus-big shadow`,
+          `bg-gray-200  dark:bg-dark-gray-800`
         )}
       >
         <Image

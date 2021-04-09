@@ -56,7 +56,7 @@ export default function EpisodeCard({
         className={clsx(
           props.className,
           `flex flex-col group focus-big relative rounded-lg overlfow-hidden cursor-pointer overflow-hidden`,
-          `bg-gray-200 border border-gray-200 dark:border-none dark:bg-dark-gray-800`
+          `bg-gray-200 dark:bg-dark-gray-800 shadow`
         )}
       >
         <div className="w-full relative">

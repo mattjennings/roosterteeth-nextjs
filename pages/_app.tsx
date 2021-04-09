@@ -1,5 +1,5 @@
 import '../css/tailwind.css'
-import './_app.css'
+import '../css/global.css'
 import 'focus-visible'
 import { MenuIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
@@ -68,7 +68,7 @@ function App({ Component, pageProps, router }: AppProps) {
                   <SideNav />
                 </div>
               )}
-              <main className="">
+              <main className="flex-grow">
                 {/* wrapper div fixes safari position: sticky bug */}
                 <div>
                   {nav && (

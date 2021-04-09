@@ -8,7 +8,7 @@ export default function SearchBar(props: HTMLProps<HTMLInputElement>) {
       className={clsx(
         `flex flex-nowrap items-center p-2 w-full rounded-lg focus-within group`,
         `focus-within:ring-gray-400 dark:focus-within:ring-gray-500 focus-within:ring-opacity-75`,
-        `bg-gray-200 dark:bg-dark-gray-700`
+        `bg-gray-200 dark:bg-dark-gray-700 shadow`
       )}
       aria-label="Search Bar"
     >

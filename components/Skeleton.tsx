@@ -6,7 +6,7 @@ export default function Skeleton(props: HTMLProps<HTMLDivElement>) {
     <div
       className={clsx(
         props.className,
-        `animate-pulse rounded-lg overflow-hidden bg-gray-300 dark:bg-dark-gray-700`
+        `animate-pulse shadow rounded-lg overflow-hidden bg-gray-300 dark:bg-dark-gray-700`
       )}
     />
   )
