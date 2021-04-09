@@ -3,7 +3,7 @@ const fetch = require(`@vercel/fetch-retry`)()
 /**
  * node-fetch wrapper that supports relative urls on server
  */
-export function fetcher<T = any>(
+export async function fetcher<T = any>(
   url: string,
   opts: RequestInit = {}
 ): Promise<T> {

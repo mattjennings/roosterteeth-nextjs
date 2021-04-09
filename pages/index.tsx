@@ -9,7 +9,7 @@ import { getUserCookie, setUserCookie } from 'lib/cookies'
 import { fetcher } from 'lib/fetcher'
 import { GetStaticProps } from 'next'
 import React from 'react'
-import { useQuery, useQueryCache } from 'react-query'
+import { useQuery, useQueryClient } from 'react-query'
 
 export const getStaticProps: GetStaticProps = async () => {
   const popularShows = await fetcher(
@@ -30,7 +30,7 @@ export default function Home({
 }: {
   popularShows: RT.SearchResponse<RT.Show>
 }) {
-  const cache = useQueryCache()
+  const client = useQueryClient()
   const { data: incompleteVideos, isFetching } = useQuery<
     Array<RT.Episode & { slug: string }>
   >(`incomplete-videos`, async () => {
@@ -98,7 +98,7 @@ export default function Home({
                                     }
                                   })
 
-                                  cache.setQueryData(
+                                  client.setQueryData(
                                     `incomplete-videos`,
                                     incompleteVideos.filter(
                                       (vid) => vid.slug !== episode.slug

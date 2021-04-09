@@ -1,4 +1,25 @@
 declare namespace RT {
+  export interface AuthUser {
+    access_token: string
+    created_at: number
+    expires_in: number
+    refresh_token: string
+    scope: string
+    token_type: string
+    user_id: number
+    uuid: string
+  }
+
+  export interface DecodedAuthToken {
+    user_id: string
+    username: string
+    r: string
+    exp: number
+    tier: number
+    role: number
+    scopes: string
+  }
+
   export interface SearchResponse<T> {
     data: T[]
     page: number
