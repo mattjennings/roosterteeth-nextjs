@@ -1,17 +1,15 @@
-import { useResponsiveValue } from '@theme-ui/match-media'
 import clsx from 'clsx'
 import format from 'date-fns/format'
 import isBefore from 'date-fns/isBefore'
-import { motion } from 'framer-motion'
+import { HTMLMotionProps, motion } from 'framer-motion'
 import { useLocalStorage } from 'hooks/useLocalStorage'
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
-import { MotionFlexProps } from './MotionComponents'
 import NoSSR from './NoSSR'
 import Progress from './Progress'
 
-export interface EpisodeProps extends MotionFlexProps {
+export interface EpisodeProps extends HTMLMotionProps<'a'> {
   episode: RT.Episode
   showDescription?: boolean
 }
@@ -22,7 +20,9 @@ export default function EpisodeCard({
   ...props
 }: EpisodeProps) {
   const title = episode.attributes.title
-  const caption = episode.attributes.caption
+  const description =
+    // caption is often better, but not always there
+    episode.attributes.caption || episode.attributes.description
   const link = episode.canonical_links.self
   const date = new Date(episode.attributes.original_air_date)
   const publicDate = new Date(episode.attributes.public_golive_at)
@@ -40,7 +40,6 @@ export default function EpisodeCard({
     episode.included.images.find(
       (img) => img.attributes.image_type === `title_card`
     ) ?? episode.included.images[0]
-  const imgQuality = useResponsiveValue([30, 30, 10])
 
   return (
     <Link href={link} passHref>
@@ -53,25 +52,24 @@ export default function EpisodeCard({
               )}`
             : ``
         }
-        className={clsx(
-          `flex flex-col relative rounded-lg overlfow-hidden cursor-pointer overflow-hidden`,
-          `bg-gray-200 border border-gray-200 dark:border-none dark:bg-dark-gray-800 focus`
-        )}
         {...(props as any)}
+        className={clsx(
+          props.className,
+          `flex flex-col group focus-big relative rounded-lg overlfow-hidden cursor-pointer overflow-hidden`,
+          `bg-gray-200 border border-gray-200 dark:border-none dark:bg-dark-gray-800`
+        )}
       >
         <div className="w-full relative">
           <Image
             className={clsx(
               `transform transition-transform duration-200 ease-linear`,
-              `hover:scale-[1.025]`
+              `hover:scale-[1.025] group-focus:scale-[1.025]`
             )}
             src={img.attributes.medium}
             width={300 * (16 / 9)}
             height={300}
             layout="responsive"
-            quality={imgQuality}
             alt={title}
-            loading="eager"
           />
           <NoSSR>
             {progress > 0 && (
@@ -98,7 +96,7 @@ export default function EpisodeCard({
         <div className="p-2 flex flex-col justify-between flex-grow">
           <div>
             <h6 className="text-lg font-semibold">{title}</h6>
-            {showDescription && <p className="text-sm">{caption}</p>}
+            {showDescription && <p className="text-sm">{description}</p>}
           </div>
           <time
             className="mt-1 text-gray-700 dark:text-dark-gray-600"

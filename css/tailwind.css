@@ -4,14 +4,26 @@
 
 .focus {
   @apply focus:outline-none focus-visible:ring-2 
-  focus-visible:ring-gray-400 dark:focus-visible:ring-blue-300 
-  focus-visible:ring-opacity-75 dark:focus-visible:ring-opacity-60;
+  focus-visible:ring-blue-500 dark:focus-visible:ring-blue-300 
+  focus-visible:ring-opacity-75 dark:focus-visible:ring-opacity-75;
+}
+
+.focus-big {
+  @apply focus:outline-none focus-visible:ring-4 
+  focus-visible:ring-blue-500 dark:focus-visible:ring-blue-300 
+  focus-visible:ring-opacity-75 dark:focus-visible:ring-opacity-75;
 }
 
 .focus-within {
   @apply focus:outline-none focus-visible:focus-within:outline-none focus-visible:focus-within:ring-2 
-  focus-visible:focus-within:ring-gray-400 dark:focus-visible:focus-within:ring-blue-300 
-  focus-visible:focus-within:ring-opacity-75 dark:focus-visible:focus-within:ring-opacity-60;
+  focus-visible:focus-within:ring-blue-500 dark:focus-visible:focus-within:ring-blue-300 
+  focus-visible:focus-within:ring-opacity-75 dark:focus-visible:focus-within:ring-opacity-75;
+}
+
+.focus-within-big {
+  @apply focus:outline-none focus-visible:focus-within:outline-none focus-visible:focus-within:ring-4 
+  focus-visible:focus-within:ring-blue-500 dark:focus-visible:focus-within:ring-blue-300 
+  focus-visible:focus-within:ring-opacity-75 dark:focus-visible:focus-within:ring-opacity-75;
 }
 
 .bg-background {

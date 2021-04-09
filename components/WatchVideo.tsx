@@ -1,20 +1,12 @@
-import Flex from 'components/Flex'
-import {
-  MotionBox,
-  MotionBoxProps,
-  MotionFlex,
-} from 'components/MotionComponents'
-import Text from 'components/Text'
-import { AnimatePresence } from 'framer-motion'
+import { AnimatePresence, HTMLMotionProps, motion } from 'framer-motion'
 import { useLocalStorage } from 'hooks/useLocalStorage'
 import { setUserCookie } from 'lib/cookies'
 import { getVideoInfo } from 'lib/rt'
 import React, { useEffect, useRef, useState } from 'react'
 import ReactPlayer from 'react-player'
 import { useQuery } from 'react-query'
-import { Box, Close } from 'theme-ui'
 
-export interface WatchVideoProps extends MotionBoxProps {
+export interface WatchVideoProps extends HTMLMotionProps<'div'> {
   slug: string
   initialData?: {
     attributes: any
@@ -27,7 +19,6 @@ export interface WatchVideoProps extends MotionBoxProps {
 export default function WatchVideo({
   slug,
   initialData,
-  onClose,
   ...props
 }: WatchVideoProps) {
   const player = useRef<ReactPlayer>()
@@ -79,19 +70,9 @@ export default function WatchVideo({
   }
 
   return (
-    <MotionBox
-      {...(props as any)}
-      sx={{
-        width: `100vw`,
-        height: `100vh`,
-        bg: `black`,
-        position: `relative`,
-      }}
-    >
+    <motion.div className="h-screen w-screen bg-black relative" {...props}>
       {data && (
-        <Box
-          sx={{ position: `absolute`, top: 0, left: 0, right: 0, bottom: 0 }}
-        >
+        <div className="absolute inset-0">
           {!error && (
             <ReactPlayer
               ref={player}
@@ -116,51 +97,22 @@ export default function WatchVideo({
           )}
           <AnimatePresence initial={false}>
             {(!playing || error) && (
-              <MotionFlex
-                sx={{
-                  top: 0,
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  position: `absolute`,
-                  pointerEvents: `none`,
-                  p: 4,
-                  background: `linear-gradient(180deg, rgba(2,0,36,1) 0%, rgba(255,255,255,0) 100%)`,
-                }}
+              <motion.div
+                className="absolute inset-0 pointer-events-none p-4 bg-gradient-to-b from-black to-transparent"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
-                <Flex
-                  align="center"
-                  justify="space-between"
-                  sx={{ width: `100%` }}
-                >
-                  <Text color="white" fontSize={4}>
+                <div className="flex items-center justify-between w-full">
+                  <h1 className="text-white text-3xl">
                     {error ? error : attributes.title}
-                  </Text>
-                  {onClose && (
-                    <Close
-                      sx={{
-                        width: 8,
-                        height: 8,
-                        color: `white`,
-                        cursor: `pointer`,
-                        zIndex: 1000,
-                        pointerEvents: `all`,
-                      }}
-                      onClick={(ev) => {
-                        ev.stopPropagation()
-                        onClose()
-                      }}
-                    />
-                  )}
-                </Flex>
-              </MotionFlex>
+                  </h1>
+                </div>
+              </motion.div>
             )}
           </AnimatePresence>
-        </Box>
+        </div>
       )}
-    </MotionBox>
+    </motion.div>
   )
 }

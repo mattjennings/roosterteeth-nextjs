@@ -1,10 +1,11 @@
+import clsx from 'clsx'
+import { HTMLMotionProps, motion } from 'framer-motion'
+import { useMediaQuery } from 'hooks/useMediaQuery'
+import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
-import { MotionBox, MotionFlexProps } from './MotionComponents'
-import Image from 'next/image'
-import { useResponsiveValue } from '@theme-ui/match-media'
 
-export interface ShowProps extends MotionFlexProps {
+export interface ShowProps extends HTMLMotionProps<'a'> {
   show: RT.Show
 }
 
@@ -18,45 +19,31 @@ export default function ShowCard({ show, ...props }: ShowProps) {
   const link = show.canonical_links.self
 
   const size = 200
-  const quality = useResponsiveValue([30, 30, 10])
 
   return (
     <Link href={link} passHref>
-      <MotionBox
-        as="a"
-        {...(props as any)}
-        sx={{
-          overflow: `hidden`,
-          borderRadius: `lg`,
-          bg: `gray.2`,
-          cursor: `pointer`,
-          textDecoration: `none`,
-          color: `inherit`,
-          boxShadow: `md`,
-          fontSize: 0,
-          lineHeight: 0,
-          '& img': {
-            verticalAlign: `bottom`,
-          },
-          ...(props.sx ?? {}),
-        }}
-        whileHover={{
-          scale: 1.05,
-        }}
-        whileTap={{
-          scale: 1,
-        }}
+      <motion.a
+        {...props}
+        className={clsx(
+          props.className,
+          `overflow-hidden group rounded-lg cursor-pointer focus-big`,
+          `bg-gray-200 border border-gray-200 dark:border-none dark:bg-dark-gray-800`
+        )}
       >
         <Image
+          className={clsx(
+            `transform transition-transform duration-100 ease-linear`,
+            `group-hover:scale-105 group-focus:scale-105`,
+            `align-bottom`
+          )}
           src={img.attributes.medium}
           width={Math.round(size * (16 / 9))}
           height={size}
           layout="responsive"
           alt={title}
-          quality={quality}
-          loading="eager"
+          quality={30}
         />
-      </MotionBox>
+      </motion.a>
     </Link>
   )
 }

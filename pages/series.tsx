@@ -4,7 +4,7 @@ import NoSSR from 'components/NoSSR'
 import ShowCard from 'components/ShowCard'
 import Skeleton from 'components/Skeleton'
 import Text from 'components/Text'
-import { AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import useInfiniteScroll from 'hooks/useInfiniteScroll'
 import { fetcher } from 'lib/fetcher'
 import { GetStaticProps } from 'next'
@@ -131,20 +131,10 @@ export default function Series() {
   }, [data])
 
   return (
-    <Box
-      sx={{
-        maxWidth: 1920,
-        mx: `auto`,
-      }}
-    >
-      <Grid columns={[1, 1, 2, 4]} my={2} p={3}>
-        <Label
-          sx={{
-            display: `inline-flex`,
-            flexDirection: `column`,
-          }}
-        >
-          <Text fontWeight="medium">Filter</Text>
+    <div className="max-w-[1920px] mx-auto">
+      <div className="my-2 p-3 grid gap-2 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+        <label className="inline-flex flex-col">
+          <span className="font-medium">Filter</span>
           <Select
             value={filter?.name}
             onChange={(e) => {
@@ -159,14 +149,9 @@ export default function Series() {
               </option>
             ))}
           </Select>
-        </Label>
-        <Label
-          sx={{
-            display: `inline-flex`,
-            flexDirection: `column`,
-          }}
-        >
-          <Text fontWeight="medium">Sort</Text>
+        </label>
+        <label className="inline-flex flex-col">
+          <span className="font-medium">Sort</span>
           <Select
             value={sort}
             onChange={(e) => {
@@ -178,30 +163,27 @@ export default function Series() {
             <option value="a-z">A-Z</option>
             <option value="z-a">Z-A</option>
           </Select>
-        </Label>
-      </Grid>
+        </label>
+      </div>
       <AnimatePresence initial={false} exitBeforeEnter>
-        <MotionGrid
-          columns={[1, 2, 3, 3, 4]}
-          p={3}
+        <motion.div
+          className="p-3 grid gap-4 grid-cols-2 md:grid-cols-3 xl:grid-cols-4"
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           initial={{ opacity: 0 }}
         >
           <NoSSR>
             {isFetching && !data?.length
-              ? new Array(PER_PAGE).fill(null).map((_, i) => (
-                  <Skeleton
-                    key={i}
-                    // best estimates at the height of the videos given the width of device
-                    height={[`52vw`, `25vw`, `17vw`, `13vw`, `10vw`]}
-                  />
-                ))
+              ? new Array(PER_PAGE)
+                  .fill(null)
+                  .map((_, i) => (
+                    <Skeleton key={i} className="pt-[56.25%] w-full" />
+                  ))
               : shows.map((show) => <ShowCard show={show} key={show.id} />)}
           </NoSSR>
-        </MotionGrid>
+        </motion.div>
       </AnimatePresence>
-    </Box>
+    </div>
   )
 }
 

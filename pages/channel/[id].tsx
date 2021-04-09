@@ -155,7 +155,10 @@ export default function ChannelPage({ channel }: { channel: RT.Channel }) {
                 ? new Array(10)
                     .fill(null)
                     .map((_, i) => (
-                      <Skeleton key={i} height={[300, 400, 375]} />
+                      <Skeleton
+                        key={i}
+                        className="h-[300px] sm:h-[400px] md:h-[375px]"
+                      />
                     ))
                 : episodes.map((episode) => (
                     <EpisodeCard

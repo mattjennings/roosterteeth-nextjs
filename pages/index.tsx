@@ -1,11 +1,8 @@
 import clsx from 'clsx'
-import Button from 'components/Button'
 import EpisodeCard from 'components/EpisodeCard'
-import { MotionGrid } from 'components/MotionComponents'
 import NoSSR from 'components/NoSSR'
 import ShowCard from 'components/ShowCard'
 import Skeleton from 'components/Skeleton'
-import Text from 'components/Text'
 import VideoGrid from 'components/VideoGrid'
 import { AnimatePresence, AnimateSharedLayout, motion } from 'framer-motion'
 import { getUserCookie, setUserCookie } from 'lib/cookies'
@@ -68,11 +65,7 @@ export default function Home({
                       ? new Array(numIncompleteVideos)
                           .fill(null)
                           .map((_, i) => (
-                            <Skeleton
-                              key={i}
-                              // best estimates at the height of the videos given the width of device
-                              height={[`65vw`, `40vw`, `30vw`, `23vw`, `18vw`]}
-                            />
+                            <Skeleton key={i} className="pt-[56.25%] w-full" />
                           ))
                       : incompleteVideos?.map((episode) => (
                           <EpisodeCard
