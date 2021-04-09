@@ -1,7 +1,5 @@
-import clsx from 'clsx'
 import EpisodeCard from 'components/EpisodeCard'
 import ImageHeader from 'components/ImageHeader'
-import { MotionGrid } from 'components/MotionComponents'
 import NoSSR from 'components/NoSSR'
 import SearchBar from 'components/SearchBar'
 import Skeleton from 'components/Skeleton'

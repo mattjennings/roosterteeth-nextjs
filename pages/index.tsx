@@ -65,7 +65,10 @@ export default function Home({
                       ? new Array(numIncompleteVideos)
                           .fill(null)
                           .map((_, i) => (
-                            <Skeleton key={i} className="pt-[56.25%] w-full" />
+                            <Skeleton
+                              key={i}
+                              className="h-[65vw] sm:h-[40vw] md:h-[30vw] lg:h-[23vw] xl:h-[18vw]"
+                            />
                           ))
                       : incompleteVideos?.map((episode) => (
                           <EpisodeCard

@@ -50,13 +50,13 @@ function App({ Component, pageProps, router }: AppProps) {
               />
 
               <Transition.Child
-                className="fixed transform inset-0 z-50 lg:hidden overflow-hidden w-80 sm:w-96"
+                className="fixed transform inset-0 z-50 lg:hidden overflow-hidden w-60"
                 enter="transition-transform ease-out duration-200"
                 leave="transition-transform ease-in duration-200"
-                enterFrom="translate-x-[-65vw] sm:translate-x-[-30vw]"
+                enterFrom="translate-x-[-50vw]"
                 enterTo="translate-x-0"
                 leaveFrom="translate-x-0"
-                leaveTo="translate-x-[-65vw] sm:translate-x-[-30vw]"
+                leaveTo="translate-x-[-50vw]"
               >
                 <SideNav />
               </Transition.Child>
@@ -64,11 +64,14 @@ function App({ Component, pageProps, router }: AppProps) {
 
             <div className="flex">
               {nav && (
-                <div className="sticky top-0 h-screen w-[32rem] xl:w-[20rem] hidden lg:flex">
-                  <SideNav />
-                </div>
+                <SideNav
+                  className="hidden lg:block sticky flex-grow-0 top-0 bottom-0"
+                  style={{
+                    flexBasis: `16rem`,
+                  }}
+                />
               )}
-              <main className="flex-grow">
+              <main className="flex-grow" style={{ flexBasis: 0 }}>
                 {/* wrapper div fixes safari position: sticky bug */}
                 <div>
                   {nav && (

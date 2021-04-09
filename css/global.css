@@ -22,3 +22,7 @@ input::placeholder {
   /* placeholder-opacity will not work with placeholder-text, so we apply it here instead */
   opacity: 0.5;
 }
+
+video {
+  @apply focus:outline-none;
+}

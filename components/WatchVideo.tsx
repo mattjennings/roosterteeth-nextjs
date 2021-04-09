@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import { AnimatePresence, HTMLMotionProps, motion } from 'framer-motion'
 import { useLocalStorage } from 'hooks/useLocalStorage'
 import { setUserCookie } from 'lib/cookies'
@@ -70,7 +71,10 @@ export default function WatchVideo({
   }
 
   return (
-    <motion.div className="h-screen w-screen bg-black relative" {...props}>
+    <motion.div
+      {...props}
+      className={clsx(props.className, `h-screen w-screen bg-black relative`)}
+    >
       {data && (
         <div className="absolute inset-0">
           {!error && (

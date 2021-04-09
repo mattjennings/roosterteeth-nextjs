@@ -6,56 +6,57 @@ import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import React, { HTMLProps, useEffect, useState } from 'react'
 import NoSSR from './NoSSR'
-import Switch from './Switch'
 
 export default function SideNav(props: HTMLProps<HTMLDivElement>) {
   return (
     <nav
       {...props}
       className={clsx(
-        `flex flex-col items-stretch flex-nowrap px-2 pt-2 w-full h-screen overflow-scroll`,
+        `px-2 pt-2 w-full h-screen overflow-scroll`,
         `border-r bg-background border-background`,
         props.className
       )}
     >
-      <div className="flex justify-between items-center p-2">
-        <Link href="/">
-          <HomeIcon className="w-6 h-6" />
-        </Link>
-        <NoSSR>
-          <ThemeSwitch />
-        </NoSSR>
+      <div className="flex flex-col items-stretch">
+        <div className="flex justify-between items-center p-2">
+          <Link href="/">
+            <HomeIcon className="w-6 h-6" />
+          </Link>
+          <NoSSR>
+            <ThemeSwitch />
+          </NoSSR>
+        </div>
+        <LinkGroup name="Channels" basePath="/channel">
+          <Link sub href="/channel/achievement-hunter">
+            Achievement Hunter
+          </Link>
+          <Link sub href="/channel/funhaus">
+            Funhaus
+          </Link>
+          <Link sub href="/channel/rooster-teeth">
+            Rooster Teeth
+          </Link>
+          <Link sub href="/channel/animation">
+            Animation
+          </Link>
+          <Link sub href="/channel/inside-gaming">
+            Inside Gaming
+          </Link>
+          <Link sub href="/channel/death-battle">
+            Death Battle
+          </Link>
+          <Link sub href="/channel/the-yogscast">
+            The Yogscast
+          </Link>
+          <Link sub href="/channel/kinda-funny">
+            Kinda Funny
+          </Link>
+          <Link sub href="/channel/friends-of-rt">
+            Friends of RT
+          </Link>
+        </LinkGroup>
+        <Link href="/series">Series</Link>
       </div>
-      <LinkGroup name="Channels" basePath="/channel">
-        <Link sub href="/channel/achievement-hunter">
-          Achievement Hunter
-        </Link>
-        <Link sub href="/channel/funhaus">
-          Funhaus
-        </Link>
-        <Link sub href="/channel/rooster-teeth">
-          Rooster Teeth
-        </Link>
-        <Link sub href="/channel/animation">
-          Animation
-        </Link>
-        <Link sub href="/channel/inside-gaming">
-          Inside Gaming
-        </Link>
-        <Link sub href="/channel/death-battle">
-          Death Battle
-        </Link>
-        <Link sub href="/channel/the-yogscast">
-          The Yogscast
-        </Link>
-        <Link sub href="/channel/kinda-funny">
-          Kinda Funny
-        </Link>
-        <Link sub href="/channel/friends-of-rt">
-          Friends of RT
-        </Link>
-      </LinkGroup>
-      <Link href="/series">Series</Link>
     </nav>
   )
 }
