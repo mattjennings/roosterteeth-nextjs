@@ -15,7 +15,6 @@ import { Hydrate } from 'react-query/hydration'
 import { Transition } from '@headlessui/react'
 import { Provider } from 'next-auth/client'
 import { QueryClient, QueryClientProvider } from 'react-query'
-import { fetcher } from 'lib/fetcher'
 
 function App({ Component, pageProps, router }: AppProps) {
   const { nav = true, title } = pageProps
