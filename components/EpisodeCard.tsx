@@ -97,9 +97,9 @@ export default function EpisodeCard({
           </div>
           <time
             className="mt-1 text-gray-700 dark:text-dark-gray-600"
-            dateTime={isRTFirst ? publicDate.toISOString() : date.toISOString()}
+            dateTime={publicDate.toISOString()}
           >
-            {format(isRTFirst ? publicDate : date, `MMM dd / yy`)}
+            {format(publicDate, `MMM dd / yy`)}
           </time>
         </div>
         {props.children}

@@ -15,7 +15,7 @@ import { useInfiniteQuery } from 'react-query'
 const PER_PAGE = 30
 const fetchEpisodes = (channel, page = 0, params = {}) =>
   fetcher(
-    `/api/episodes?per_page=${PER_PAGE}&channel_id=${channel}&order=desc&page=${page}&${qs.stringify(
+    `/api/episodes?per_page=${PER_PAGE}&channel_id=${channel}&order=desc&order_by=attributes.public_golive_at&page=${page}&${qs.stringify(
       params
     )}`
   )
@@ -111,7 +111,10 @@ export default function ChannelPage({ channel }: { channel: RT.Channel }) {
   })
   const episodes = useMemo<RT.Episode[]>(() => {
     if (data) {
-      return data.flatMap(({ data }) => data)
+      return data.flatMap(({ data }) => data as RT.Episode)
+      // .sort((a, b) =>
+      //   a.attributes.public_golive_at < b.attributes.public_golive_at ? 1 : -1
+      // )
     }
     return []
   }, [data])

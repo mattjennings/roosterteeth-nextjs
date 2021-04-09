@@ -16,7 +16,8 @@ const useInfiniteScroll = ({
 
   function handleScroll() {
     const scrollPosition =
-      (document.documentElement.scrollTop /
+      ((document.documentElement.scrollTop +
+        document.documentElement.clientHeight) /
         document.documentElement.scrollHeight) *
       100
 
