@@ -50,7 +50,7 @@ export default function EpisodeCard({
                 publicDate,
                 `MMMM dd, yyyy`
               )}`
-            : ``
+            : title
         }
         {...(props as any)}
         className={clsx(
@@ -91,12 +91,12 @@ export default function EpisodeCard({
           )}
         </div>
         <div className="p-2 flex flex-col justify-between flex-grow">
-          <div>
-            <h6 className="text-lg font-semibold">{title}</h6>
+          <div className="py-2">
+            <p className="text-sm sm:text-lg  font-semibold">{title}</p>
             {showDescription && <p className="text-sm">{description}</p>}
           </div>
           <time
-            className="mt-1 text-gray-700 dark:text-dark-gray-600"
+            className="text-xs sm:text-sm text-gray-700 dark:text-dark-gray-600"
             dateTime={publicDate.toISOString()}
           >
             {format(publicDate, `MMM dd / yy`)}
