@@ -78,7 +78,7 @@ export default function EpisodeCard({
           <NoSSR>
             {progress > 0 && (
               <Progress
-                className="absolute left-0 right-0 bottom-0"
+                className="!absolute left-0 right-0 bottom-0"
                 value={progress}
               />
             )}
