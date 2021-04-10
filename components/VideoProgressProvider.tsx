@@ -27,7 +27,7 @@ const VideoProgressContext = React.createContext<VideoProgressContextValue>(
 export const useVideoProgress = () => useContext(VideoProgressContext)
 
 export default function VideoProgressProvider({ children }) {
-  const { user } = useUser()
+  const { user, loading } = useUser()
 
   const queryClient = useQueryClient()
 
@@ -49,6 +49,7 @@ export default function VideoProgressProvider({ children }) {
       initialData: process.browser
         ? JSON.parse(localStorage.getItem(`keep-watching`) ?? `[]`)
         : [],
+      enabled: !!user || !loading,
     }
   )
 
