@@ -12,7 +12,6 @@ import { useSession } from 'next-auth/client'
 export default function SideNav(props: HTMLProps<HTMLDivElement>) {
   const [session, loading] = useSession()
 
-  console.log(session)
   return (
     <nav
       {...props}
