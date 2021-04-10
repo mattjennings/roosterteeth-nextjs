@@ -94,11 +94,13 @@ export default function EpisodeCard({
             </>
           )}
         </div>
-        <div className="p-2 flex flex-col justify-between">
-          <div>
-            <h6 className="text-lg font-semibold">{attributes.title}</h6>
+        <div className="p-2 flex flex-col justify-between flex-grow">
+          <div className="py-2">
+            <p className="text-sm sm:text-lg  font-semibold">
+              {attributes.title}
+            </p>
             {showDescription && (
-              <p className="text-sm">
+              <p className="py-1 text-xs sm:text-sm">
                 {
                   // caption is often better, but not always there
                   episode.attributes.caption || episode.attributes.description
@@ -107,7 +109,7 @@ export default function EpisodeCard({
             )}
           </div>
           <time
-            className="mt-1 text-gray-700 dark:text-dark-gray-600"
+            className="text-xs sm:text-sm text-gray-700 dark:text-dark-gray-600"
             dateTime={date.toISOString()}
           >
             {format(date, `MMM dd / yy`)}
