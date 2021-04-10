@@ -11,13 +11,18 @@ import NoSSR from './NoSSR'
 import { useVideoProgress } from './VideoProgressProvider'
 export interface WatchVideoProps extends HTMLMotionProps<'div'> {
   slug: string
+  startAt?: number
   onClose?: () => any
 }
 
-export default function WatchVideo({ slug, ...props }: WatchVideoProps) {
+export default function WatchVideo({
+  slug,
+  startAt,
+  ...props
+}: WatchVideoProps) {
   const player = useRef<ReactPlayer>()
 
-  const { videos, setVideoProgress, getVideoProgress } = useVideoProgress()
+  const { setVideoProgress } = useVideoProgress()
 
   const [progress, setProgress] = useState(0)
   const [playing, setPlaying] = useState(false)
@@ -45,11 +50,11 @@ export default function WatchVideo({ slug, ...props }: WatchVideoProps) {
   const video = videoQuery.data?.data?.[0]
 
   useEffect(() => {
-    if (ready && !playing) {
-      player.current.seekTo(getVideoProgress(slug))
+    if (ready) {
+      player.current.seekTo(startAt)
     }
     // eslint-disable-next-line
-  }, [ready, videos])
+  }, [ready])
 
   const updateProgress = useCallback(
     (
