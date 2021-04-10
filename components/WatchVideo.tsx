@@ -1,13 +1,13 @@
 import clsx from 'clsx'
 import { AnimatePresence, HTMLMotionProps, motion } from 'framer-motion'
-import { useLocalStorage } from 'hooks/useLocalStorage'
-import { setUserCookie } from 'lib/cookies'
 import { fetcher } from 'lib/fetcher'
-import { getVideoInfo } from 'lib/rt'
-import React, { useEffect, useRef, useState } from 'react'
+import debounce from 'lodash/debounce'
+import Head from 'next/head'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import ReactPlayer from 'react-player'
 import { useQuery } from 'react-query'
 import NoSSR from './NoSSR'
+import { useVideoProgress } from './VideoProgressProvider'
 
 export interface WatchVideoProps extends HTMLMotionProps<'div'> {
   slug: string
@@ -17,6 +17,13 @@ export interface WatchVideoProps extends HTMLMotionProps<'div'> {
 export default function WatchVideo({ slug, ...props }: WatchVideoProps) {
   const player = useRef<ReactPlayer>()
 
+  const {
+    setVideoProgress,
+    getVideoProgress,
+    loading: loadingVideoProgress,
+  } = useVideoProgress()
+
+  const [progress, setProgress] = useState(0)
   const [playing, setPlaying] = useState(false)
   const [ready, setReady] = useState(false)
 
@@ -38,51 +45,51 @@ export default function WatchVideo({ slug, ...props }: WatchVideoProps) {
     }
   )
 
-  const [progress, setProgress] = useLocalStorage(`video-progress-${slug}`, 0)
-
   const meta = metaQuery.data?.data?.[0]
   const video = videoQuery.data?.data?.[0]
 
   useEffect(() => {
-    if (ready) {
-      player.current.seekTo(progress)
+    if (ready && !loadingVideoProgress) {
+      player.current.seekTo(getVideoProgress(slug))
     }
     // eslint-disable-next-line
-  }, [ready])
+  }, [ready, loadingVideoProgress])
 
-  const getProgress = () =>
-    player.current.getCurrentTime() / player.current.getDuration()
+  const updateProgress = useCallback(
+    (
+      progress = player.current.getCurrentTime() / player.current.getDuration()
+    ) => {
+      if (progress > 0.05 && progress < 0.95) {
+        setVideoProgress({ slug, progress })
+      } else if (progress > 0.95) {
+        // mark as complete
+        setVideoProgress({ slug, progress: 1 })
+      }
+    },
+    []
+  )
 
-  function updateProgress(progress = getProgress()) {
-    setProgress(progress)
+  // update progress on unmount
+  useEffect(
+    () => () => {
+      updateProgress(progress)
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  )
 
-    if (progress > 0.1 && progress < 0.9) {
-      // add to incomplete
-      setUserCookie((prev) => {
-        const incompleteVideos = prev.incompleteVideos ?? []
-
-        const exists = incompleteVideos?.indexOf(slug) > -1
-
-        return {
-          incompleteVideos: exists
-            ? incompleteVideos.sort((vid) => (vid === slug ? -1 : 1))
-            : [slug, ...incompleteVideos].slice(0, 5),
-        }
-      })
-    } else {
-      // remove from incomplete
-      setUserCookie((prev) => ({
-        incompleteVideos:
-          prev.incompleteVideos?.filter((vid) => vid !== slug) ?? [],
-      }))
-    }
-  }
+  useEffect(() => {
+    updateProgress(progress)
+  }, [updateProgress, progress])
 
   return (
     <motion.div
       {...props}
       className={clsx(props.className, `h-screen w-screen bg-black relative`)}
     >
+      <Head>
+        {meta.attributes.title && <title>{meta.attributes.title}</title>}
+      </Head>
       {meta && (
         <div className="absolute inset-0">
           <NoSSR>
@@ -95,15 +102,25 @@ export default function WatchVideo({ slug, ...props }: WatchVideoProps) {
                 pip
                 width="100%"
                 height="100%"
-                onPlay={() => setPlaying(true)}
+                progressInterval={30000}
+                onPlay={() => {
+                  setPlaying(true)
+                }}
                 onPause={() => {
                   setPlaying(false)
-                  updateProgress()
+                }}
+                onSeek={() => {
+                  setProgress(
+                    player.current.getCurrentTime() /
+                      player.current.getDuration()
+                  )
                 }}
                 onProgress={({ played }) => {
-                  updateProgress(played)
+                  setProgress(played)
                 }}
-                onReady={() => {
+                // onReady fires too soon, so we use onDuration to seek to the
+                // last video progress once it's ready
+                onDuration={() => {
                   setReady(true)
                 }}
               />
@@ -126,9 +143,7 @@ export default function WatchVideo({ slug, ...props }: WatchVideoProps) {
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
                     <p className="text-white text-3xl">
                       {/* @ts-ignore */}
-                      {videoQuery.error?.access === false
-                        ? `Video unavailable`
-                        : `Something went wrong`}
+                      {videoQuery.error.message ?? `Something went wrong`}
                     </p>
                   </div>
                 )}

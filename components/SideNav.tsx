@@ -8,9 +8,10 @@ import { useRouter } from 'next/router'
 import React, { HTMLProps, useEffect, useState } from 'react'
 import NoSSR from './NoSSR'
 import { useSession } from 'next-auth/client'
+import { useUser } from './UserProvider'
 
 export default function SideNav(props: HTMLProps<HTMLDivElement>) {
-  const [session, loading] = useSession()
+  const { user, loading } = useUser()
 
   return (
     <nav
@@ -31,19 +32,19 @@ export default function SideNav(props: HTMLProps<HTMLDivElement>) {
           </NoSSR>
         </div>
         <div className="flex justify-end h-10">
-          <AnimatePresence>
+          <AnimatePresence initial={false}>
             {!loading && (
               <motion.div animate={{ opacity: 1 }} initial={{ opacity: 0 }}>
                 <Link
-                  href={session ? `/api/auth/signout` : `/api/auth/signin`}
+                  href={user ? `/api/auth/signout` : `/api/auth/signin`}
                   className="normal-case flex items-center text-sm"
                 >
-                  {session ? (
+                  {user ? (
                     <LogoutIcon className="w-5 mr-2" />
                   ) : (
                     <LoginIcon className="w-5 mr-2" />
                   )}
-                  {session ? `Sign out` : `Sign in`}
+                  {user ? `Sign out` : `Sign in`}
                 </Link>
               </motion.div>
             )}

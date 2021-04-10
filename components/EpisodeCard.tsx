@@ -6,9 +6,11 @@ import { useLocalStorage } from 'hooks/useLocalStorage'
 import { useSession } from 'next-auth/client'
 import Image from 'next/image'
 import Link from 'next/link'
-import React from 'react'
+import React, { useEffect } from 'react'
 import NoSSR from './NoSSR'
 import Progress from './Progress'
+import { useUser } from './UserProvider'
+import { useVideoProgress } from './VideoProgressProvider'
 
 export interface EpisodeProps extends HTMLMotionProps<'a'> {
   episode: RT.Episode
@@ -20,11 +22,12 @@ export default function EpisodeCard({
   showDescription = true,
   ...props
 }: EpisodeProps) {
-  const [session] = useSession()
+  const { user } = useUser()
+  const { getVideoProgress } = useVideoProgress()
 
   const { attributes, canonical_links } = episode
 
-  const isUserFirst = session?.user?.isRTFirst
+  const isUserFirst = user?.isRTFirst
   const date = isUserFirst
     ? new Date(episode.attributes.member_golive_at)
     : new Date(episode.attributes.public_golive_at)
@@ -34,11 +37,7 @@ export default function EpisodeCard({
     (isBefore(new Date(), new Date(episode.attributes.public_golive_at)) ||
       episode.attributes.is_sponsors_only)
 
-  const [progress] = useLocalStorage(
-    `video-progress-${episode.attributes.slug}`,
-    0
-  )
-
+  const progress = getVideoProgress(episode.attributes.slug)
   const img =
     episode.included.images.find(
       (img) => img.attributes.image_type === `title_card`
@@ -90,7 +89,7 @@ export default function EpisodeCard({
             </>
           )}
         </div>
-        <div className="p-2 flex flex-col justify-between flex-grow">
+        <div className="p-2 flex flex-col justify-between">
           <div>
             <h6 className="text-lg font-semibold">{attributes.title}</h6>
             {showDescription && (

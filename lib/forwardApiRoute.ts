@@ -9,11 +9,11 @@ export async function forwardApiRoute(path: string, req: NextApiRequest) {
   const fetchRes = await fetch(
     `${process.env.API_BASE_URL}${path}?${qs.stringify(query)}`,
     {
-      headers: {
-        Authorization: session
-          ? `Bearer ${session.user.access_token}`
-          : undefined,
-      },
+      headers: session
+        ? {
+            Authorization: `Bearer ${session.user.access_token}`,
+          }
+        : {},
     }
   )
   return fetchRes
