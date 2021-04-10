@@ -9,7 +9,8 @@ import ReactPlayer from 'react-player'
 import { useQuery } from 'react-query'
 import NoSSR from './NoSSR'
 import { useVideoProgress } from './VideoProgressProvider'
-
+import useHotkeys from '@reecelucas/react-use-hotkeys'
+import { useKeyPress } from 'hooks/useKeyPress'
 export interface WatchVideoProps extends HTMLMotionProps<'div'> {
   slug: string
   onClose?: () => any
@@ -71,6 +72,27 @@ export default function WatchVideo({ slug, ...props }: WatchVideoProps) {
   useEffect(() => {
     updateProgress(progress)
   }, [updateProgress, progress])
+
+  // skip back 15 seconds
+  useKeyPress(`J`, () => {
+    if (ready) {
+      player.current.seekTo(player.current.getCurrentTime() - 15, `seconds`)
+    }
+  })
+
+  // skip ahead 15 seconds
+  useKeyPress(`L`, () => {
+    if (ready) {
+      player.current.seekTo(player.current.getCurrentTime() + 15, `seconds`)
+    }
+  })
+
+  // play/pause
+  useKeyPress(`K`, () => {
+    if (ready) {
+      setPlaying((prev) => !prev)
+    }
+  })
 
   return (
     <motion.div
