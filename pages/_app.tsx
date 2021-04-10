@@ -136,7 +136,7 @@ function App({ Component, pageProps, router }: AppProps) {
                                 onClick={() => setSidebarOpen(true)}
                               >
                                 <span className="sr-only">Open nav menu</span>
-                                <MenuIcon />
+                                <MenuIcon className="w-full h-full" />
                               </button>
                             </div>
                             <div />

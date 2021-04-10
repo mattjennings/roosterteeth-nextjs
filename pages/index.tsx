@@ -90,7 +90,7 @@ export default function Home({
                           <div className="absolute right-1 bottom-1">
                             <button
                               className={clsx(
-                                `bg-none py-1 px-3  focus rounded-full font-medium`,
+                                `bg-none py-1 px-3 focus rounded-full font-medium text-sm sm:text-md`,
                                 `text-gray-800 hover:text-gray-500 dark:text-gray-400 dark:hover:text-gray-300`
                               )}
                               onClick={(e) => {

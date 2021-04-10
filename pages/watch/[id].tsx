@@ -24,5 +24,9 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 }
 
 export default function Watch({ id }) {
-  return <WatchVideo slug={id} />
+  return (
+    <div className="h-screen w-screen overflow-hidden">
+      <WatchVideo slug={id} />
+    </div>
+  )
 }

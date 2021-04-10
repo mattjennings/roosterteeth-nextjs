@@ -1,16 +1,14 @@
 import clsx from 'clsx'
 import { AnimatePresence, HTMLMotionProps, motion } from 'framer-motion'
+import { useKeyPress } from 'hooks/useKeyPress'
 import useOnUnmount from 'hooks/useOnUnmount'
 import { fetcher } from 'lib/fetcher'
-import debounce from 'lodash/debounce'
 import Head from 'next/head'
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import ReactPlayer from 'react-player'
 import { useQuery } from 'react-query'
 import NoSSR from './NoSSR'
 import { useVideoProgress } from './VideoProgressProvider'
-import useHotkeys from '@reecelucas/react-use-hotkeys'
-import { useKeyPress } from 'hooks/useKeyPress'
 export interface WatchVideoProps extends HTMLMotionProps<'div'> {
   slug: string
   onClose?: () => any

@@ -57,6 +57,11 @@ export default function EpisodeCard({
           `flex flex-col group focus-big relative rounded-lg overlfow-hidden cursor-pointer overflow-hidden`,
           `bg-gray-200 dark:bg-dark-gray-800 shadow`
         )}
+        style={{
+          // fix safari clipping outside of border radius on image scale
+          transform: `translateZ(0)`,
+          ...(props.style ?? {}),
+        }}
       >
         <div className="w-full relative">
           <Image
