@@ -50,14 +50,14 @@ export default function Series() {
   })
 
   const {
-    data = [],
+    data,
     isFetching,
-    isFetchingMore,
-    fetchMore,
-    canFetchMore,
-  } = useInfiniteQuery(
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+  } = useInfiniteQuery<RT.SearchResponse<RT.Show>>(
     `shows-${filter?.name}-${sort}`,
-    (key, page: number) => {
+    ({ pageParam }) => {
       const sortParams: any = {}
       switch (sort) {
         case `newest`:
@@ -73,24 +73,24 @@ export default function Series() {
           sortParams.title_order = `desc`
       }
       if (filter?.channel) {
-        return fetchShows(page, {
+        return fetchShows(pageParam, {
           channel_id: slug(filter.name),
           ...sortParams,
         })
       }
 
       if (filter?.genre) {
-        return fetchShows(page, { genres: filter.name, ...sortParams })
+        return fetchShows(pageParam, { genres: filter.name, ...sortParams })
       }
 
       if (filter?.params) {
-        return fetchShows(page, { ...filter.params, ...sortParams })
+        return fetchShows(pageParam, { ...filter.params, ...sortParams })
       }
 
-      return fetchShows(page)
+      return fetchShows(pageParam)
     },
     {
-      getFetchMore(prev) {
+      getNextPageParam(prev) {
         const nextPage = prev?.page + 1 ?? 0
 
         return nextPage < prev.total_pages ? nextPage : false
@@ -113,18 +113,15 @@ export default function Series() {
   }, [filter, sort])
 
   useInfiniteScroll({
-    enabled: canFetchMore && !isFetching && !isFetchingMore,
+    enabled: hasNextPage && !isFetching && !isFetchingNextPage,
     onLoadMore: () => {
-      fetchMore()
+      fetchNextPage()
     },
     scrollPercentage: 75,
   })
 
-  const shows = useMemo<RT.Show[]>(() => {
-    if (data) {
-      return data.flatMap(({ data }) => data)
-    }
-    return []
+  const shows = useMemo(() => {
+    return data?.pages.flatMap(({ data }) => data) ?? []
   }, [data])
 
   return (
@@ -171,7 +168,7 @@ export default function Series() {
           initial={{ opacity: 0 }}
         >
           <NoSSR>
-            {isFetching && !data?.length
+            {isFetching && !data?.pages.length
               ? new Array(PER_PAGE)
                   .fill(null)
                   .map((_, i) => (

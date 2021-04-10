@@ -57,18 +57,20 @@ export default function ChannelPage({ channel }: { channel: RT.Channel }) {
   const [debouncedSearch, setDebouncedSearch] = useState(``)
 
   const {
-    data = [],
+    data,
     isFetching,
-    isFetchingMore,
-    fetchMore,
-    canFetchMore,
-    clear,
-  } = useInfiniteQuery(
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+    remove,
+  } = useInfiniteQuery<RT.SearchResponse<RT.Episode>>(
     `${router.query.id}-episodes`,
-    (key, page: number) =>
-      fetchEpisodes(channel.attributes.slug, page, { query: debouncedSearch }),
+    ({ pageParam }) =>
+      fetchEpisodes(channel.attributes.slug, pageParam, {
+        query: debouncedSearch,
+      }),
     {
-      getFetchMore(prev) {
+      getNextPageParam(prev) {
         const nextPage = prev?.page + 1 ?? 0
 
         return nextPage < prev.total_pages ? nextPage : false
@@ -80,7 +82,7 @@ export default function ChannelPage({ channel }: { channel: RT.Channel }) {
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (search !== debouncedSearch) {
-        clear()
+        remove()
         setDebouncedSearch(search)
 
         const query = { ...router.query, search }
@@ -103,18 +105,15 @@ export default function ChannelPage({ channel }: { channel: RT.Channel }) {
   }, [search])
 
   useInfiniteScroll({
-    enabled: canFetchMore && !isFetching && !isFetchingMore,
+    enabled: hasNextPage && !isFetching && !isFetchingNextPage,
     onLoadMore: () => {
-      fetchMore()
+      fetchNextPage()
     },
     scrollPercentage: 75,
   })
-  const episodes = useMemo<RT.Episode[]>(() => {
+  const episodes = useMemo(() => {
     if (data) {
-      return data.flatMap(({ data }) => data as RT.Episode)
-      // .sort((a, b) =>
-      //   a.attributes.public_golive_at < b.attributes.public_golive_at ? 1 : -1
-      // )
+      return data.pages.flatMap(({ data }) => data)
     }
     return []
   }, [data])
@@ -152,7 +151,7 @@ export default function ChannelPage({ channel }: { channel: RT.Channel }) {
             initial={{ opacity: 0 }}
           >
             <NoSSR>
-              {isFetching && !data?.length
+              {isFetching && !data?.pages?.length
                 ? new Array(10)
                     .fill(null)
                     .map((_, i) => (

@@ -1,4 +1,25 @@
 declare namespace RT {
+  export interface AuthUser {
+    access_token: string
+    created_at: number
+    expires_in: number
+    refresh_token: string
+    scope: string
+    token_type: string
+    user_id: number
+    uuid: string
+  }
+
+  export interface DecodedAuthToken {
+    user_id: string
+    username: string
+    r: string
+    exp: number
+    tier: number
+    role: number
+    scopes: string
+  }
+
   export interface SearchResponse<T> {
     data: T[]
     page: number
@@ -136,6 +157,39 @@ declare namespace RT {
     }
   }
 
+  export interface Video {
+    id: number
+    type: string
+    uuid: string
+    access?: boolean
+    message?: string
+    attributes: {
+      url: string
+      encoding_pipeline: string
+      content_id: number
+      content_slug: string
+      content_uuid: string
+      public_golive_at: string
+      sponsor_golive_at: string
+      member_golive_at: string
+      frame_sizes: unknown
+      intro_starts_at: unknown
+      intro_ends_at: unknown
+      media_type: string
+      member_tier: string
+      bandwidth: unknown
+      embed: boolean
+      is_sponsors_only: boolean
+      image_pattern_url: string
+      bif_url: string
+    }
+    links: {
+      self: string
+      content: string
+      download: string
+    }
+    included: {}
+  }
   export interface Channel {
     _index: string
     _type: string

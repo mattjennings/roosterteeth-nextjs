@@ -1,3 +1,9 @@
+body {
+  min-height: 100vh;
+  /* mobile viewport bug fix */
+  min-height: -webkit-fill-available;
+}
+
 select {
   -moz-appearance: none;
   background-color: inherit;

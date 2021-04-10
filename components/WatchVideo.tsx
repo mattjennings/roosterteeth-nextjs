@@ -1,106 +1,146 @@
 import clsx from 'clsx'
 import { AnimatePresence, HTMLMotionProps, motion } from 'framer-motion'
-import { useLocalStorage } from 'hooks/useLocalStorage'
-import { setUserCookie } from 'lib/cookies'
-import { getVideoInfo } from 'lib/rt'
-import React, { useEffect, useRef, useState } from 'react'
+import { useKeyPress } from 'hooks/useKeyPress'
+import useOnUnmount from 'hooks/useOnUnmount'
+import { fetcher } from 'lib/fetcher'
+import Head from 'next/head'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import ReactPlayer from 'react-player'
 import { useQuery } from 'react-query'
-
+import NoSSR from './NoSSR'
+import { useVideoProgress } from './VideoProgressProvider'
 export interface WatchVideoProps extends HTMLMotionProps<'div'> {
   slug: string
-  initialData?: {
-    attributes: any
-    url: string
-    error: string
-  }
+  startAt?: number
   onClose?: () => any
 }
 
 export default function WatchVideo({
   slug,
-  initialData,
+  startAt,
   ...props
 }: WatchVideoProps) {
   const player = useRef<ReactPlayer>()
 
+  const { setVideoProgress } = useVideoProgress()
+
+  const [progress, setProgress] = useState(0)
   const [playing, setPlaying] = useState(false)
   const [ready, setReady] = useState(false)
-  const { data } = useQuery(slug, () => getVideoInfo(slug), {
-    initialData,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-  })
 
-  const [progress, setProgress] = useLocalStorage(`video-progress-${slug}`, 0)
-  const { error, url, attributes } = data ?? {}
+  const metaQuery = useQuery<{ data: RT.Episode[] }>(
+    `/api/watch/${slug}`,
+    () => fetcher(`/api/watch/${slug}`),
+    {
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+    }
+  )
+  const videoQuery = useQuery<{ data: RT.Video[] }>(
+    `/api/watch/${slug}/videos`,
+    () => fetcher(`/api/watch/${slug}/videos`),
+    {
+      enabled: process.browser,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+    }
+  )
+
+  const meta = metaQuery.data?.data?.[0]
+  const video = videoQuery.data?.data?.[0]
 
   useEffect(() => {
     if (ready) {
-      player.current.seekTo(progress)
+      player.current.seekTo(startAt)
     }
     // eslint-disable-next-line
   }, [ready])
 
-  const getProgress = () =>
-    player.current.getCurrentTime() / player.current.getDuration()
+  const updateProgress = useCallback(
+    (
+      progress = player.current.getCurrentTime() / player.current.getDuration()
+    ) => {
+      if (progress > 0.05 && progress < 0.95) {
+        setVideoProgress({ slug, progress })
+      } else if (progress > 0.95) {
+        // mark as complete
+        setVideoProgress({ slug, progress: 1 })
+      }
+    },
+    [setVideoProgress, slug]
+  )
 
-  function updateProgress(progress = getProgress()) {
-    setProgress(progress)
+  useOnUnmount(() => updateProgress(progress))
 
-    if (progress > 0.1 && progress < 0.9) {
-      // add to incomplete
-      setUserCookie((prev) => {
-        const incompleteVideos = prev.incompleteVideos ?? []
+  useEffect(() => {
+    updateProgress(progress)
+  }, [updateProgress, progress])
 
-        const exists = incompleteVideos?.indexOf(slug) > -1
-
-        return {
-          incompleteVideos: exists
-            ? incompleteVideos.sort((vid) => (vid === slug ? -1 : 1))
-            : [slug, ...incompleteVideos].slice(0, 5),
-        }
-      })
-    } else {
-      // remove from incomplete
-      setUserCookie((prev) => ({
-        incompleteVideos:
-          prev.incompleteVideos?.filter((vid) => vid !== slug) ?? [],
-      }))
+  // skip back 15 seconds
+  useKeyPress(`J`, () => {
+    if (ready) {
+      player.current.seekTo(player.current.getCurrentTime() - 15, `seconds`)
     }
-  }
+  })
+
+  // skip ahead 15 seconds
+  useKeyPress(`L`, () => {
+    if (ready) {
+      player.current.seekTo(player.current.getCurrentTime() + 15, `seconds`)
+    }
+  })
+
+  // play/pause
+  useKeyPress(`K`, () => {
+    if (ready) {
+      setPlaying((prev) => !prev)
+    }
+  })
 
   return (
     <motion.div
       {...props}
       className={clsx(props.className, `h-screen w-screen bg-black relative`)}
     >
-      {data && (
+      <Head>
+        {meta.attributes.title && <title>{meta.attributes.title}</title>}
+      </Head>
+      {meta && (
         <div className="absolute inset-0">
-          {!error && (
-            <ReactPlayer
-              ref={player}
-              playing={playing}
-              controls
-              url={url}
-              pip
-              width="100%"
-              height="100%"
-              onPlay={() => setPlaying(true)}
-              onPause={() => {
-                setPlaying(false)
-                updateProgress()
-              }}
-              onProgress={({ played }) => {
-                updateProgress(played)
-              }}
-              onReady={() => {
-                setReady(true)
-              }}
-            />
-          )}
+          <NoSSR>
+            {video && !videoQuery.error && (
+              <ReactPlayer
+                ref={player}
+                playing={playing}
+                controls
+                url={video.attributes.url}
+                pip
+                width="100%"
+                height="100%"
+                progressInterval={30000}
+                onPlay={() => {
+                  setPlaying(true)
+                  setProgress(
+                    player.current.getCurrentTime() /
+                      player.current.getDuration()
+                  )
+                }}
+                onPause={() => {
+                  setPlaying(false)
+                }}
+                onProgress={({ played }) => {
+                  setProgress(played)
+                }}
+                // onReady fires too soon, so we use onDuration to seek to the
+                // last video progress once it's ready
+                onDuration={() => {
+                  setReady(true)
+                }}
+              />
+            )}
+          </NoSSR>
           <AnimatePresence initial={false}>
-            {(!playing || error) && (
+            {!playing && (
               <motion.div
                 className="absolute inset-0 pointer-events-none p-4 bg-gradient-to-b from-black to-transparent"
                 initial={{ opacity: 0 }}
@@ -109,9 +149,17 @@ export default function WatchVideo({
               >
                 <div className="flex items-center justify-between w-full">
                   <h1 className="text-white text-3xl">
-                    {error ? error : attributes.title}
+                    {meta.attributes?.title}
                   </h1>
                 </div>
+                {videoQuery.error && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <p className="text-white text-3xl">
+                      {/* @ts-ignore */}
+                      {videoQuery.error.message ?? `Something went wrong`}
+                    </p>
+                  </div>
+                )}
               </motion.div>
             )}
           </AnimatePresence>

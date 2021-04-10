@@ -1,27 +1,64 @@
+import { useVideoProgress } from 'components/VideoProgressProvider'
 import WatchVideo from 'components/WatchVideo'
+import closestIndexTo from 'date-fns/closestIndexTo/index'
 import { fetcher } from 'lib/fetcher'
+import { GetServerSideProps } from 'next'
+import { getSession } from 'next-auth/client'
 import React from 'react'
+import { QueryClient } from 'react-query'
+import { dehydrate } from 'react-query/hydration'
 
-export default function Watch({ id, url, error, attributes }) {
-  return <WatchVideo slug={id} initialData={{ url, error, attributes }} />
-}
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const session = await getSession(ctx)
+  const slug = ctx.query.id
 
-Watch.getInitialProps = async (ctx) => {
-  const id = ctx.query.id
-  const [watchRes, metaRes] = await Promise.all([
-    fetcher(`/api/watch/${id}/videos`),
-    fetcher(`/api/watch/${id}`),
+  const queryClient = new QueryClient()
+
+  async function getStartPosition() {
+    if (session) {
+      const { progress } = await fetcher(`/api/user/get-video-progress`, {
+        method: `POST`,
+        body: JSON.stringify({ slug }),
+        headers: {
+          cookie: ctx.req.headers.cookie,
+        },
+      })
+
+      return progress
+    }
+    return 0
+  }
+
+  // prefetch the meta url for video
+  const [startAt] = await Promise.all([
+    getStartPosition(),
+    queryClient.prefetchQuery(`/api/watch/${slug}`, () =>
+      fetcher(`/api/watch/${slug}`)
+    ),
   ])
 
-  const attributes = metaRes.data?.[0]?.attributes
-  const url = watchRes.data?.[0]?.attributes?.url ?? null
-
   return {
-    nav: false,
-    title: attributes.title,
-    id,
-    url,
-    attributes,
-    error: watchRes.access === false && watchRes.message,
+    props: {
+      dehydratedState: dehydrate(queryClient),
+      nav: false,
+      slug,
+      startAt,
+      isAuthenticated: !!session,
+    },
   }
+}
+
+export default function Watch({ slug, startAt, isAuthenticated }) {
+  const { getVideoProgress } = useVideoProgress()
+
+  if (!isAuthenticated) {
+    // will be retrieved from localstorage
+    startAt = getVideoProgress(slug)
+  }
+
+  return (
+    <div className="h-screen w-screen overflow-hidden">
+      <WatchVideo slug={slug} startAt={startAt} />
+    </div>
+  )
 }

@@ -3,7 +3,7 @@ const fetch = require(`@vercel/fetch-retry`)()
 /**
  * node-fetch wrapper that supports relative urls on server
  */
-export function fetcher<T = any>(
+export async function fetcher<T = any>(
   url: string,
   opts: RequestInit = {}
 ): Promise<T> {
@@ -14,5 +14,13 @@ export function fetcher<T = any>(
         : `https://${process.env.VERCEL_URL}`
       : ``
 
-  return fetch(`${baseUrl}${url}`, opts).then((res) => res.json())
+  return fetch(`${baseUrl}${url}`, opts).then(async (res: Response) => {
+    const json = await res.json()
+
+    if (res.status >= 400) {
+      throw json
+    }
+
+    return json
+  })
 }

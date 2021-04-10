@@ -3,11 +3,14 @@ import format from 'date-fns/format'
 import isBefore from 'date-fns/isBefore'
 import { HTMLMotionProps, motion } from 'framer-motion'
 import { useLocalStorage } from 'hooks/useLocalStorage'
+import { useSession } from 'next-auth/client'
 import Image from 'next/image'
 import Link from 'next/link'
-import React from 'react'
+import React, { useEffect } from 'react'
 import NoSSR from './NoSSR'
 import Progress from './Progress'
+import { useUser } from './UserProvider'
+import { useVideoProgress } from './VideoProgressProvider'
 
 export interface EpisodeProps extends HTMLMotionProps<'a'> {
   episode: RT.Episode
@@ -19,38 +22,34 @@ export default function EpisodeCard({
   showDescription = true,
   ...props
 }: EpisodeProps) {
-  const title = episode.attributes.title
-  const description =
-    // caption is often better, but not always there
-    episode.attributes.caption || episode.attributes.description
-  const link = episode.canonical_links.self
-  const date = new Date(episode.attributes.original_air_date)
-  const publicDate = new Date(episode.attributes.public_golive_at)
-  const isRTFirst =
+  const { user } = useUser()
+  const { getVideoProgress } = useVideoProgress()
+
+  const { attributes, canonical_links } = episode
+
+  const isUserFirst = user?.isRTFirst
+  const date = isUserFirst
+    ? new Date(episode.attributes.member_golive_at)
+    : new Date(episode.attributes.public_golive_at)
+
+  const isEpisodeFirst =
     !!episode.attributes.public_golive_at &&
     (isBefore(new Date(), new Date(episode.attributes.public_golive_at)) ||
       episode.attributes.is_sponsors_only)
 
-  const [progress] = useLocalStorage(
-    `video-progress-${episode.attributes.slug}`,
-    0
-  )
-
+  const progress = getVideoProgress(episode.attributes.slug)
   const img =
     episode.included.images.find(
       (img) => img.attributes.image_type === `title_card`
     ) ?? episode.included.images[0]
 
   return (
-    <Link href={link} passHref>
+    <Link href={canonical_links.self} passHref>
       <motion.a
         aria-label={
-          isRTFirst
-            ? `FIRST members only, available ${format(
-                publicDate,
-                `MMMM dd, yyyy`
-              )}`
-            : title
+          isEpisodeFirst && !isUserFirst
+            ? `FIRST members only, available ${format(date, `MMMM dd, yyyy`)}`
+            : attributes.title
         }
         {...(props as any)}
         className={clsx(
@@ -58,6 +57,11 @@ export default function EpisodeCard({
           `flex flex-col group focus-big relative rounded-lg overlfow-hidden cursor-pointer overflow-hidden`,
           `bg-gray-200 dark:bg-dark-gray-800 shadow`
         )}
+        style={{
+          // fix safari clipping outside of border radius on image scale
+          transform: `translateZ(0)`,
+          ...(props.style ?? {}),
+        }}
       >
         <div className="w-full relative">
           <Image
@@ -69,17 +73,17 @@ export default function EpisodeCard({
             width={300 * (16 / 9)}
             height={300}
             layout="responsive"
-            alt={title}
+            alt={attributes.title}
           />
           <NoSSR>
             {progress > 0 && (
               <Progress
-                className="absolute left-0 right-0 bottom-0"
+                className="!absolute left-0 right-0 bottom-0"
                 value={progress}
               />
             )}
           </NoSSR>
-          {isRTFirst && (
+          {isEpisodeFirst && !isUserFirst && (
             <>
               <div className="flex justify-center items-center absolute inset-0 bg-black opacity-80" />
               <div className="flex flex-col justify-center items-center absolute inset-0 p-4 text-center">
@@ -92,14 +96,23 @@ export default function EpisodeCard({
         </div>
         <div className="p-2 flex flex-col justify-between flex-grow">
           <div className="py-2">
-            <p className="text-sm sm:text-lg  font-semibold">{title}</p>
-            {showDescription && <p className="text-sm">{description}</p>}
+            <p className="text-sm sm:text-lg  font-semibold">
+              {attributes.title}
+            </p>
+            {showDescription && (
+              <p className="py-1 text-xs sm:text-sm">
+                {
+                  // caption is often better, but not always there
+                  episode.attributes.caption || episode.attributes.description
+                }
+              </p>
+            )}
           </div>
           <time
             className="text-xs sm:text-sm text-gray-700 dark:text-dark-gray-600"
-            dateTime={publicDate.toISOString()}
+            dateTime={date.toISOString()}
           >
-            {format(publicDate, `MMM dd / yy`)}
+            {format(date, `MMM dd / yy`)}
           </time>
         </div>
         {props.children}

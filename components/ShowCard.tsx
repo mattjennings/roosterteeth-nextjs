@@ -29,6 +29,10 @@ export default function ShowCard({ show, ...props }: ShowProps) {
           `overflow-hidden group rounded-lg cursor-pointer focus-big shadow`,
           `bg-gray-200  dark:bg-dark-gray-800`
         )}
+        style={{
+          // fix safari clipping outside of border radius on image scale
+          transform: `translateZ(0)`,
+        }}
       >
         <Image
           className={clsx(

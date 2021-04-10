@@ -1,4 +1,5 @@
 import { HomeIcon, MoonIcon, SunIcon } from '@heroicons/react/solid'
+import { LoginIcon, LogoutIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useTheme } from 'next-themes'
@@ -6,8 +7,12 @@ import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import React, { HTMLProps, useEffect, useState } from 'react'
 import NoSSR from './NoSSR'
+import { useSession } from 'next-auth/client'
+import { useUser } from './UserProvider'
 
 export default function SideNav(props: HTMLProps<HTMLDivElement>) {
+  const { user, loading } = useUser()
+
   return (
     <nav
       {...props}
@@ -19,13 +24,33 @@ export default function SideNav(props: HTMLProps<HTMLDivElement>) {
     >
       <div className="flex flex-col items-stretch">
         <div className="flex justify-between items-center p-2">
-          <Link href="/">
+          <Link href="/" showActive={false}>
             <HomeIcon className="w-6 h-6" />
           </Link>
           <NoSSR>
             <ThemeSwitch />
           </NoSSR>
         </div>
+        <div className="flex justify-end h-10">
+          <AnimatePresence initial={false}>
+            {!loading && (
+              <motion.div animate={{ opacity: 1 }} initial={{ opacity: 0 }}>
+                <Link
+                  href={user ? `/api/auth/signout` : `/api/auth/signin`}
+                  className="normal-case flex items-center text-sm"
+                >
+                  {user ? (
+                    <LogoutIcon className="w-5 mr-2" />
+                  ) : (
+                    <LoginIcon className="w-5 mr-2" />
+                  )}
+                  {user ? `Sign out` : `Sign in`}
+                </Link>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+        <div className="h-[1px] my-2 border-b border-gray-300 dark:border-dark-gray-800" />
         <LinkGroup name="Channels" basePath="/channel">
           <Link sub href="/channel/achievement-hunter">
             Achievement Hunter
@@ -114,10 +139,11 @@ function LinkGroup({
 function Link({
   href,
   sub,
+  showActive,
   ...props
-}: HTMLProps<HTMLAnchorElement> & { sub?: boolean }) {
+}: HTMLProps<HTMLAnchorElement> & { sub?: boolean; showActive?: boolean }) {
   const { asPath } = useRouter()
-  const isActive = asPath === href || asPath === props.as
+  const isActive = showActive && (asPath === href || asPath === props.as)
 
   return (
     <NextLink href={href} passHref>

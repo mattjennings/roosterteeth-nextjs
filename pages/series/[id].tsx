@@ -79,16 +79,16 @@ export default function Series({
   })
 
   const {
-    data = [],
+    data,
     isFetching,
-    isFetchingMore,
-    fetchMore,
-    canFetchMore,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
   } = useInfiniteQuery<RT.SearchResponse<RT.Episode>>(
     `${season}-episodes`,
-    (key, page: number) => fetchEpisodes(season, page),
+    ({ pageParam }) => fetchEpisodes(season, pageParam),
     {
-      getFetchMore(prev) {
+      getNextPageParam(prev) {
         const nextPage = prev?.page + 1 ?? 0
 
         return nextPage < prev.total_pages ? nextPage : false
@@ -109,18 +109,15 @@ export default function Series({
   }, [season])
 
   useInfiniteScroll({
-    enabled: canFetchMore && !isFetching && !isFetchingMore,
+    enabled: hasNextPage && !isFetching && !isFetchingNextPage,
     onLoadMore: () => {
-      fetchMore()
+      fetchNextPage()
     },
     scrollPercentage: 75,
   })
 
   const episodes = useMemo(() => {
-    if (data) {
-      return data.flatMap(({ data }) => data)
-    }
-    return []
+    return data?.pages.flatMap(({ data }) => data) ?? []
   }, [data])
 
   const hero = show.included.images.find(
@@ -150,7 +147,7 @@ export default function Series({
       </div>
       <div className="max-w-[1920px] mx-auto">
         <div className="flex my-3 px-3">
-          <div className="w-full sm:w-16 mx-auto">
+          <div className="w-full sm:w-24 mx-auto">
             <label className="inline-flex w-full flex-col">
               <span className="font-medium sm:text-center">Season</span>
               <Select
@@ -174,7 +171,7 @@ export default function Series({
             initial={{ opacity: 0 }}
           >
             <NoSSR>
-              {isFetching && !data?.length
+              {isFetching && !data?.pages.length
                 ? new Array(10)
                     .fill(null)
                     .map((_, i) => (
