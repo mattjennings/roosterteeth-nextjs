@@ -1,4 +1,11 @@
+import AWS from 'aws-sdk'
 import { TableClient } from 'dynamodb-table-client'
+
+AWS.config.update({
+  region: `us-east-1`,
+  accessKeyId: process.env.DYNAMODB_ACCESS_KEY,
+  secretAccessKey: process.env.DYNAMODB_SECRET_KEY,
+})
 
 export type DynamoItem<T> = T & {
   PK: string
@@ -11,5 +18,4 @@ export type DynamoItem<T> = T & {
 
 export const db = new TableClient({
   tableName: `rt-nextjs-${process.env.STAGE}`,
-  region: `us-east-1`,
 })
