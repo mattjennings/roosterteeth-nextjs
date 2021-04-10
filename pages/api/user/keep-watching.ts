@@ -10,12 +10,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   const items = await db
     .query({
-      KeyConditionExpression: `#PK = :PK`,
+      IndexName: `GSI1`,
+      KeyConditionExpression: `#GSI1PK = :GSI1PK`,
       ExpressionAttributeNames: {
-        '#PK': `PK`,
+        '#GSI1PK': `GSI1PK`,
       },
       ExpressionAttributeValues: {
-        ':PK': `USER#${session.user.user_id}#KEEP_WATCHING`,
+        ':GSI1PK': `USER#${session.user.user_id}#KEEP_WATCHING`,
       },
     })
     .then((r) => r.Items)

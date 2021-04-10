@@ -14,6 +14,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       Item: {
         PK: `USER#${session.user.user_id}#KEEP_WATCHING`,
         SK: `VIDEO#${slug}`,
+        GSI1PK: `USER#${session.user.user_id}#KEEP_WATCHING`,
+        GSI1SK: `VIDEO#${slug}#CREATED#${Date.now()}`,
         slug,
         progress,
       },

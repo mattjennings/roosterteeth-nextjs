@@ -3,75 +3,25 @@ import EpisodeCard from 'components/EpisodeCard'
 import NoSSR from 'components/NoSSR'
 import ShowCard from 'components/ShowCard'
 import Skeleton from 'components/Skeleton'
-import { useUser } from 'components/UserProvider'
-import VideoGrid from 'components/VideoGrid'
 import { useVideoProgress } from 'components/VideoProgressProvider'
-import { AnimatePresence, AnimateSharedLayout, motion } from 'framer-motion'
-import { useMounted } from 'hooks/useMounted'
+import { AnimatePresence, motion } from 'framer-motion'
 import { fetcher } from 'lib/fetcher'
-import { GetServerSideProps, GetStaticProps } from 'next'
-import { getSession } from 'next-auth/client'
+import { GetStaticProps } from 'next'
 import React, { useEffect } from 'react'
-import { QueryClient, useQuery, useQueryClient } from 'react-query'
-import { dehydrate } from 'react-query/hydration'
+import { useQuery, useQueryClient } from 'react-query'
 
-// export const getStaticProps: GetStaticProps = async () => {
-//   const popularShows = await fetcher(
-//     `${process.env.API_BASE_URL}/shows?order_by=attributes.trending_score&page=1&per_page=8`
-//   )
-
-//   return {
-//     props: {
-//       title: `Home`,
-//       popularShows,
-//     },
-//     revalidate: 60 * 60, // regenerate every hour
-//   }
-// }
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const session = await getSession(ctx)
-  const queryClient = new QueryClient()
-
-  async function getKeepWatching() {
-    if (session) {
-      const videos = await fetcher<Array<{ slug: string }>>(
-        `/api/user/keep-watching`,
-        {
-          headers: {
-            cookie: ctx.req.headers.cookie,
-          },
-        }
-      )
-
-      await queryClient.prefetchQuery(`/api/user/keep-watching`, () =>
-        fetchKeepWatching(videos.map((v) => v.slug))
-      )
-    }
-  }
-  const [popularShows] = await Promise.all([
-    fetcher(
-      `${process.env.API_BASE_URL}/shows?order_by=attributes.trending_score&page=1&per_page=8`
-    ),
-    getKeepWatching(),
-  ])
+export const getStaticProps: GetStaticProps = async () => {
+  const popularShows = await fetcher(
+    `${process.env.API_BASE_URL}/shows?order_by=attributes.trending_score&page=1&per_page=8`
+  )
 
   return {
     props: {
       title: `Home`,
       popularShows,
-      dehydratedState: dehydrate(queryClient),
     },
+    revalidate: 60 * 60, // regenerate every hour
   }
-}
-
-function fetchKeepWatching(slugs: string[]) {
-  return Promise.all(
-    slugs.slice(0, 10).map((slug) =>
-      fetcher(`/api/watch/${slug}`)
-        .then((res) => ({ ...res.data?.[0], slug }))
-        .catch((e) => null)
-    )
-  )
 }
 
 export default function Home({
@@ -84,9 +34,14 @@ export default function Home({
   const queryClient = useQueryClient()
   const { data: keepWatching, isFetching, refetch } = useQuery<RT.Episode[]>(
     `incomplete-videos`,
-    async () => {
-      return fetchKeepWatching(videos.map((v) => v.slug))
-    },
+    async () =>
+      Promise.all(
+        videos.slice(0, 10).map(({ slug }) =>
+          fetcher(`/api/watch/${slug}`)
+            .then((res) => ({ ...res.data?.[0], slug }))
+            .catch((e) => null)
+        )
+      ),
     {
       // we only want to refetch when videos changes, which will refetch on focus
       refetchOnWindowFocus: false,
@@ -98,6 +53,9 @@ export default function Home({
     refetch()
   }, [videos])
 
+  useEffect(() => {
+    console.log(keepWatching)
+  }, [keepWatching])
   // prevents a drastic animation from Popular Series when keep watching loads in
   const allowLayoutAnimation = keepWatching?.length > 0
 
@@ -109,8 +67,8 @@ export default function Home({
             <div className="mb-2">
               <SectionHeader>Keep Watching</SectionHeader>
               <div className="grid gap-4 grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-                <AnimatePresence initial={false}>
-                  {videos.length && !keepWatching?.length
+                <AnimatePresence initial={false} exitBeforeEnter>
+                  {isFetching && !keepWatching?.length
                     ? new Array(videos.length)
                         .fill(null)
                         .map((_, i) => (

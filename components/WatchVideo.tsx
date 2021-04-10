@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import { AnimatePresence, HTMLMotionProps, motion } from 'framer-motion'
+import useOnUnmount from 'hooks/useOnUnmount'
 import { fetcher } from 'lib/fetcher'
 import debounce from 'lodash/debounce'
 import Head from 'next/head'
@@ -17,11 +18,7 @@ export interface WatchVideoProps extends HTMLMotionProps<'div'> {
 export default function WatchVideo({ slug, ...props }: WatchVideoProps) {
   const player = useRef<ReactPlayer>()
 
-  const {
-    setVideoProgress,
-    getVideoProgress,
-    loading: loadingVideoProgress,
-  } = useVideoProgress()
+  const { videos, setVideoProgress, getVideoProgress } = useVideoProgress()
 
   const [progress, setProgress] = useState(0)
   const [playing, setPlaying] = useState(false)
@@ -49,11 +46,11 @@ export default function WatchVideo({ slug, ...props }: WatchVideoProps) {
   const video = videoQuery.data?.data?.[0]
 
   useEffect(() => {
-    if (ready && !loadingVideoProgress) {
+    if (ready && !playing) {
       player.current.seekTo(getVideoProgress(slug))
     }
     // eslint-disable-next-line
-  }, [ready, loadingVideoProgress])
+  }, [ready, videos])
 
   const updateProgress = useCallback(
     (
@@ -66,17 +63,10 @@ export default function WatchVideo({ slug, ...props }: WatchVideoProps) {
         setVideoProgress({ slug, progress: 1 })
       }
     },
-    []
+    [setVideoProgress, slug]
   )
 
-  // update progress on unmount
-  useEffect(
-    () => () => {
-      updateProgress(progress)
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  )
+  useOnUnmount(() => updateProgress(progress))
 
   useEffect(() => {
     updateProgress(progress)
@@ -105,15 +95,13 @@ export default function WatchVideo({ slug, ...props }: WatchVideoProps) {
                 progressInterval={30000}
                 onPlay={() => {
                   setPlaying(true)
-                }}
-                onPause={() => {
-                  setPlaying(false)
-                }}
-                onSeek={() => {
                   setProgress(
                     player.current.getCurrentTime() /
                       player.current.getDuration()
                   )
+                }}
+                onPause={() => {
+                  setPlaying(false)
                 }}
                 onProgress={({ played }) => {
                   setProgress(played)
