@@ -59,25 +59,28 @@ export default function VideoProgressProvider({ children }) {
 
   const setVideoProgress = useCallback(
     ({ slug, progress }: Video) => {
-      queryClient.setQueryData<Video[]>(`/api/user/keep-watching`, (prev) => {
-        const isRemoving = progress === 0
+      queryClient.setQueryData<Video[]>(
+        `/api/user/keep-watching`,
+        (prev = []) => {
+          const isRemoving = progress === 0
 
-        if (isRemoving) {
-          return prev.filter((v) => v.slug !== slug)
-        } else {
-          const index = prev.findIndex((v) => v.slug === slug)
+          if (isRemoving) {
+            return prev.filter((v) => v.slug !== slug)
+          } else {
+            const index = prev.findIndex((v) => v.slug === slug)
 
-          if (index === -1) {
-            return [...prev, { slug, progress }]
+            if (index === -1) {
+              return [...prev, { slug, progress }]
+            }
+
+            return [
+              ...prev.slice(0, index),
+              { slug, progress },
+              ...prev.slice(index + 1),
+            ]
           }
-
-          return [
-            ...prev.slice(0, index),
-            { slug, progress },
-            ...prev.slice(index + 1),
-          ]
         }
-      })
+      )
 
       // if user is logged in, save to db
       if (user) {
