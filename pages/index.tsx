@@ -53,9 +53,6 @@ export default function Home({
     refetch()
   }, [videos])
 
-  useEffect(() => {
-    console.log(keepWatching)
-  }, [keepWatching])
   // prevents a drastic animation from Popular Series when keep watching loads in
   const allowLayoutAnimation = keepWatching?.length > 0
 
@@ -67,7 +64,7 @@ export default function Home({
             <div className="mb-2">
               <SectionHeader>Keep Watching</SectionHeader>
               <div className="grid gap-4 grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-                <AnimatePresence initial={false} exitBeforeEnter>
+                <AnimatePresence initial={false}>
                   {isFetching && !keepWatching?.length
                     ? new Array(videos.length)
                         .fill(null)
