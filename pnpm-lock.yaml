@@ -27,7 +27,7 @@ specifiers:
   eslint-plugin-react: ^7.20.3
   eslint-plugin-react-hooks: ^4.0.8
   focus-visible: ^5.2.0
-  framer-motion: ^4.1.3
+  framer-motion: ^4.1.6
   humanize-string: ^2.1.0
   jwt-decode: ^3.1.2
   lodash: ^4.17.21
@@ -80,7 +80,7 @@ devDependencies:
   eslint-plugin-react: 7.23.2_eslint@7.24.0
   eslint-plugin-react-hooks: 4.2.0_eslint@7.24.0
   focus-visible: 5.2.0
-  framer-motion: 4.1.3_react-dom@17.0.2+react@17.0.2
+  framer-motion: 4.1.6_react-dom@17.0.2+react@17.0.2
   humanize-string: 2.1.0
   jwt-decode: 3.1.2
   lodash: 4.17.21
@@ -3144,8 +3144,8 @@ packages:
     resolution: {integrity: sha512-E1fz2Xs9ltlUp+qbiyx9wmt2n9dRzPsS11Jtdb8D2o+cC7wr9xkkKsVKJuBX0ST+LVS+LhLO+SbLJNtfWcJvXA==}
     dev: true
 
-  /framer-motion/4.1.3_react-dom@17.0.2+react@17.0.2:
-    resolution: {integrity: sha512-WJ3iZiMgzR3cf/W5/o5OwGyNeXvjuIriItPnDtqbAGgd8rCq5ysAW3RS4cC2i2wVA9EfrlxWmosTt+lKhaVI3Q==}
+  /framer-motion/4.1.6_react-dom@17.0.2+react@17.0.2:
+    resolution: {integrity: sha512-17KqosUH0AxzBQTrGPUElMcActYRsCa7UtjKeT93s1I4eHiqOvpZS5iSwpZhNcZW3/6o0BZ/JjsFXio9v2erBg==}
     peerDependencies:
       react: '>=16.8 || ^17.0.0'
       react-dom: '>=16.8 || ^17.0.0'
