@@ -21,11 +21,20 @@ import VideoProgressProvider from 'components/VideoProgressProvider'
 import { Router } from 'next/router'
 import NProgress from 'nprogress'
 
+let routeTimer
 Router.events.on(`routeChangeStart`, (url) => {
-  NProgress.start()
+  routeTimer = setTimeout(() => {
+    NProgress.start()
+  }, 300)
 })
-Router.events.on(`routeChangeComplete`, () => NProgress.done())
-Router.events.on(`routeChangeError`, () => NProgress.done())
+Router.events.on(`routeChangeComplete`, () => {
+  clearTimeout(routeTimer)
+  NProgress.done()
+})
+Router.events.on(`routeChangeError`, () => {
+  clearTimeout(routeTimer)
+  NProgress.done()
+})
 
 function App({ Component, pageProps, router }: AppProps) {
   const { nav = true, title } = pageProps
