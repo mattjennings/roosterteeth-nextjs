@@ -127,6 +127,10 @@ export default function WatchVideo({
                 }}
                 onPause={() => {
                   setPlaying(false)
+                  setProgress(
+                    player.current.getCurrentTime() /
+                      player.current.getDuration()
+                  )
                 }}
                 onProgress={({ played }) => {
                   setProgress(played)
