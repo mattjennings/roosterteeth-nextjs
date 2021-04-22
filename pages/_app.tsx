@@ -1,5 +1,6 @@
 import '../css/tailwind.css'
 import '../css/global.css'
+import '../css/nprogress.css'
 import 'focus-visible'
 import { MenuIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
@@ -17,6 +18,14 @@ import { Provider } from 'next-auth/client'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import UserProvider from 'components/UserProvider'
 import VideoProgressProvider from 'components/VideoProgressProvider'
+import { Router } from 'next/router'
+import NProgress from 'nprogress'
+
+Router.events.on(`routeChangeStart`, (url) => {
+  NProgress.start()
+})
+Router.events.on(`routeChangeComplete`, () => NProgress.done())
+Router.events.on(`routeChangeError`, () => NProgress.done())
 
 function App({ Component, pageProps, router }: AppProps) {
   const { nav = true, title } = pageProps
@@ -46,6 +55,7 @@ function App({ Component, pageProps, router }: AppProps) {
   return (
     <React.StrictMode>
       <Head>
+        {/* PWA stuff */}
         <title>{title ?? `RT`}</title>
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
@@ -158,4 +168,5 @@ function App({ Component, pageProps, router }: AppProps) {
     </React.StrictMode>
   )
 }
+
 export default App

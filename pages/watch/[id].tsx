@@ -1,6 +1,5 @@
 import { useVideoProgress } from 'components/VideoProgressProvider'
 import WatchVideo from 'components/WatchVideo'
-import closestIndexTo from 'date-fns/closestIndexTo/index'
 import { fetcher } from 'lib/fetcher'
 import { GetServerSideProps } from 'next'
 import { getSession } from 'next-auth/client'
