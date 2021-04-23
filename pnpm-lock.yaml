@@ -49,6 +49,7 @@ specifiers:
   react-query: ^3.13.0
   serverless-dynamodb-local: ^0.2.39
   slug: ^3.3.5
+  styled-jsx: ^3.4.4
   tailwindcss: ^2.1.1
   typescript: ^4.0.3
   use-debounce: ^3.4.3
@@ -102,6 +103,7 @@ devDependencies:
   react-query: 3.13.5_react-dom@17.0.2+react@17.0.2
   serverless-dynamodb-local: 0.2.39
   slug: 3.5.2
+  styled-jsx: 3.4.4_react@17.0.2
   tailwindcss: 2.1.1_0bca15301caac8bc71ea0ad94045571f
   typescript: 4.2.4
   use-debounce: 3.4.3_react@17.0.2
@@ -256,6 +258,12 @@ packages:
     resolution: {integrity: sha512-48ql1CLL59aKbU94Y88Xgb2VFy7a95ykGRbJJaaVv+LX5U8wFpLfiGXJJGUozsmA1oEh/o5Bp60Voq7ACyA/Sw==}
     dependencies:
       '@babel/types': 7.13.14
+    dev: true
+
+  /@babel/helper-module-imports/7.12.5:
+    resolution: {integrity: sha512-SR713Ogqg6++uexFRORf/+nPXMmWIn80TALu0uaFb+iQIUoR7bOC7zBWyzBs5b3tBBJXuyD0cRu1F15GyzjOWA==}
+    dependencies:
+      '@babel/types': 7.13.17
     dev: true
 
   /@babel/helper-module-imports/7.13.12:
@@ -1097,6 +1105,13 @@ packages:
     dependencies:
       '@babel/helper-validator-identifier': 7.12.11
       lodash: 4.17.21
+      to-fast-properties: 2.0.0
+    dev: true
+
+  /@babel/types/7.13.17:
+    resolution: {integrity: sha512-RawydLgxbOPDlTLJNtoIypwdmAy//uQIzlKt2+iBiJaRlVuI6QLUxVAyWGNfOzp8Yu4L4lLIacoCyTNtpb4wiA==}
+    dependencies:
+      '@babel/helper-validator-identifier': 7.12.11
       to-fast-properties: 2.0.0
     dev: true
 
@@ -5666,6 +5681,23 @@ packages:
     peerDependencies:
       react: 15.x.x || 16.x.x || 17.x.x
     dependencies:
+      '@babel/types': 7.8.3
+      babel-plugin-syntax-jsx: 6.18.0
+      convert-source-map: 1.7.0
+      loader-utils: 1.2.3
+      react: 17.0.2
+      source-map: 0.7.3
+      string-hash: 1.1.3
+      stylis: 3.5.4
+      stylis-rule-sheet: 0.0.10_stylis@3.5.4
+    dev: true
+
+  /styled-jsx/3.4.4_react@17.0.2:
+    resolution: {integrity: sha512-PkZi/col7R4cpwSPY2n4JjpcTYfBgaWg/1mt0+1E/pmkXL+Pik5Kr/snYMWj90+N3kDw+BqfnJOogdRw4621GQ==}
+    peerDependencies:
+      react: 15.x.x || 16.x.x || 17.x.x
+    dependencies:
+      '@babel/helper-module-imports': 7.12.5
       '@babel/types': 7.8.3
       babel-plugin-syntax-jsx: 6.18.0
       convert-source-map: 1.7.0
